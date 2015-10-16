@@ -1,0 +1,12 @@
+msvc_x64/
+cppunit/src/cppunit/Release/
+cppunit/src/cppunit/DebugDll/cppunit_dll.tlog/link.read.1.tlog
+cppunit/src/cppunit/DebugDll/
+cppunit/src/msvc6/testpluginrunner/Debug/
+cppunit/src/cppunit/ReleaseDll/
+cppunit/src/msvc6/testpluginrunner/Release/
+cppunit/src/cppunit/Debug/
+cppunit/src/DllPlugInTester/ReleaseUnicode/
+cppunit/src/DllPlugInTester/DebugUnicode/
+cppunit/src/msvc6/testrunner/ReleaseUnicode/
+cppunit/src/msvc6/testrunner/
