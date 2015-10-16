@@ -1,0 +1,4 @@
+#include "Cuti.h"
+#ifdef CUTI_USES_CPPUNIT_BACKEND
+CPPUNIT_PLUGIN_IMPLEMENT();
+#endif
