@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 	bool result = false;
 	try {
 		for (size_t i = 1; i < argc; ++i) {
-			args.emplace_back(argv[i]);
+			args.push_back(argv[i]);
 		}
 		size_t maxSize = args.size() > 2 ? args.size() - 2 : 0;
 		for (size_t j = 0; j < maxSize; ++j) {

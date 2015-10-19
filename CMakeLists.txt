@@ -14,8 +14,13 @@ set(INCLUDE_DIR ${TOP_DIR}include/)
 set(TEST_DIR ${TOP_DIR}test/)
 
 include_directories(${TOP_DIR}cppunit/include)
+if(WIN32)
 set(CPPUNIT_LIBRARIES_DEBUG .${TOP_DIR}cppunit/lib/cppunitd_dll)
 set(CPPUNIT_LIBRARIES_RELEASE .${TOP_DIR}cppunit/lib/cppunit_dll)
+else(WIN32)
+get_filename_component(CPPUNIT_LIBRARIES_DEBUG ${TOP_DIR}cppunit/lib/libcppunit.a ABSOLUTE)
+get_filename_component(CPPUNIT_LIBRARIES_RELEASE ${TOP_DIR}cppunit/lib/libcppunit.a ABSOLUTE)
+endif(WIN32)
 
 project (Cuti)
 include_directories(${CPPUNIT_TOP_DIR}include)

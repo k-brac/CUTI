@@ -16,9 +16,15 @@ else(CUTI_USES_MSVC_UNIT_BACKEND)
 	add_definitions(-DCUTI_USES_CPPUNIT_BACKEND)
 	add_definitions(-DCPPUNIT_DLL)
 	include_directories(${CUTI_TOP_DIR}cppunit/include)
-	#TODO make it generic
+	if(WIN32)
 	get_filename_component(CUTI_UNIT_TEST_LIBRARIES_DEBUG ${CUTI_TOP_DIR}cppunit/lib/cppunitd_dll.lib ABSOLUTE)
 	get_filename_component(CUTI_UNIT_TEST_LIBRARIES_RELEASE ${CUTI_TOP_DIR}cppunit/lib/cppunit_dll.lib ABSOLUTE)
+	elseif(APPLE)
+	get_filename_component(CUTI_UNIT_TEST_LIBRARIES_DEBUG ${CUTI_TOP_DIR}cppunit/lib/libcppunit.a ABSOLUTE)
+	get_filename_component(CUTI_UNIT_TEST_LIBRARIES_RELEASE ${CUTI_TOP_DIR}cppunit/lib/libcppunit.a ABSOLUTE)
+	else(WIN32)
+
+	endif(WIN32)
 endif(CUTI_USES_MSVC_UNIT_BACKEND)
 
 include_directories(${CUTI_TOP_DIR}include)
