@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 3.2)
 
-#set(CUTI_USES_MSVC_UNIT_BACKEND ON)
+if(WIN32)
+#to be defined before find package CUTI to enable visual studio integration
+	set(CUTI_USES_MSVC_UNIT_BACKEND ON)
+endif(WIN32)
 find_package(CUTI REQUIRED)
 
 if(WIN32)
