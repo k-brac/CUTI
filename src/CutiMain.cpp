@@ -20,7 +20,7 @@ bool runPlugin(const std::string &plugPath, const std::vector<std::string> &test
 	// Create the event manager and test controller
 	CppUnit::TestResult controller;
 
-	// Add a listener that colllects test result
+	// Add a listener that collects test result
 	CppUnit::TestResultCollector result;
 	controller.addListener(&result);
 
