@@ -72,5 +72,3 @@ public:
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLibInt);
 
 CUTI_EXCLUDE_FROM_COVERAGE(TestLibInt, L"TestLibInt::*");
-//ExcludeFromCodeCoverage(TestLibInt, L"TestLibInt::*");
-//ExcludeFromCodeCoverage(assertEqual, cuti::CutiTestHelper::toWideString(typeid(TestLibInt).name()).c_str());
