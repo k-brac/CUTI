@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(CPPUNIT_ROOT_DIR ./cppunit/)
+set(CPPUNIT_ROOT_DIR ../cppunit/)
 
 get_filename_component(CPPUNIT_INCLUDE_DIR ${CPPUNIT_ROOT_DIR}include ABSOLUTE)
 include_directories(${CPPUNIT_INCLUDE_DIR})
