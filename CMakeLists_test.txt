@@ -20,7 +20,7 @@ project (compute_lib)
 include_directories(${TEST_INCLUDE_DIR})
 set(COMPUTE_LIB_SRC ${TEST_SRC_DIR}ComputeInt.cpp ${TEST_SRC_DIR}ComputeDouble.cpp ${TEST_SRC_DIR}ComputeFloat.cpp)
 set(COMPUTE_LIB_INCLUDE ${TEST_INCLUDE_DIR}ComputeInt.h ${TEST_INCLUDE_DIR}ComputeDouble.h ${TEST_INCLUDE_DIR}ComputeFloat.h)
-add_library(compute_lib SHARED ${COMPUTE_LIB_SRC} ${COMPUTE_LIB_INCLUDE})
+add_library(compute_lib STATIC ${COMPUTE_LIB_SRC} ${COMPUTE_LIB_INCLUDE})
 
 project(test_compute_lib)
 set(TEST_LIB_SRC ${TEST_DIR}TestLibInt.cpp ${TEST_DIR}TestLibFloat.cpp ${TEST_DIR}TestLibDouble.cpp ${TEST_DIR}TestLibPlugIn.cpp)
