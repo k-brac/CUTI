@@ -20,15 +20,10 @@ project (compute_lib)
 include_directories(${TEST_INCLUDE_DIR})
 set(COMPUTE_LIB_SRC ${TEST_SRC_DIR}ComputeInt.cpp ${TEST_SRC_DIR}ComputeDouble.cpp ${TEST_SRC_DIR}ComputeFloat.cpp)
 set(COMPUTE_LIB_INCLUDE ${TEST_INCLUDE_DIR}ComputeInt.h ${TEST_INCLUDE_DIR}ComputeDouble.h ${TEST_INCLUDE_DIR}ComputeFloat.h)
-add_library(compute_lib STATIC ${COMPUTE_LIB_SRC} ${COMPUTE_LIB_INCLUDE})
+add_library(compute_lib SHARED ${COMPUTE_LIB_SRC} ${COMPUTE_LIB_INCLUDE})
 
 project(test_compute_lib)
-
-set(TEST_LIB_SRC ${TEST_DIR}TestLibInt.cpp ${TEST_DIR}TestLibFloat.cpp ${TEST_DIR}TestLibDouble.cpp ${CUTI_INCLUDE})
-
+set(TEST_LIB_SRC ${TEST_DIR}TestLibInt.cpp ${TEST_DIR}TestLibFloat.cpp ${TEST_DIR}TestLibDouble.cpp ${TEST_DIR}TestLibPlugIn.cpp)
+set(MACOSX_BUNDLE_GUI_IDENTIFIER "cuti.bundle.identifier")
 include_directories(${TEST_INCLUDE_DIR})
-
-add_library(test_compute_lib SHARED ${TEST_LIB_SRC} ${TEST_DIR}TestLibPlugIn.cpp)
-
-target_link_libraries(test_compute_lib debug ${CUTI_UNIT_TEST_LIBRARIES_DEBUG} compute_lib)
-target_link_libraries(test_compute_lib optimized ${CUTI_UNIT_TEST_LIBRARIES_RELEASE} compute_lib)
+cuti_creates_test_target(test_compute_lib compute_lib ${TEST_LIB_SRC})
