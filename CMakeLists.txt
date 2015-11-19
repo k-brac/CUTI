@@ -3,6 +3,8 @@ cmake_minimum_required (VERSION 3.2)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
+include(./CMakeLists_test.txt)
+
 find_package(CppUnit REQUIRED)
 
 if(WIN32)
@@ -15,8 +17,6 @@ endif(WIN32)
 set(TOP_DIR ./)
 set(SRC_DIR ${TOP_DIR}src/)
 set(TEST_DIR ${TOP_DIR}test/)
-
-include(./CMakeLists_test.txt)
 
 project (Cuti)
 include_directories(${CPPUNIT_INCLUDE_DIR})
