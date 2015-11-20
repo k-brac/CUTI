@@ -35,7 +35,7 @@ function(cuti_creates_test_target target testee)
 			VERSION "1.0.0"
 			SOVERSION "1.0.0"
 			FRAMEWORK_VERSION "A"
-	)
+		)
 		xctest_add_bundle(${target} ${testee} ${CUTI_SOURCE} ${ARGN} ${CUTI_INCLUDE})
 	ELSE()
 		add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE})
