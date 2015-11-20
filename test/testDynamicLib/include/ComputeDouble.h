@@ -1,7 +1,9 @@
 #ifndef CUTI_COMPUTE_DOUBLE
 #define CUTI_COMPUTE_DOUBLE
 
-class ComputeDouble
+#include "DynamicLib.h"
+
+class LIBRARY_API ComputeDouble
 {
 private:
 	double mVal = 0.;

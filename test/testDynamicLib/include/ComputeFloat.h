@@ -1,7 +1,9 @@
 #ifndef CUTI_COMPUTE_FLOAT
 #define CUTI_COMPUTE_FLOAT
 
-class ComputeFloat
+#include "DynamicLib.h"
+
+class LIBRARY_API ComputeFloat
 {
 private:
 	float mVal = 0.f;

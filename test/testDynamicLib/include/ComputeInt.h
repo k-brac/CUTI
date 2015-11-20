@@ -1,7 +1,9 @@
 #ifndef CUTI_COMPUTE_INT
 #define CUTI_COMPUTE_INT
 
-class ComputeInt
+#include "DynamicLib.h"
+
+class LIBRARY_API ComputeInt
 {
 private:
 	int mVal = 0;
