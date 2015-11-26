@@ -8,12 +8,10 @@ CUTI is a wrapper on top of the CPPUNIT testing framework allowing you to integr
 CUTI uses CMake to setup its include and library path.
 
 ### Visual Studio
-CUTI override CPPUNIT macros, and adds a few, to use Visual Studio's cppunit test framework.
+CUTI override CPPUNIT macros, and adds a few, to use Visual Studio's cppunit test framework instead of CPPUNIT.
 
 ### XCode
-Here it is tricky :
-CUTI uses CPPUNIT test framework but implements an interface allowing to load your tests in XCode at runtime.
-Unfortunately it needs some manual configuration...
+CUTI uses the CPPUNIT test framework with a special test runner to dynamically register your test in XCode.
 
 ### Others
 CUTI uses CPPUNIT framework as backend.
@@ -23,18 +21,20 @@ CUTI uses CPPUNIT framework as backend.
 * You have visual feedback when running your tests
 * It is easier to use your IDE tools with your tests like code coverage, profiling, ...
 * It is easier to debug your code
+* You are more likely to run your tests
 
 ## Prerequisite
 * Use CPPUNIT as a shared library
 * Use CPPUNIT plugin feature
 * Use CPPUNIT macros
+* The code to test must be compiled as a library (static or shared)
+* The test code must be compiled as a shared library (this is linked to the use of CPPUNIT's plugin feature)
 
-## Issues
+## Known Issues
 * In Visual Studio, CUTI (by default) uses Visual Studio's cppunit test framework, which could have a different behavior than CPPUNIT.
 * In XCode CUTI uses the objective-c runtime to find the tests at runtime, which could change the behavior of your tests. (Unverified)
-* In XCode, you need to manually create a test target and setup its include and link path. These settings are overridden every-time CMake is run.
+* In XCode, you can only test code compiled as a shared library
 
 ## TO DO
 * Tutorial on how to use CPPUNIT
 * Tutorial on how to use CUTI
-* Automatic creation of XCode targets
