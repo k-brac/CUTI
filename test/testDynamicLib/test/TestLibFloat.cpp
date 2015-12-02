@@ -16,4 +16,3 @@ public:
 	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLibFloat);
-CUTI_EXCLUDE_FROM_COVERAGE(TestLibFloat, L"TestLibFloat::*");

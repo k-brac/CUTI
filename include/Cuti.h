@@ -8,11 +8,12 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #ifdef CUTI_EXCLUDE_TEST_FROM_COVERAGE
 /**
-* Excludes test code from code coverage
+* Compatibility for cppunit test suite registration
+* Can exclude test suite from code coverage
 */
-#define CUTI_EXCLUDE_FROM_COVERAGE(className, pattern) ExcludeFromCodeCoverage(className, pattern);
+#define CPPUNIT_TEST_SUITE_REGISTRATION(className) ExcludeFromCodeCoverage(className, L#className L"::*")
 #else
-#define CUTI_EXCLUDE_FROM_COVERAGE(className, pattern)
+#define CPPUNIT_TEST_SUITE_REGISTRATION(className)
 #endif
 
 namespace cuti {
@@ -60,10 +61,6 @@ static cuti::CutiTestHelper h;
 * Declare a test class
 */
 #define CUTI_TEST_CLASS(className) TEST_CLASS(className)
-/**
-* Compatibility for cppunit test suite registration
-*/
-#define CPPUNIT_TEST_SUITE_REGISTRATION(className)
 /**
 * Compatibility for cppunit test suite registration
 */

@@ -70,5 +70,3 @@ public:
 	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLibInt);
-
-CUTI_EXCLUDE_FROM_COVERAGE(TestLibInt, L"TestLibInt::*");

@@ -17,4 +17,3 @@ public:
 
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLibDouble);
-CUTI_EXCLUDE_FROM_COVERAGE(TestLibDouble, L"TestLibDouble::*");
