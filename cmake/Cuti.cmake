@@ -26,8 +26,6 @@ IF(USE_CUTI_INTEGRATION AND APPLE)
 	set_source_files_properties(${CUTI_SOURCE} PROPERTIES COMPILE_FLAGS "-x objective-c++")
 ENDIF(USE_CUTI_INTEGRATION AND APPLE)
 
-
-
 function(cuti_xctest_add_bundle target testee)
   if(NOT XCTest_FOUND)
     message(FATAL_ERROR "XCTest is required to create a XCTest Bundle.")
@@ -76,9 +74,6 @@ function(cuti_xctest_add_bundle target testee)
     message(FATAL_ERROR "Testee ${testee} is of unsupported type.")
   endif()
 endfunction(cuti_xctest_add_bundle)
-
-
-
 
 function(cuti_creates_test_target target testee)
 	IF(USE_CUTI_INTEGRATION AND APPLE)
