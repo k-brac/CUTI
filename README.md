@@ -27,13 +27,9 @@ CUTI uses CPPUNIT framework as backend.
 * Use CPPUNIT as a shared library
 * Use CPPUNIT plugin feature
 * Use CPPUNIT macros
+* Use CMake
 * The code to test must be compiled as a library (static or shared)
-* The test code must be compiled as a shared library (this is linked to the use of CPPUNIT's plugin feature)
-
-## Known Issues
-* In Visual Studio, CUTI (by default) uses Visual Studio's cppunit test framework, which could have a different behavior than CPPUNIT.
-* In XCode CUTI uses the objective-c runtime to find the tests at runtime, which could change the behavior of your tests. (Unverified)
-* In XCode, you can only test code compiled as a shared library
+* The test code must be compiled as a library (static or shared)
 
 ## TO DO
 * Tutorial on how to use CPPUNIT
