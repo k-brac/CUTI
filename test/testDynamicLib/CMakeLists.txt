@@ -1,14 +1,19 @@
+#CMake example file to show how to setup a project and its test to use Cuti
 cmake_minimum_required (VERSION 3.2)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package(CUTI REQUIRED)
 
 if(WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+elseif(APPLE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wall -Wextra")
 endif(WIN32)
 
 #define the resource path
-set(TEST_TOP_DIR ./test/testDynamicLib/)
+set(TEST_TOP_DIR ./)
 set(TEST_SRC_DIR ${TEST_TOP_DIR}src/)
 set(TEST_INCLUDE_DIR ${TEST_TOP_DIR}include/)
 set(TEST_DIR ${TEST_TOP_DIR}test/)

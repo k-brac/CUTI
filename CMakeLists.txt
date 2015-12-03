@@ -1,9 +1,8 @@
+#CMake file to compile a cli test runner for CPPUNIT plugins
 cmake_minimum_required (VERSION 3.2)
 
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-
-include(./CMakeLists_test.txt)
 
 find_package(CppUnit REQUIRED)
 
