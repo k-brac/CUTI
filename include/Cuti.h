@@ -50,11 +50,11 @@ static cuti::CutiTestHelper h;
 		return &s_Info;\
 	}
 /**
-* Set up a test case
+* Function initializing a test method
 */
 #define CUTI_SET_UP() TEST_METHOD_INITIALIZE(setUp)
 /**
-* Tear down a test case
+* Function cleaning up a test method
 */
 #define CUTI_TEAR_DOWN() TEST_METHOD_CLEANUP(tearDown)
 /**
@@ -182,8 +182,16 @@ static cuti::CutiTestHelper h;
 #ifdef _MSC_VER
 #pragma warning( pop )
 #endif
+/**
+* Declare a test fixture
+*/
 #define CUTI_TEST_CLASS(className) class className : public CppUnit::TestFixture
+/**
+* Function initializing a test case
+*/
 #define CUTI_SET_UP() virtual void setUp() override
+/**
+* Function cleaning up a test case
+*/
 #define CUTI_TEAR_DOWN() virtual void tearDown() override
-#define CUTI_EXCLUDE_FROM_COVERAGE(className, pattern)
 #endif
