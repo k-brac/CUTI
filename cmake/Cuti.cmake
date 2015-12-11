@@ -78,7 +78,6 @@ endfunction(cuti_xctest_add_bundle)
 function(cuti_creates_test_target target testee)
 	IF(USE_CUTI_INTEGRATION AND APPLE)
 		find_package(XCTest REQUIRED)
-		set(MACOSX_BUNDLE_GUI_IDENTIFIER "cuti.bundle.identifier")
 		set_target_properties(${testee} PROPERTIES
 			FRAMEWORK TRUE
 			VERSION "1.0.0"

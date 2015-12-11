@@ -143,7 +143,7 @@ static void RunTest(id self, SEL _cmd) {
  */
 + (void)load {
     NSBundle *bundle = [NSBundle bundleForClass:self];
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSBundleDidLoadNotification object:bundle queue:nil usingBlock:^(NSNotification *notification) {
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSBundleDidLoadNotification object:bundle queue:nil usingBlock:^(NSNotification * /*notification*/) {
         [self registerTestClasses];
     }];
 }
@@ -186,7 +186,7 @@ static void RunTest(id self, SEL _cmd) {
             
             SEL selector = sel_registerName([methodName UTF8String]);
             BOOL added = class_addMethod(testClass, selector, (IMP)RunTest, "v@:");
-            NSAssert1(added, @"Failed to add Goole Test method \"%@\", this method may already exist in the class.", methodName);
+            NSAssert1(added, @"Failed to add Cuti Test method \"%@\", this method may already exist in the class.", methodName);
             hasMethods = YES;
         }
         
