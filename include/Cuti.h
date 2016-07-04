@@ -1,12 +1,35 @@
+/*The MIT License (MIT)
+
+Copyright (c) 2015 k-brac
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 #ifdef CUTI_USES_MSVC_UNIT_BACKEND
 #ifdef WIN32
 #include <CppUnitTest.h>
-#include <CodeCoverage\CodeCoverage.h>
 #include <codecvt>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #ifdef CUTI_EXCLUDE_TEST_FROM_COVERAGE
+#include <CodeCoverage/CodeCoverage.h>
 /**
 * Compatibility for cppunit test suite registration
 * Can exclude test suite from code coverage
@@ -32,6 +55,16 @@ namespace cuti {
 		std::wstring toWideString(const std::string &s) {
 			return converter.from_bytes(s);
 		}
+        
+        template <typename T>
+        std::string toString(const T & val) {
+            return std::to_string(val);
+        }
+
+        template <>
+        std::string toString(const std::string & val) {
+            return val;
+        }
 	};
 }
 
@@ -45,7 +78,7 @@ static cuti::CutiTestHelper h;
 		ALLOCATE_TESTDATA_SECTION_METHOD\
 		static const ::Microsoft::VisualStudio::CppUnitTestFramework::MethodMetadata s_Metadata = {L"TestMethodInfo", L#methodName, reinterpret_cast<unsigned char*>(__FUNCTION__), reinterpret_cast<unsigned char*>(__FUNCDNAME__), __WFILE__, __LINE__};\
 \
-		static ::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo s_Info = {::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo::TestMethod, NULL, &s_Metadata};\
+		static ::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo s_Info = {::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo::TestMethod, nullptr, &s_Metadata};\
 		s_Info.method.pVoidMethod = static_cast<::Microsoft::VisualStudio::CppUnitTestFramework::TestClassImpl::__voidFunc>(&methodName);\
 		return &s_Info;\
 	}
@@ -72,7 +105,7 @@ static cuti::CutiTestHelper h;
 /**
 * Compatibility for cppunit test suite registration
 */
-#define CPPUNIT_TEST_SUITE_END()
+#define CPPUNIT_TEST_SUITE_END() 
 /**
 * Fails the test and print the error message
 */
@@ -118,7 +151,7 @@ static cuti::CutiTestHelper h;
 * Compares expected to actual using operation.
 * Prints message on failure
 */
-#define CUTI_ASSERT_COMPARE(expected, actual, operation, message) if (expected operation actual) {CPPUNIT_FAIL(std::to_string(expected) + message + std::to_string(actual));}
+#define CUTI_ASSERT_COMPARE(expected, actual, operation, message) if (expected operation actual) {CPPUNIT_FAIL(h.toString(expected) + message + h.toString(actual));}
 /**
 * Checks that actual is LESS than expected
 */
@@ -160,7 +193,7 @@ static cuti::CutiTestHelper h;
 * Not implemented!
 */
 #ifdef CUTI_WARNING_UNIMPLEMENTED
-#pragma message("Warning : CPPUNIT_ASSERT_ASSERTION_FAIL Not implemented")
+//#pragma message("Warning : CPPUNIT_ASSERT_ASSERTION_FAIL Not implemented")
 #endif
 #define CPPUNIT_ASSERT_ASSERTION_FAIL(assertion) //assertion
 #endif
@@ -172,9 +205,11 @@ static cuti::CutiTestHelper h;
 #define CPPUNIT_DLL
 #endif
 #ifdef _MSC_VER
+#include <Windows.h>
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 #pragma warning( disable : 4512 )
+#pragma warning( disable : 4275 )
 #endif
 #include "cppunit/plugin/TestPlugIn.h"
 #include <cppunit/extensions/HelperMacros.h>
