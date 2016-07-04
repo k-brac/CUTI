@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 2.8)
 
-set(CPPUNIT_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../cppunit_2")
+set(CPPUNIT_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../cppunit")
 set(CPPUNIT_DEBUG_DIR ${CPPUNIT_ROOT_DIR}/bin/Debug)
 set(CPPUNIT_RELEASE_DIR ${CPPUNIT_ROOT_DIR}/bin/Release)
 
