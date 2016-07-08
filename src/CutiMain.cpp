@@ -27,6 +27,7 @@ SOFTWARE.
 #pragma warning( disable : 4251 )
 #endif
 #include "cppunit/CompilerOutputter.h"
+#include "cppunit/XmlOutputter.h"
 #ifdef WIN32
 #pragma warning( pop )
 #endif
@@ -37,9 +38,45 @@ SOFTWARE.
 
 #include "cppunit/plugin/PlugInManager.h"
 
-bool runPlugin(const std::string &plugPath, const std::vector<std::string> &testPaths) {
+
+struct CommandLineParser {
+    std::string xmlOutputFile;
+    std::string plugName;
+    std::vector<std::string> testPaths;
+
+    void parseArgs(int argc, char* argv[]) {
+        for (int i = 1; i < argc; i++) {
+            std::string arg = argv[i];
+            if (arg.size() >= 2 && arg.front() == '-') {
+                auto it = arg.find("=");
+                if (it != std::string::npos) {
+                    auto key = arg.substr(0, it);
+                    auto val = arg.substr(it + 1, arg.size());
+                    if (val.empty()) {
+                        continue;
+                    }
+                    if (key == "-x" || key == "--xml") {
+                        xmlOutputFile = val;
+                    }
+                    else if (key == "-t" || key == "--test") {
+                        testPaths.emplace_back(val);
+                    }
+                    else {
+                        std::cerr << "Unknow arguments " << key << " with value : " << val << std::endl;
+                    }
+                }
+            }
+            else {
+                plugName = arg;
+            }
+        }
+
+    }
+};
+
+bool runPlugin(const CommandLineParser &arguments) {
 	CppUnit::PlugInManager pluginManager;
-	pluginManager.load(plugPath);
+	pluginManager.load(arguments.plugName);
 
 	// Create the event manager and test controller
 	CppUnit::TestResult controller;
@@ -59,12 +96,12 @@ bool runPlugin(const std::string &plugPath, const std::vector<std::string> &test
 	runner.addTest(CppUnit::TestFactoryRegistry::getRegistry().makeTest());
 	try
 	{
-		if (testPaths.empty()) {
+		if (arguments.testPaths.empty()) {
 			std::cout << "Running ";
 			runner.run(controller);
 		}
 		else {
-			for (const auto & p : testPaths) {
+			for (const auto & p : arguments.testPaths) {
 				std::cout << "Running " << p;
 				runner.run(controller, p);
 			}
@@ -74,6 +111,12 @@ bool runPlugin(const std::string &plugPath, const std::vector<std::string> &test
 		// Print test in a compiler compatible format.
 		CppUnit::CompilerOutputter outputter(&result, std::cerr);
 		outputter.write();
+
+        if (!arguments.xmlOutputFile.empty()) {
+            std::ofstream file(arguments.xmlOutputFile);
+            CppUnit::XmlOutputter xOutputter(&result, file);
+            xOutputter.write();
+        }
 	}
 	catch (std::invalid_argument &e)  // Test path not resolved
 	{
@@ -87,23 +130,16 @@ bool runPlugin(const std::string &plugPath, const std::vector<std::string> &test
 
 int main(int argc, char* argv[])
 {
-	std::cout << "usage : " << argv[0] << " {-t | -test test_path} test_plugin_path" << std::endl << std::endl;
+	std::cout << "usage : " << argv[0] << "{-x | -xml=file} {-t | --test=test_path} test_plugin_path" << std::endl << std::endl;
 	if (argc < 2)
 		return 1;
-	std::vector<std::string> args;
-	args.reserve(argc - 1);
-	std::vector<std::string> testPaths;
+
 	bool result = false;
 	try {
-		for (int i = 1; i < argc; ++i) {
-			args.push_back(argv[i]);
-		}
-		size_t maxSize = args.size() > 2 ? args.size() - 2 : 0;
-		for (size_t j = 0; j < maxSize; ++j) {
-			if ((args[j] == "-t" || args[j] == "-test"))
-				testPaths.push_back(args[j + 1]);
-		}
-		result = runPlugin(args.at(args.size() - 1), testPaths) ? 0 : 1;
+        CommandLineParser command;
+        command.parseArgs(argc, argv);
+		
+		result = runPlugin(command) ? 0 : 1;
 	}
 	catch (std::exception &e) {
 		std::cerr << std::endl
