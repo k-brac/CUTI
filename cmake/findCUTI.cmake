@@ -112,6 +112,7 @@ function(cuti_creates_test_target target testee)
 			FRAMEWORK_VERSION "A"
 		)
 		cuti_xctest_add_bundle(${target} ${testee} ${CUTI_SOURCE} ${ARGN} ${CUTI_INCLUDE})
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER ${target}.bundle.identifier)
 	ELSE()
     add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE})
     target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
