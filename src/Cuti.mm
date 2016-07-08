@@ -49,14 +49,14 @@ public:
     
     virtual void addFailure(const CppUnit::TestFailure& testFailure) override {
         int lineNumber = testFailure.sourceLine().lineNumber();
-        const char *fileName = testFailure.sourceLine().fileName().c_str();
-        const char * message = testFailure.thrownException()->message().details().c_str();
-        NSString *path = fileName ? [@(fileName) stringByStandardizingPath] : nil;
-        NSString *description = @(message);
+        auto fileName = testFailure.sourceLine().fileName();
+        auto message = testFailure.thrownException()->message().details();
+        NSString *path = @(fileName.c_str());
+        NSString *description = @(message.c_str());
         [_testCase recordFailureWithDescription:description
                                          inFile:path
                                          atLine:(lineNumber >= 0 ? (NSUInteger)lineNumber : 0)
-                                       expected:YES];
+                                       expected:NO];
     }
     
 private:
