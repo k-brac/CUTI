@@ -41,9 +41,9 @@ if(WIN32)
 	get_filename_component(CPPUNIT_DYN_LIB_DEBUG ${CPPUNIT_DEBUG_DIR}/msvc${VS_VER}/cppunitd_dll.dll ABSOLUTE)
 else()
 	#Release lib
-	get_filename_component(CPPUNIT_LIBRARIES_RELEASE ${CPPUNIT_RELEASE_DIR}/clang/libcppunit.a ABSOLUTE)
-	get_filename_component(CPPUNIT_DYN_LIB_RELEASE ${CPPUNIT_RELEASE_DIR}/clang/libcppunit.so ABSOLUTE)
+	get_filename_component(CPPUNIT_LIBRARIES_RELEASE ${CPPUNIT_RELEASE_DIR}/clang/libcppunit.dylib ABSOLUTE)
+	get_filename_component(CPPUNIT_DYN_LIB_RELEASE ${CPPUNIT_RELEASE_DIR}/clang/libcppunit.dylib ABSOLUTE)
 	#Debug lib
-	get_filename_component(CPPUNIT_LIBRARIES_DEBUG ${CPPUNIT_DEBUG_DIR}/clang/libcppunit.a ABSOLUTE)
-	get_filename_component(CPPUNIT_DYN_LIB_DEBUG ${CPPUNIT_DEBUG_DIR}/clang/libcppunit.so ABSOLUTE)
+	get_filename_component(CPPUNIT_LIBRARIES_DEBUG ${CPPUNIT_DEBUG_DIR}/clang/libcppunit.dylib ABSOLUTE)
+	get_filename_component(CPPUNIT_DYN_LIB_DEBUG ${CPPUNIT_DEBUG_DIR}/clang/libcppunit.dylib ABSOLUTE)
 endif(WIN32)
