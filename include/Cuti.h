@@ -21,6 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#ifndef CPP_UNIT_TEST_INTEGRATED
+#define CPP_UNIT_TEST_INTEGRATED
+
 #ifdef CUTI_USES_MSVC_UNIT_BACKEND
 #ifdef WIN32
 #include <CppUnitTest.h>
@@ -229,4 +232,6 @@ static cuti::CutiTestHelper h;
 * Function cleaning up a test case
 */
 #define CUTI_TEAR_DOWN() virtual void tearDown() override
+#endif
+
 #endif
