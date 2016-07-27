@@ -47,31 +47,28 @@ namespace cuti {
 	* Contains cuti's helper functions
 	*/
 	class CutiTestHelper {
-	private:
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	public:
 		/**
 		* Converts string to wide string
 		* @param s The string to be converted
 		* @return s as a wide string
 		*/
-		std::wstring toWideString(const std::string &s) {
+        static std::wstring toWideString(const std::string &s) {
+            static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 			return converter.from_bytes(s);
 		}
         
         template <typename T>
-        std::string toString(const T & val) {
+        static std::string toString(const T & val) {
             return std::to_string(val);
         }
 
         template <>
-        std::string toString(const std::string & val) {
+        static std::string toString(const std::string & val) {
             return val;
         }
 	};
 }
-
-static cuti::CutiTestHelper h;
 
 #define CUTI_TEST_METHOD(methodName)\
 	static const EXPORT_METHOD ::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo* CALLING_CONVENTION CATNAME(__GetTestMethodInfo_, methodName)()\
@@ -112,11 +109,11 @@ static cuti::CutiTestHelper h;
 /**
 * Fails the test and print the error message
 */
-#define CPPUNIT_FAIL(message) Assert::Fail(h.toWideString(message).c_str(), LINE_INFO())
+#define CPPUNIT_FAIL(message) Assert::Fail(cuti::CutiTestHelper::toWideString(message).c_str(), LINE_INFO())
 /**
 * Checks for condition and print message on error
 */
-#define CPPUNIT_ASSERT_MESSAGE(message,condition) Assert::IsTrue(condition, h.toWideString(message).c_str(), LINE_INFO())
+#define CPPUNIT_ASSERT_MESSAGE(message,condition) Assert::IsTrue(condition, cuti::CutiTestHelper::toWideString(message).c_str(), LINE_INFO())
 /**
 * Checks for condition
 */
@@ -126,7 +123,7 @@ static cuti::CutiTestHelper h;
 * Fails if the wrong exception is catched or none
 * Prints message on failure
 */
-#define CPPUNIT_ASSERT_THROW_MESSAGE(message, expression, ExceptionType) Assert::ExpectException<ExceptionType>([&](){expression;}, h.toWideString(message).c_str(), LINE_INFO())
+#define CPPUNIT_ASSERT_THROW_MESSAGE(message, expression, ExceptionType) Assert::ExpectException<ExceptionType>([&](){expression;}, cuti::CutiTestHelper::toWideString(message).c_str(), LINE_INFO())
 /**
 * Checks that expression throws ExceptionType.
 * Fails if the wrong exception is catched or none
@@ -154,7 +151,7 @@ static cuti::CutiTestHelper h;
 * Compares expected to actual using operation.
 * Prints message on failure
 */
-#define CUTI_ASSERT_COMPARE(expected, actual, operation, message) if (expected operation actual) {CPPUNIT_FAIL(h.toString(expected) + message + h.toString(actual));}
+#define CUTI_ASSERT_COMPARE(expected, actual, operation, message) if (expected operation actual) {CPPUNIT_FAIL(cuti::CutiTestHelper::toString(expected) + message + cuti::CutiTestHelper::toString(actual));}
 /**
 * Checks that actual is LESS than expected
 */
@@ -185,7 +182,7 @@ static cuti::CutiTestHelper h;
 * Checks that expected and actual are equal using a delta
 * Prints message on failure
 */
-#define CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(message, expected, actual, delta) Assert::AreEqual(expected, actual, delta, h.toWideString(message).c_str(), LINE_INFO())
+#define CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(message, expected, actual, delta) Assert::AreEqual(expected, actual, delta, cuti::CutiTestHelper::toWideString(message).c_str(), LINE_INFO())
 /**
 * Checks that expected and actual are equal using a delta
 * Prints message on failure
