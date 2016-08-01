@@ -165,7 +165,6 @@ static void RunTest(id self, SEL _cmd) {
 
 + (void)registerTestClasses {
     NSMutableDictionary *testFilterMap = [NSMutableDictionary dictionary];
-    NSCharacterSet *decimalDigitCharacterSet = [NSCharacterSet decimalDigitCharacterSet];
     CppUnit::Test * cutiTests = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
     cutiTestRunner.addTest(cutiTests);
     for (int testCaseIndex = 0; testCaseIndex < cutiTests->getChildTestCount(); testCaseIndex++) {
@@ -187,21 +186,14 @@ static void RunTest(id self, SEL _cmd) {
         for (int testIndex = 0; testIndex < testCase->getChildTestCount(); testIndex++) {
             const CppUnit::Test *test = testCase->getChildTestAt(testIndex);
             NSString *testName = @(test->getName().c_str());
-            
-            // Google Test allows test names starting with a digit, prefix these with an
-            // underscore to create a valid method name.
-            NSString *methodName = testName;
-            if ([methodName length] > 0 && [decimalDigitCharacterSet characterIsMember:[methodName characterAtIndex:0]]) {
-                methodName = [@"_" stringByAppendingString:methodName];
-            }
-            
-            NSString *testKey = [NSString stringWithFormat:@"%@.%@", className, methodName];
+
+            NSString *testKey = [NSString stringWithFormat:@"%@.%@", className, testName];
             NSString *testFilter = [NSString stringWithFormat:@"%@.%@", testCaseName, testName];
             testFilterMap[testKey] = testFilter;
             
-            SEL selector = sel_registerName([methodName UTF8String]);
+            SEL selector = sel_registerName([testName UTF8String]);
             BOOL added = class_addMethod(testClass, selector, (IMP)RunTest, "v@:");
-            NSAssert1(added, @"Failed to add Cuti Test method \"%@\", this method may already exist in the class.", methodName);
+            NSAssert1(added, @"Failed to add Cuti Test method \"%@\", this method may already exist in the class.", testName);
             hasMethods = YES;
         }
         
@@ -211,8 +203,6 @@ static void RunTest(id self, SEL _cmd) {
             objc_disposeClassPair(testClass);
         }
     }
-    
- //   GoogleTestFilterMap = testFilterMap;
 }
 
 @end
