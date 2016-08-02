@@ -43,31 +43,44 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #endif
 
 namespace cuti {
-	/**
-	* Contains cuti's helper functions
-	*/
-	class CutiTestHelper {
-	public:
-		/**
-		* Converts string to wide string
-		* @param s The string to be converted
-		* @return s as a wide string
-		*/
+    /**
+    * Contains cuti's helper functions
+    */
+    class CutiTestHelper {
+    public:
+        /**
+        * Converts string to wide string
+        * @param s The string to be converted
+        * @return s as a wide string
+        */
         static std::wstring toWideString(const std::string &s) {
             static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-			return converter.from_bytes(s);
-		}
-        
+            return converter.from_bytes(s);
+        }
+
+        /**
+        * converts fundamental and enum types to std::string
+        */
         template <typename T>
-        static std::string toString(const T & val) {
+        static std::string toString(const T & val, typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type* = 0) {
             return std::to_string(val);
         }
 
-        template <>
-        static std::string toString(const std::string & val) {
+        /**
+        * converts object types (class and struct) to std::string
+        */
+        template <typename T>
+        static std::string toString(const T & val, typename std::enable_if<std::is_class<T>::value>::type* = 0) {
+            return T::to_string(val);
+        }
+
+        /**
+        * Special overload to avoid converting a std::string to std::string
+        */
+        static const std::string & toString(const std::string & val) {
             return val;
         }
-	};
+    };
 }
 
 #define CUTI_TEST_METHOD(methodName)\
