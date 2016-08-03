@@ -24,6 +24,15 @@ SOFTWARE.
 #ifndef CPP_UNIT_TEST_INTEGRATED
 #define CPP_UNIT_TEST_INTEGRATED
 
+/**
+* Defines an empty operator<< in case the testee doesn't provide one
+*/
+#define CUTI_EMPTY_TO_STRING(type) template <typename T> \
+constexpr std::ostream& operator<<(std::ostream& os, const T&) \
+{ \
+    return os; \
+}
+
 #ifdef CUTI_USES_MSVC_UNIT_BACKEND
 #ifdef WIN32
 #include <CppUnitTest.h>
@@ -71,7 +80,9 @@ namespace cuti {
         */
         template <typename T>
         static std::string toString(const T & val, typename std::enable_if<std::is_class<T>::value>::type* = 0) {
-            return T::to_string(val);
+            std::ostringstream ost;
+            ost << val;
+            return ost.str();
         }
 
         /**
@@ -95,6 +106,7 @@ namespace cuti {
 		s_Info.method.pVoidMethod = static_cast<::Microsoft::VisualStudio::CppUnitTestFramework::TestClassImpl::__voidFunc>(&methodName);\
 		return &s_Info;\
 	}
+
 /**
 * Function initializing a test method
 */
