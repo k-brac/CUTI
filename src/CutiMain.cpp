@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
         CommandLineParser command;
         command.parseArgs(argc, argv);
 		
-		result = runPlugin(command) ? 0 : 1;
+		result = runPlugin(command);
 	}
 	catch (std::exception &e) {
 		std::cerr << std::endl
