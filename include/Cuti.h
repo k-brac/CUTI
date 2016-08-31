@@ -106,6 +106,7 @@ namespace cuti {
 		s_Info.method.pVoidMethod = static_cast<::Microsoft::VisualStudio::CppUnitTestFramework::TestClassImpl::__voidFunc>(&methodName);\
 		return &s_Info;\
 	}
+#define CUTI_LINE_INFO() Microsoft::VisualStudio::CppUnitTestFramework::__LineInfo(__WFILE__, __FUNCTION__, __LINE__)
 
 /**
 * Function initializing a test method
@@ -134,11 +135,11 @@ namespace cuti {
 /**
 * Fails the test and print the error message
 */
-#define CPPUNIT_FAIL(message) Assert::Fail(cuti::CutiTestHelper::toWideString(message).c_str(), LINE_INFO())
+#define CPPUNIT_FAIL(message) do{auto li = CUTI_LINE_INFO(); Assert::Fail(cuti::CutiTestHelper::toWideString(message).c_str(), &li); break; } while(true)
 /**
 * Checks for condition and print message on error
 */
-#define CPPUNIT_ASSERT_MESSAGE(message,condition) Assert::IsTrue(condition, cuti::CutiTestHelper::toWideString(message).c_str(), LINE_INFO())
+#define CPPUNIT_ASSERT_MESSAGE(message,condition) do{auto li = CUTI_LINE_INFO(); Assert::IsTrue(condition, cuti::CutiTestHelper::toWideString(message).c_str(), &li); break; } while(true)
 /**
 * Checks for condition
 */
@@ -148,7 +149,7 @@ namespace cuti {
 * Fails if the wrong exception is catched or none
 * Prints message on failure
 */
-#define CPPUNIT_ASSERT_THROW_MESSAGE(message, expression, ExceptionType) Assert::ExpectException<ExceptionType>([&](){expression;}, cuti::CutiTestHelper::toWideString(message).c_str(), LINE_INFO())
+#define CPPUNIT_ASSERT_THROW_MESSAGE(message, expression, ExceptionType) do{auto li = CUTI_LINE_INFO(); Assert::ExpectException<ExceptionType>([&](){expression;}, cuti::CutiTestHelper::toWideString(message).c_str(), &li); break; } while(true)
 /**
 * Checks that expression throws ExceptionType.
 * Fails if the wrong exception is catched or none
@@ -207,7 +208,7 @@ namespace cuti {
 * Checks that expected and actual are equal using a delta
 * Prints message on failure
 */
-#define CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(message, expected, actual, delta) Assert::AreEqual(expected, actual, delta, cuti::CutiTestHelper::toWideString(message).c_str(), LINE_INFO())
+#define CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(message, expected, actual, delta) do{auto li = CUTI_LINE_INFO(); Assert::AreEqual(expected, actual, delta, cuti::CutiTestHelper::toWideString(message).c_str(), &li); break; } while(true)
 /**
 * Checks that expected and actual are equal using a delta
 * Prints message on failure
