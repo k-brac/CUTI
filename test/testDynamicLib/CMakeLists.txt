@@ -48,14 +48,14 @@ set(COMPUTE_LIB_SRC ${TEST_SRC_DIR}/ComputeInt.cpp ${TEST_SRC_DIR}/ComputeDouble
 #Definition for windows to enable the generation of a dll and its lib
 add_definitions(-DCOMPUTE_EXPORT)
 set(COMPUTE_LIB_INCLUDE ${TEST_INCLUDE_DIR}/ComputeInt.h ${TEST_INCLUDE_DIR}/ComputeDouble.h ${TEST_INCLUDE_DIR}/ComputeFloat.h ${TEST_INCLUDE_DIR}/DynamicLib.h)
+
 add_library(compute_lib SHARED ${COMPUTE_LIB_SRC} ${COMPUTE_LIB_INCLUDE})
 
 #create the test project
 project(test_compute_lib)
 #put all the test source files in a variable
 set(TEST_LIB_SRC ${TEST_DIR}/TestLibInt.cpp ${TEST_DIR}/TestLibFloat.cpp ${TEST_DIR}/TestLibDouble.cpp ${TEST_DIR}/TestLibPlugIn.cpp)
-#special case for XCode to set a mandatory information in the info.plist file (otherwithe XCode crashes)
-set(MACOSX_BUNDLE_GUI_IDENTIFIER "cuti.bundle.identifier")
+
 include_directories(${TEST_INCLUDE_DIR})
 
 #creates the test target to be integrated in Visual Studio and XCode

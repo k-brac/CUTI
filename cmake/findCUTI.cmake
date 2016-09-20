@@ -45,6 +45,7 @@ ENDIF(USE_CUTI_INTEGRATION AND WIN32)
 
 get_filename_component(CUTI_INCLUDE ${CUTI_ROOT_DIR}/include/Cuti.h ABSOLUTE)
 IF(USE_CUTI_INTEGRATION AND APPLE)
+  set(MACOSX_BUNDLE_GUI_IDENTIFIER "$(PRODUCT_BUNDLE_IDENTIFIER)")
   get_filename_component(CUTI_SOURCE ${CUTI_ROOT_DIR}/src/Cuti.mm ABSOLUTE)
   set_source_files_properties(${CUTI_SOURCE} PROPERTIES COMPILE_FLAGS "-x objective-c++")
 ENDIF(USE_CUTI_INTEGRATION AND APPLE)
@@ -92,10 +93,9 @@ function(cuti_xctest_add_bundle target testee)
   get_property(_testee_framework TARGET ${testee} PROPERTY FRAMEWORK)
   get_property(_testee_macosx_bundle TARGET ${testee} PROPERTY MACOSX_BUNDLE)
 
-  if(_testee_type STREQUAL "SHARED_LIBRARY" OR _testee_type STREQUAL "STATIC_LIBRARY" AND _testee_framework)
+  if(_testee_type STREQUAL "SHARED_LIBRARY" OR _testee_type STREQUAL "STATIC_LIBRARY" )
     # testee is a Framework
     target_link_libraries(${target} PRIVATE ${testee})
-
   elseif(_testee_type STREQUAL "EXECUTABLE" AND _testee_macosx_bundle)
     # testee is an App Bundle
     add_dependencies(${target} ${testee})
@@ -107,7 +107,6 @@ function(cuti_xctest_add_bundle target testee)
       target_link_libraries(${target}
         PRIVATE -bundle_loader $<TARGET_FILE:${testee}>)
     endif(XCODE)
-
   else()
     message(FATAL_ERROR "Testee ${testee} is of unsupported type.")
   endif()
@@ -116,14 +115,7 @@ endfunction(cuti_xctest_add_bundle)
 function(cuti_creates_test_target target testee)
 	IF(USE_CUTI_INTEGRATION AND APPLE)
 		find_package(XCTest REQUIRED)
-		set_target_properties(${testee} PROPERTIES
-			FRAMEWORK TRUE
-			VERSION "1.0.0"
-			SOVERSION "1.0.0"
-			FRAMEWORK_VERSION "A"
-		)
 		cuti_xctest_add_bundle(${target} ${testee} ${CUTI_SOURCE} ${ARGN} ${CUTI_INCLUDE})
-    set(MACOSX_BUNDLE_GUI_IDENTIFIER ${target}.bundle.identifier)
 	ELSE()
     add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE})
     target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
