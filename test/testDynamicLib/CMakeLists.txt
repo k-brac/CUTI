@@ -54,7 +54,7 @@ add_library(compute_lib SHARED ${COMPUTE_LIB_SRC} ${COMPUTE_LIB_INCLUDE})
 #create the test project
 project(test_compute_lib)
 #put all the test source files in a variable
-set(TEST_LIB_SRC ${TEST_DIR}/TestLibInt.cpp ${TEST_DIR}/TestLibFloat.cpp ${TEST_DIR}/TestLibDouble.cpp ${TEST_DIR}/TestLibPlugIn.cpp)
+set(TEST_LIB_SRC ${TEST_DIR}/TestLibInt.cpp ${TEST_DIR}/TestLibFloat.cpp ${TEST_DIR}/TestLibDouble.cpp)
 
 include_directories(${TEST_INCLUDE_DIR})
 

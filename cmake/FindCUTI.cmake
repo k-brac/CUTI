@@ -22,7 +22,11 @@
 
 cmake_minimum_required (VERSION 3.2)
 
-option(USE_CUTI_INTEGRATION "Use IDE test integration (Cuti)" ON)
+IF(WIN32 OR APPLE)
+  option(USE_CUTI_INTEGRATION "Use IDE test integration (Cuti)" ON)
+ELSE()
+  option(USE_CUTI_INTEGRATION "Use IDE test integration (Cuti)" OFF)
+ENDIF(WIN32 OR APPLE)
 
 set(CUTI_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
 set(CUTI_INCLUDE_DIRS ${CUTI_ROOT_DIR}/include)

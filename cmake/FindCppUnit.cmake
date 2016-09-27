@@ -39,11 +39,23 @@ if(WIN32)
 	#Debug lib
 	get_filename_component(CPPUNIT_LIBRARIES_DEBUG ${CPPUNIT_DEBUG_DIR}/msvc${VS_VER}/cppunitd_dll.lib ABSOLUTE)
 	get_filename_component(CPPUNIT_DYN_LIB_DEBUG ${CPPUNIT_DEBUG_DIR}/msvc${VS_VER}/cppunitd_dll.dll ABSOLUTE)
-else()
+elseif(APPLE)
 	#Release lib
 	get_filename_component(CPPUNIT_LIBRARIES_RELEASE ${CPPUNIT_RELEASE_DIR}/clang/libcppunit.a ABSOLUTE)
 	get_filename_component(CPPUNIT_DYN_LIB_RELEASE ${CPPUNIT_RELEASE_DIR}/clang/libcppunit.dylib ABSOLUTE)
 	#Debug lib
 	get_filename_component(CPPUNIT_LIBRARIES_DEBUG ${CPPUNIT_DEBUG_DIR}/clang/libcppunit.a ABSOLUTE)
 	get_filename_component(CPPUNIT_DYN_LIB_DEBUG ${CPPUNIT_DEBUG_DIR}/clang/libcppunit.dylib ABSOLUTE)
+else()
+	if(CMAKE_COMPILER_IS_GNUCXX)
+		set(COMPILER_NAME gcc)
+	else()
+		set(COMPILER_NAME clang)
+	endif()
+	#Release lib
+	get_filename_component(CPPUNIT_LIBRARIES_RELEASE ${CPPUNIT_RELEASE_DIR}/${COMPILER_NAME}/libcppunit.a ABSOLUTE)
+	get_filename_component(CPPUNIT_DYN_LIB_RELEASE ${CPPUNIT_RELEASE_DIR}/${COMPILER_NAME}/libcppunit.so ABSOLUTE)
+	#Debug lib
+	get_filename_component(CPPUNIT_LIBRARIES_DEBUG ${CPPUNIT_DEBUG_DIR}/${COMPILER_NAME}/libcppunit.a ABSOLUTE)
+	get_filename_component(CPPUNIT_DYN_LIB_DEBUG ${CPPUNIT_DEBUG_DIR}/${COMPILER_NAME}/libcppunit.so ABSOLUTE)
 endif(WIN32)
