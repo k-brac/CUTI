@@ -1,6 +1,6 @@
 /*The MIT License (MIT)
 
-Copyright (c) 2015 k-brac
+Copyright (c) 2016 k-brac
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+/**
+* Automaticaly added by cuti to declare a CPPUNIT plugin entry point
+*/
+
 #include "Cuti.h"
 #ifdef CUTI_USES_CPPUNIT_BACKEND
+extern "C"
+{
 CPPUNIT_PLUGIN_IMPLEMENT();
+}
 #endif
