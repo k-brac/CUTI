@@ -97,12 +97,12 @@ bool runPlugin(const CommandLineParser &arguments) {
 	try
 	{
 		if (arguments.testPaths.empty()) {
-			std::cout << "Running ";
+			std::cout << "Running " << std::endl;
 			runner.run(controller);
 		}
 		else {
 			for (const auto & p : arguments.testPaths) {
-				std::cout << "Running " << p;
+				std::cout << "Running " << p << std::endl;
 				runner.run(controller, p);
 			}
 		}
