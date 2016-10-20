@@ -199,11 +199,11 @@ namespace cuti {
 * Checks that expected and actual are equal
 * Prints message on failure
 */
-#define CPPUNIT_ASSERT_EQUAL_MESSAGE(message,expected,actual) CUTI_ASSERT_COMPARE(expected, actual, !=, message)
+#define CPPUNIT_ASSERT_EQUAL_MESSAGE(message,expected,actual) do{auto li = CUTI_LINE_INFO(); Assert::AreEqual(expected, actual, cuti::CutiTestHelper::toWideString(message).c_str(), &li); break; } while(true)
 /**
 * Checks that expected and actual are equal
 */
-#define CPPUNIT_ASSERT_EQUAL(expected,actual) CPPUNIT_ASSERT_EQUAL_MESSAGE(" was expected but instead got " ,expected,actual)
+#define CPPUNIT_ASSERT_EQUAL(expected,actual) CUTI_ASSERT_COMPARE(expected,actual, != ," was expected but instead got ")
 /**
 * Checks that expected and actual are equal using a delta
 * Prints message on failure
