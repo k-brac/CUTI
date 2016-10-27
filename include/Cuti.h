@@ -24,21 +24,20 @@ SOFTWARE.
 #ifndef CPP_UNIT_TEST_INTEGRATED
 #define CPP_UNIT_TEST_INTEGRATED
 
-/**
-* Defines an empty operator<< in case the testee doesn't provide one
-*/
-#define CUTI_EMPTY_TO_STRING(type) template <typename T> \
-constexpr std::ostream& operator<<(std::ostream& os, const T&) \
-{ \
-    return os; \
-}
-
 #ifdef CUTI_USES_MSVC_UNIT_BACKEND
 #ifdef WIN32
 #include <CppUnitTest.h>
 #include <codecvt>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+#define CUTI_SPECIALIZED_TO_STRING(type) template<> inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<type> (const type& t) { RETURN_WIDE_STRING(t); } \
+template<> inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<type> (const type* t) { RETURN_WIDE_STRING(t); } \
+template<> inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<type> (type* t) { RETURN_WIDE_STRING(t); }
+
+//missing specialization
+CUTI_SPECIALIZED_TO_STRING(int64_t);
+CUTI_SPECIALIZED_TO_STRING(uint16_t);
 
 #ifdef CUTI_EXCLUDE_TEST_FROM_COVERAGE
 #include <CodeCoverage/CodeCoverage.h>
