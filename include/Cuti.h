@@ -85,6 +85,13 @@ namespace cuti {
         }
 
         /**
+        * Special overload for bool
+        */
+        static const std::string toString(bool val) {
+            return val ? "true" : "false";
+        }
+
+        /**
         * Special overload to avoid converting a std::string to std::string
         */
         static const std::string & toString(const std::string & val) {
