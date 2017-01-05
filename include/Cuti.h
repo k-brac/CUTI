@@ -237,7 +237,9 @@ namespace cuti {
 #define CPPUNIT_DLL
 #endif
 #ifdef _MSC_VER
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#undef WIN32_LEAN_AND_MEAN
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 #pragma warning( disable : 4512 )
