@@ -243,6 +243,11 @@ namespace cuti {
 #pragma warning( disable : 4512 )
 #pragma warning( disable : 4275 )
 #endif
+
+#ifndef CPPUNIT_UNIQUE_COUNTER
+# define CPPUNIT_UNIQUE_COUNTER __COUNTER__
+#endif
+
 #include "cppunit/plugin/TestPlugIn.h"
 #include <cppunit/extensions/HelperMacros.h>
 
