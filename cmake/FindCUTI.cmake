@@ -68,6 +68,9 @@ function(cuti_init_target_flags target)
     target_include_directories(${target} PUBLIC ${CPPUNIT_INCLUDE_DIRS})
   ENDIF(USE_CUTI_INTEGRATION AND WIN32)
   target_include_directories(${target} PUBLIC ${CUTI_INCLUDE_DIRS})
+  #Enable debug information for xcode
+  set_target_properties (${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
+  set_target_properties (${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
 endfunction(cuti_init_target_flags)
 
 function(cuti_xctest_add_bundle target testee)
