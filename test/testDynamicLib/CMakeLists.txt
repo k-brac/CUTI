@@ -51,6 +51,12 @@ set(COMPUTE_LIB_INCLUDE ${TEST_INCLUDE_DIR}/ComputeInt.h ${TEST_INCLUDE_DIR}/Com
 
 add_library(compute_lib SHARED ${COMPUTE_LIB_SRC} ${COMPUTE_LIB_INCLUDE})
 
+if(APPLE)
+	set_target_properties (compute_lib PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
+	set_target_properties (compute_lib PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
+endif()
+
 #create the test project
 project(test_compute_lib)
 #put all the test source files in a variable
