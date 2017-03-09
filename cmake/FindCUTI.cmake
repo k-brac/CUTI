@@ -52,12 +52,6 @@ ENDIF(USE_CUTI_INTEGRATION AND WIN32)
 
 get_filename_component(CUTI_INCLUDE ${CUTI_ROOT_DIR}/include/Cuti.h ABSOLUTE)
 
-IF(USE_CUTI_INTEGRATION AND APPLE)
-  set(MACOSX_BUNDLE_GUI_IDENTIFIER "$(PRODUCT_BUNDLE_IDENTIFIER)")
-  get_filename_component(CUTI_SOURCE ${CUTI_ROOT_DIR}/src/Cuti.mm ABSOLUTE)
-  set_source_files_properties(${CUTI_SOURCE} PROPERTIES COMPILE_FLAGS "-x objective-c++")
-ENDIF(USE_CUTI_INTEGRATION AND APPLE)
-
 function(cuti_init_target_flags target)
 #Set all the flags needed by cuti to the test target
   IF(USE_CUTI_INTEGRATION AND WIN32)
@@ -131,9 +125,11 @@ function(cuti_creates_test_target target testee)
   #uses ${ARGN} as list of source files for the test target
 	if(USE_CUTI_INTEGRATION AND APPLE)
     #integrate tests to XCode
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER "$(PRODUCT_BUNDLE_IDENTIFIER)")
 		find_package(XCTest REQUIRED)
 		cuti_xctest_add_bundle(${target} ${testee} ${CUTI_SOURCE} ${ARGN} ${CUTI_INCLUDE})
     target_compile_definitions(${target} PUBLIC -DCUTI_USES_XCTEST_BACKEND)
+    set_source_files_properties(${ARGN} PROPERTIES COMPILE_FLAGS "-x objective-c++")
 	else()
     if(NOT USE_CUTI_INTEGRATION)
       #code to automatically declare a cpp unit test plugin
