@@ -23,8 +23,10 @@
 cmake_minimum_required (VERSION 3.2)
 
 IF(WIN32 OR APPLE)
+  #Defaulted to ON for windows and mac
   option(USE_CUTI_INTEGRATION "Use IDE test integration (Cuti)" ON)
 ELSE()
+  #Defaulted to OFF for the rest because there is no integration
   option(USE_CUTI_INTEGRATION "Use IDE test integration (Cuti)" OFF)
 ENDIF(WIN32 OR APPLE)
 
@@ -33,6 +35,7 @@ set(CUTI_INCLUDE_DIRS ${CUTI_ROOT_DIR}/include)
 
 IF(USE_CUTI_INTEGRATION AND WIN32)
   find_package(VisualStudio REQUIRED)
+  #Code coverage is only available in the enterprise edition so we default to false
   option(EXCLUDE_TEST_FROM_COVERAGE "Exclude tests from coverage (Cuti)" OFF)
   set(CUTI_LIBRARIES_DEBUG ${MSVC_UNIT_TEST_LIB})
   set(CUTI_LIBRARIES_RELEASE ${MSVC_UNIT_TEST_LIB})
@@ -56,6 +59,7 @@ IF(USE_CUTI_INTEGRATION AND APPLE)
 ENDIF(USE_CUTI_INTEGRATION AND APPLE)
 
 function(cuti_init_target_flags target)
+#Set all the flags needed by cuti to the test target
   IF(USE_CUTI_INTEGRATION AND WIN32)
     target_compile_definitions(${target} PUBLIC -DCUTI_USES_MSVC_UNIT_BACKEND)
       IF(EXCLUDE_TEST_FROM_COVERAGE)
@@ -74,6 +78,8 @@ function(cuti_init_target_flags target)
 endfunction(cuti_init_target_flags)
 
 function(cuti_xctest_add_bundle target testee)
+  #creates a test bundle ${target} for the testee target
+  #uses ${ARGN} as list of source files for the test target
   if(NOT XCTest_FOUND)
     message(FATAL_ERROR "XCTest is required to create a XCTest Bundle.")
   endif(NOT XCTest_FOUND)
@@ -121,16 +127,21 @@ function(cuti_xctest_add_bundle target testee)
 endfunction(cuti_xctest_add_bundle)
 
 function(cuti_creates_test_target target testee)
-	IF(USE_CUTI_INTEGRATION AND APPLE)
+  #creates a test target for the testee target
+  #uses ${ARGN} as list of source files for the test target
+	if(USE_CUTI_INTEGRATION AND APPLE)
+    #integrate tests to XCode
 		find_package(XCTest REQUIRED)
 		cuti_xctest_add_bundle(${target} ${testee} ${CUTI_SOURCE} ${ARGN} ${CUTI_INCLUDE})
-	ELSE()
-    IF(NOT USE_CUTI_INTEGRATION)
+    target_compile_definitions(${target} PUBLIC -DCUTI_USES_XCTEST_BACKEND)
+	else()
+    if(NOT USE_CUTI_INTEGRATION)
+      #code to automatically declare a cpp unit test plugin
       get_filename_component(CUTI_PLUGIN_SRC ${CUTI_ROOT_DIR}/src/UnitTestPlugin.cpp ABSOLUTE)      
-    ENDIF(NOT USE_CUTI_INTEGRATION)
+    endif(NOT USE_CUTI_INTEGRATION)
     add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE} ${CUTI_PLUGIN_SRC})
     target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
-	ENDIF(USE_CUTI_INTEGRATION AND APPLE)
+	endif(USE_CUTI_INTEGRATION AND APPLE)
 
 	target_link_libraries(${target} PRIVATE debug ${CUTI_LIBRARIES_DEBUG} ${testee})
 	target_link_libraries(${target} PRIVATE optimized ${CUTI_LIBRARIES_RELEASE} ${testee})
