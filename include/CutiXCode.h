@@ -39,7 +39,10 @@ SOFTWARE.
 /**
  * Unique instance of the test runner
  */
-static CppUnit::TestRunner cutiTestRunner;
+static CppUnit::TestRunner & GetCutiTestRunner() {
+    static CppUnit::TestRunner cutiTestRunner;
+    return cutiTestRunner;
+}
 
 /**
  * A Cuti listener that reports failures to XCTest.
@@ -83,7 +86,7 @@ static void RunTest(id self, SEL _cmd) {
         // Add a listener
         controller.addListener(&listener);
 
-        cutiTestRunner.run(controller, [testKey UTF8String]);
+        GetCutiTestRunner().run(controller, [testKey UTF8String]);
     }
     catch(std::exception &e) {
         std::cerr << e.what() << std::endl;
@@ -189,8 +192,8 @@ CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__ ); \
 } \
  \
 + (void)registerTestClasses { \
-    className instance; \
-    cutiTestRunner.addTest(instance.suite()); \
+    static className instance; \
+    GetCutiTestRunner().addTest(instance.suite()); \
     addMethodToTestCase(instance.suite(), [C##className class]); \
 } \
 @end
