@@ -24,7 +24,11 @@ SOFTWARE.
 #ifndef CPP_UNIT_TEST_INTEGRATED
 #define CPP_UNIT_TEST_INTEGRATED
 
-#ifdef CUTI_USES_MSVC_UNIT_BACKEND
+#ifdef CUTI_FREE_STANDING
+
+#include "CutiFreeStanding.h"
+
+#elif CUTI_USES_MSVC_UNIT_BACKEND
 /**
 * The specificities of visual studio's integration are in their own file for lisibility
 */
