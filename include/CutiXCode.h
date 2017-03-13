@@ -192,7 +192,7 @@ CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__ ); \
 } \
  \
 + (void)registerTestClasses { \
-    static className instance; \
+    className instance; \
     GetCutiTestRunner().addTest(instance.suite()); \
     addMethodToTestCase(instance.suite(), [C##className class]); \
 } \
