@@ -45,9 +45,10 @@ CUTI_SPECIALIZED_TO_STRING(uint16_t);
 * Compatibility for cppunit test suite registration
 * Can exclude test suite from code coverage
 */
-#define CPPUNIT_TEST_SUITE_REGISTRATION(className) ExcludeFromCodeCoverage(className, L#className L"::*")
+#define CPPUNIT_TEST_SUITE_REGISTRATION(className) ExcludeFromCodeCoverage(className, L#className L"::*"); \
+static_assert(std::is_same<className, ::className>::value, "CPPUNIT_TEST_SUITE_REGISTRATION(" #className ") must be declared in the global namespace")
 #else
-#define CPPUNIT_TEST_SUITE_REGISTRATION(className)
+#define CPPUNIT_TEST_SUITE_REGISTRATION(className) static_assert(std::is_same<className, ::className>::value, "CPPUNIT_TEST_SUITE_REGISTRATION(" #className ") must be declared in the global namespace")
 #endif
 
 namespace cuti {
