@@ -24,37 +24,37 @@
 /**
 * Mandatory include. Should always be on top
 */
-#define CUTI_FREE_STANDING
 #include "Cuti.h"
 
-#include <iostream>
-
-class Truc {
+/**
+* Declare a test class allowing for standalone or integrated test runner
+*/
+CUTI_TEST_CLASS(TemplateFreeStanding) {
+private:
+    bool val = false;
 public:
-    void p() {
-        std::cout << "p" << std::endl;
+    /**
+    * Optional. Executed before every test case
+    */
+    CUTI_SET_UP() {
+        val = true;
     }
+
+    /**
+    * Optional. Executed after every test case
+    */
+    CUTI_TEAR_DOWN() {
+        val = false;
+    }
+
+    void testSimpleAssert() {
+        CUTI_ASSERT(val);
+    }
+    /**
+     * Test suit declaration and test case registration
+     */
+    CUTI_BEGIN_TESTS_REGISTRATION(TemplateFreeStanding);
+    CUTI_TEST(testSimpleAssert);
+    CUTI_END_TESTS_REGISTRATION();//must be the last statement in the class
 };
 
-CUTI_TEST_CLASS(TestFreeStanding) {
-    //must be the first statement in the class
-    CUTI_BEGIN_TEST_DECLARATION()
-    CUTI_TEST(testhello)
-
-    CUTI_SET_UP(TestFreeStanding) {
-        std::cout << "setup" << std::endl;
-    }
-
-    CUTI_TEAR_DOWN(TestFreeStanding) {
-        std::cout << "teardown" << std::endl;
-    }
-    //private field
-    Truc t;
-    //test implementation
-    void testhello() {
-        std::cout << "hello" << std::endl;
-        t.p();
-    }
-//must be the last statement in the class
-CUTI_END_TEST_DECLARATION()
-};

@@ -1,6 +1,6 @@
 #The MIT License (MIT)
 #
-#Copyright (c) 2015 k-brac
+#Copyright (c) 2017 k-brac
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ if(WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 elseif(APPLE)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wall -Wextra")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-c++98-compat")
 endif(WIN32)
 
 #define the resource path
@@ -60,13 +60,15 @@ endif()
 #create the test project
 project(test_compute_lib)
 #put all the test source files in a variable
-set(TEST_LIB_SRC ${TEST_DIR}/TestLibInt.cpp
-	${TEST_DIR}/TestLibFloat.cpp
-	${TEST_DIR}/TestLibDouble.cpp
-	${TEST_TOP_DIR}/../TestTemplate.cpp
+set(TEST_LIB_SRC 
+    ${TEST_DIR}/TestLibInt.cpp
+    ${TEST_DIR}/TestLibFloat.cpp
+    ${TEST_DIR}/TestLibDouble.cpp
+    ${TEST_TOP_DIR}/../TemplateFreeStanding.cpp
 )
 
 include_directories(${TEST_INCLUDE_DIR})
 
 #creates the test target to be integrated in Visual Studio and XCode
 cuti_creates_test_target(test_compute_lib compute_lib ${TEST_LIB_SRC})
+target_compile_definitions(test_compute_lib PUBLIC -DCUTI_FREE_STANDING)
