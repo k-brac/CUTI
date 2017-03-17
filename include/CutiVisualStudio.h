@@ -220,14 +220,6 @@ namespace cuti {
 * Prints message on failure
 */
 #define CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, actual, delta) CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("", expected, actual, delta)
-/**
-* Checks that assertion fails
-* Not implemented!
-*/
-#ifdef CUTI_WARNING_UNIMPLEMENTED
-//#pragma message("Warning : CPPUNIT_ASSERT_ASSERTION_FAIL Not implemented")
-#endif
-#define CPPUNIT_ASSERT_ASSERTION_FAIL(assertion) //assertion
 #else
 #error "Trying to use visual studio's backend but not on windows"
 #endif
