@@ -24,8 +24,7 @@ SOFTWARE.
 #ifndef CPP_UNIT_TEST_INTEGRATED_FREE_STANDING
 #define CPP_UNIT_TEST_INTEGRATED_FREE_STANDING
 
-#ifdef _MSC_VER
-#include <codecvt>
+#if defined(CUTI_USES_MSVC_UNIT_BACKEND)
 #include <CppUnitTest.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -101,7 +100,7 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 
 #define IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::AreEqual(expected, actual, delta, cutiMsg_.c_str(), &li), __VA_ARGS__)
 
-#else
+#elif defined(CUTI_USES_XCTEST_BACKEND)
 //XCode specific backend
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
@@ -217,11 +216,129 @@ namespace cuti {
 
 #define IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected,actual,delta, ...) INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssertEqualWithAccuracy(actual, expected, delta, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
 
+#define IMPL_CUTI_DEFAULT_TO_STRING(className) /*\
+ inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \
+ { \
+     os << cuti::CutiGetMessage(cuti::ToString(obj)); \
+     return os; \
+ }*/
+
+#elif defined(CUTI_UNKNOWN)
+#ifdef _MSC_VER
+#include <Windows.h>
+#pragma warning( push )
+#pragma warning( disable : 4251 )
+#pragma warning( disable : 4512 )
+#pragma warning( disable : 4275 )
+#endif
+
+#ifndef CPPUNIT_UNIQUE_COUNTER
+# define CPPUNIT_UNIQUE_COUNTER __COUNTER__
+#endif
+
+#include "cppunit/plugin/TestPlugIn.h"
+#include <cppunit/extensions/HelperMacros.h>
+
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif
+
+#define IMPL_CUTI_TEST_CLASS(className) \
+class className; \
+static CPPUNIT_NS::AutoRegisterSuite< className >       \
+            CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__ ); \
+class className : public CppUnit::TestFixture
+
+#define IMPL_CUTI_SET_UP() virtual void setUp() override final
+
+#define IMPL_CUTI_TEAR_DOWN() virtual void tearDown() override final
+
+#define IMPL_CUTI_TEST(methodName) CPPUNIT_TEST(methodName)
+
+#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) CPPUNIT_TEST_SUITE(className)
+
+#define IMPL_CUTI_END_TESTS_REGISTRATION() CPPUNIT_TEST_SUITE_END()
+
+#define IMPL_CUTI_ASSERT(condition, ...) CPPUNIT_ASSERT_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), condition)
+
+#define IMPL_CUTI_FAIL( ... ) CPPUNIT_FAIL(cuti::CutiGetMessage(__VA_ARGS__))
+
+/**
+* not using CPPUNIT_ASSERT_EQUAL because CppUnit::assertion_traits<T> is annoying
+*/
+#define IMPL_CUTI_ASSERT_EQUAL(expected,actual, ...) CPPUNIT_ASSERT_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), expected == actual)
+
+#define IMPL_CUTI_ASSERT_LESS(bound, actual, ...) CPPUNIT_ASSERT_LESS(bound, actual)
+
+#define IMPL_CUTI_ASSERT_GREATER(bound, actual, ...) CPPUNIT_ASSERT_GREATER(bound, actual)
+
+#define IMPL_CUTI_ASSERT_LESSEQUAL(bound, actual, ...) CPPUNIT_ASSERT_LESSEQUAL(bound, actual)
+
+#define IMPL_CUTI_ASSERT_GREATEREQUAL(bound, actual, ...) CPPUNIT_ASSERT_GREATEREQUAL(bound, actual)
+
+#define IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), expected, actual, delta)
+
+#define IMPL_CUTI_ASSERT_THROW( expression, ExceptionType, ... ) CPPUNIT_ASSERT_THROW_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), expression, ExceptionType)
+
+#define IMPL_CUTI_ASSERT_NO_THROW( expression, ... ) CPPUNIT_ASSERT_NO_THROW_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), expression)
+
+#define IMPL_CUTI_DEFAULT_TO_STRING(className) /*\
+inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \
+{ \
+    os << cuti::CutiGetMessage(cuti::ToString(obj)); \
+    return os; \
+}*/
+
+#else
+
+#error "You are trying to use cuti with an unknown configuration"
+
+#endif
+
+#if defined (CUTI_USES_MSVC_UNIT_BACKEND) || defined (CUTI_USES_XCTEST_BACKEND)
+
+#define IMPL_CUTI_ASSERT_THROW( expression, ExceptionType, ... ) \
+do { \
+    bool cpputCorrectExceptionThrown_ = false; \
+    std::string cutiMsgT_( "Expected exception not thrown. " ); \
+    cutiMsgT_ += "Expected: " #ExceptionType ". "; \
+\
+    try { \
+        expression; \
+        cutiMsgT_ += "But none was thrown. "; \
+    } catch ( const ExceptionType & ) { \
+        cpputCorrectExceptionThrown_ = true; \
+    } catch ( const std::exception &e) { \
+        cutiMsgT_ += std::string("Actual : ") + std::string(typeid(e).name()) + std::string(". ");\
+        cutiMsgT_ += std::string("What() : ") + e.what() + std::string(". ");\
+    } catch ( ... ) { \
+        cutiMsgT_ += ( "Actual  : unknown. "); \
+    } \
+\
+    if ( cpputCorrectExceptionThrown_ ) {\
+        break; \
+    } \
+    cutiMsgT_ += cuti::CutiGetMessage(__VA_ARGS__); \
+    CUTI_FAIL( cutiMsgT_); \
+} while ( false )
+
+#define IMPL_CUTI_ASSERT_NO_THROW( expression, ... ) \
+do { \
+    try {\
+        expression;\
+    } catch (std::exception &e) {\
+        CUTI_FAIL( std::string("Caught: std::exception or derived. What() : ") + e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__));\
+    } catch (...) {\
+        CUTI_FAIL(std::string("Unexpected exception caught. " + cuti::CutiGetMessage(__VA_ARGS__)));\
+    } \
+} while(false)
 #endif
 
 /*******************
  * Public interface*
  *******************/
+#include <string>
+#include <codecvt>
 
 /**
  * Declare a test fixture
@@ -271,7 +388,7 @@ namespace cuti {
 /**
 * asserts that actual is equal to expected with optional message
 */
-#define CUTI_ASSERT_EQUAL(expected, actual, ...) IMPL_CUTI_ASSERT_EQUAL(expected,actual, __VA_ARGS__)
+#define CUTI_ASSERT_EQUAL(expected, actual, ...) IMPL_CUTI_ASSERT_EQUAL(expected, actual, __VA_ARGS__)
 
 /**
 * asserts that actual is less than bound with optional message
@@ -296,53 +413,21 @@ namespace cuti {
 /**
 * asserts that floating point actual is equal to actual with fabs(expected - actual) < delta with optional message
 */
-#define CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected,actual,delta, __VA_ARGS__)
+#define CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, __VA_ARGS__)
 
 /**
 * asserts that expression throws ExceptionType with optional message
 */
-#define CUTI_ASSERT_THROW( expression, ExceptionType, ... ) \
-do { \
-    bool cpputCorrectExceptionThrown_ = false; \
-    std::string cutiMsgT_( "Expected exception not thrown. " ); \
-    cutiMsgT_ += "Expected: " #ExceptionType ". "; \
-\
-    try { \
-        expression; \
-        cutiMsgT_ += "But none was thrown. "; \
-    } catch ( const ExceptionType & ) { \
-        cpputCorrectExceptionThrown_ = true; \
-    } catch ( const std::exception &e) { \
-        cutiMsgT_ += std::string("Actual : ") + std::string(typeid(e).name()) + std::string(". ");\
-        cutiMsgT_ += std::string("What() : ") + e.what() + std::string(". ");\
-    } catch ( ... ) { \
-        cutiMsgT_ += ( "Actual  : unknown. "); \
-    } \
-\
-    if ( cpputCorrectExceptionThrown_ ) {\
-        break; \
-    } \
-    cutiMsgT_ += cuti::CutiGetMessage(__VA_ARGS__); \
-    CUTI_FAIL( cutiMsgT_); \
-} while ( false )
+#define CUTI_ASSERT_THROW( expression, ExceptionType, ... ) IMPL_CUTI_ASSERT_THROW(expression, ExceptionType, __VA_ARGS__)
 
 /**
 * asserts that expression doesn't throw with optional message
 */
-#define CUTI_ASSERT_NO_THROW( expression, ... ) \
-do { \
-    try {\
-        expression;\
-    } catch (std::exception &e) {\
-        CUTI_FAIL( std::string("Caught: std::exception or derived. What() : ") + e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__));\
-    } catch (...) {\
-        CUTI_FAIL(std::string("Unexpected exception caught. " + cuti::CutiGetMessage(__VA_ARGS__)));\
-    } \
-} while(false)
+#define CUTI_ASSERT_NO_THROW( expression, ... ) IMPL_CUTI_ASSERT_NO_THROW(expression, __VA_ARGS__)
 
- /***********************
- * Public utility macros*
- ************************/
+ /*****************
+ * Public utility *
+ ******************/
 
 namespace cuti {
     //http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature

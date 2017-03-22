@@ -35,11 +35,6 @@ SOFTWARE.
 #undef CUTI_PREPEND_TEST
 #include "ComputeInt.h"
 
-inline std::ostringstream& operator<<(std::ostringstream& os, const ComputeInt&) {
-    os << "ComputeInt val";
-    return os;
-}
-
 CUTI_DEFAULT_TO_STRING(ComputeInt);
 
 CUTI_TEST_CLASS(TestLibInt){

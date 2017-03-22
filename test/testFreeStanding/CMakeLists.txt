@@ -53,7 +53,6 @@ set(TEST_LIB_SRC
     ${TEST_DIR}/TestLibFloat.cpp
     ${TEST_DIR}/TestLibDouble.cpp
     ${TEST_TOP_DIR}/../TemplateFreeStanding.cpp
-    ${TEST_TOP_DIR}/../TestTemplate.cpp
 )
 
 include_directories(${TEST_INCLUDE_DIR})

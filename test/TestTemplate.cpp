@@ -60,4 +60,3 @@ public:
     CPPUNIT_TEST(testSimpleAssert);
     CPPUNIT_TEST_SUITE_END();
 };
-CPPUNIT_TEST_SUITE_REGISTRATION(TestTemplate);

@@ -27,16 +27,16 @@ SOFTWARE.
 /**
 * Uses only cuti's macros
 */
-#if defined(CUTI_FREE_STANDING)
+#if defined(CUTI_FREE_STANDING) || defined(CUTI_CPPUNIT_COMPATABILITY) || defined(CUTI_UNKNOWN)
 
 #include "CutiFreeStanding.h"
+
+#endif
 
 /**
 * Compatibility mode to allow the use of cuti as backend and cuppunit as frontend
 */
-#elif defined(CUTI_CPPUNIT_COMPATABILITY)
-
-#include "CutiFreeStanding.h"
+#if defined(CUTI_CPPUNIT_COMPATABILITY)
 
 #define CPPUNIT_TEST_SUITE(className) CUTI_BEGIN_TESTS_REGISTRATION(className)
 
@@ -105,21 +105,31 @@ static_assert(std::is_same<className, ::className>::value, "CPPUNIT_TEST_SUITE_R
 #include "cppunit/plugin/TestPlugIn.h"
 #include <cppunit/extensions/HelperMacros.h>
 
+/**
+* Replace CPPUNIT_TEST_SUITE_REGISTRATION with an empty definition
+*/
+#undef CPPUNIT_TEST_SUITE_REGISTRATION
+#define CPPUNIT_TEST_SUITE_REGISTRATION(className) /**/
+
 #ifdef _MSC_VER
 #pragma warning( pop )
 #endif
 /**
 * Declare a test fixture
 */
-#define CUTI_TEST_CLASS(className) class className : public CppUnit::TestFixture
+#define CUTI_TEST_CLASS(className) \
+class className; \
+static CPPUNIT_NS::AutoRegisterSuite< className >       \
+    CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__); \
+class className : public CppUnit::TestFixture
 /**
 * Function initializing a test case
 */
-#define CUTI_SET_UP() virtual void setUp() override
+#define CUTI_SET_UP() virtual void setUp() override final
 /**
 * Function cleaning up a test case
 */
-#define CUTI_TEAR_DOWN() virtual void tearDown() override
+#define CUTI_TEAR_DOWN() virtual void tearDown() override final
 
 #ifdef CUTI_USES_XCTEST_BACKEND
 /**
