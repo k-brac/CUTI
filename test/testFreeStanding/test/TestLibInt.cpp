@@ -20,10 +20,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+/**
+* Switch betwenn member and static operator<< for serializing.
+* Usefull if both are defined
+*/
+//#define CUTI_USE_MEMBER_SERIALIZE
+
+/**
+* Prepend test_ to all function declared using CUTI_TEST in XCode.
+* Indeed XCode needs the prefix "test" to automatically detect test methods
+*/
 #define CUTI_PREPEND_TEST
 #include "Cuti.h"
 #undef CUTI_PREPEND_TEST
 #include "ComputeInt.h"
+
+inline std::ostringstream& operator<<(std::ostringstream& os, const ComputeInt&) {
+    os << "ComputeInt val";
+    return os;
+}
+
+CUTI_DEFAULT_TO_STRING(ComputeInt);
 
 CUTI_TEST_CLASS(TestLibInt){
 public:
@@ -51,6 +68,7 @@ public:
 			//CUTI_ASSERT_ASSERTION_FAIL(CUTI_FAIL("This test has failed"));
 	}
 
+    
 	void assertLessTest() {
 		ComputeInt c(5);
 		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_LESS(10, c.add(5)));
@@ -64,7 +82,7 @@ public:
 		ComputeInt c(5);
 		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_GREATER(11, c.add(5)));
 		CUTI_ASSERT_GREATER(1, c.add(1));
-		CUTI_ASSERT_GREATEREQUAL(10, c.add(5));
+		CUTI_ASSERT_GREATEREQUAL(1, c.add(5));
 		CUTI_ASSERT_GREATEREQUAL(10, c.add(6));
 		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_GREATEREQUAL(10, c.add(1)));
 	}
@@ -75,7 +93,7 @@ public:
 		CUTI_ASSERT_EQUAL(5, c.add(0), "Should be equal");
 		CUTI_ASSERT_EQUAL(5, c.add(0));
 		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_EQUAL(10, c.add(1)));
-        //CUTI_ASSERT_EQUAL(c, c2);
+        CUTI_ASSERT_EQUAL(c, c2);
 	}
 
     CUTI_BEGIN_TESTS_REGISTRATION(TestLibInt);

@@ -25,10 +25,11 @@ cmake_minimum_required (VERSION 3.2)
 
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake/")
-message(STATUS "module path : " ${CMAKE_CURRENT_LIST_DIR})
+
 find_package(CUTI REQUIRED)
 
-IF(NOT USE_CUTI_INTEGRATION)
+#In the case we don't want to use IDE integration, we can use a command line test runner for cppunit
+if(NOT ${USE_CUTI_BACK_END})
 	if(WIN32)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
@@ -40,8 +41,11 @@ IF(NOT USE_CUTI_INTEGRATION)
 	set(SRC_DIR ${TOP_DIR}/src)
 
 	project (Cuti)
+	find_package(CppUnit REQUIRED)
 	include_directories(${CPPUNIT_INCLUDE_DIRS})
 	add_executable(Cuti ${SRC_DIR}/CutiMain.cpp)
+
+	cuti_init_cppunit_libraries(Cuti)
 
 	target_link_libraries(Cuti debug ${CUTI_LIBRARIES_DEBUG})
 	target_link_libraries(Cuti optimized ${CUTI_LIBRARIES_RELEASE})
@@ -51,4 +55,4 @@ IF(NOT USE_CUTI_INTEGRATION)
 	add_custom_command(TARGET Cuti POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy
 						${CUTI_COPY_LIB} $<TARGET_FILE_DIR:Cuti>)
-ENDIF(NOT USE_CUTI_INTEGRATION)
+endif()

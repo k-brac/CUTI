@@ -35,3 +35,7 @@ int ComputeInt::divide(int d) {
 		throw std::runtime_error("Divide by 0 is forbiden");
 	return mVal / d;
 }
+
+bool ComputeInt::operator==(const ComputeInt & other) const {
+    return mVal == other.mVal;
+}

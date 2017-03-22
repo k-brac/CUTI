@@ -21,6 +21,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <string>
+#include <vector>
+#include <iostream>
+
 #include "cppunit/extensions/TestFactoryRegistry.h"
 #ifdef WIN32
 #pragma warning( push )
@@ -138,13 +142,14 @@ int main(int argc, char* argv[])
 	try {
         CommandLineParser command;
         command.parseArgs(argc, argv);
-		
 		result = runPlugin(command);
 	}
 	catch (std::exception &e) {
 		std::cerr << std::endl
 			<< "ERROR: " << e.what()
 			<< std::endl;
+
+
 	}
 	return result ? 0 : 1;
 }

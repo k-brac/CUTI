@@ -25,11 +25,81 @@ SOFTWARE.
 #define CPP_UNIT_TEST_INTEGRATED_FREE_STANDING
 
 #ifdef _MSC_VER
-//Visual studio's backend is already free standing
-/**
-* The specificities of visual studio's integration are in their own file for lisibility
-*/
-#include "CutiVisualStudio.h"
+#include <codecvt>
+#include <CppUnitTest.h>
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+#define IMPL_CUTI_TEST_CLASS(className) TEST_CLASS(className)
+
+#define IMPL_CUTI_SET_UP() TEST_METHOD_INITIALIZE(setUp)
+
+#define IMPL_CUTI_TEAR_DOWN() TEST_METHOD_CLEANUP(tearDown)
+
+#define IMPL_CUTI_TEST(methodName) \
+static const EXPORT_METHOD ::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo* CALLING_CONVENTION CATNAME(__GetTestMethodInfo_, methodName)()\
+{\
+    __GetTestClassInfo();\
+    __GetTestVersion();\
+    ALLOCATE_TESTDATA_SECTION_METHOD\
+    static const ::Microsoft::VisualStudio::CppUnitTestFramework::MethodMetadata s_Metadata = {L"TestMethodInfo", L#methodName, reinterpret_cast<unsigned char*>(__FUNCTION__), reinterpret_cast<unsigned char*>(__FUNCDNAME__), __WFILE__, __LINE__};\
+\
+    static ::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo s_Info = {::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo::TestMethod, NULL, &s_Metadata};\
+    s_Info.method.pVoidMethod = static_cast<::Microsoft::VisualStudio::CppUnitTestFramework::TestClassImpl::__voidFunc>(&methodName);\
+    return &s_Info;\
+}
+
+#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) /**/
+
+#define IMPL_CUTI_END_TESTS_REGISTRATION() /**/
+
+#define IMPL_CUTI_DEFAULT_TO_STRING(className) \
+inline std::wstringstream& operator<<(std::wstringstream& os, const className& obj) \
+{ \
+    os << cuti::CutiGetMessageW(cuti::ToString(obj)); \
+    return os; \
+} \
+INTERNAL_CUTI_SPECIALIZED_TO_STRING(className)
+
+/****************************************************************
+* Fix VisualStudio::CppUnitTestFramework missing specializations*
+*****************************************************************/
+#define INTERNAL_CUTI_SPECIALIZED_TO_STRING(type) template<> inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<type> (const type& t) { RETURN_WIDE_STRING(t); } \
+template<> inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<type> (const type* t) { RETURN_WIDE_STRING(t); } \
+template<> inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<type> (type* t) { RETURN_WIDE_STRING(t); }
+
+INTERNAL_CUTI_SPECIALIZED_TO_STRING(int64_t);
+INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
+
+/*****************
+* CUTI internals*
+*****************/
+
+#define INTERNAL_CUTI_LINE_INFO() Microsoft::VisualStudio::CppUnitTestFramework::__LineInfo(__WFILE__, __FUNCTION__, __LINE__)
+
+#define INTERNAL_CUTI_ASSERT_MESSAGE(expression, ...) do{auto li = INTERNAL_CUTI_LINE_INFO(); const auto cutiMsg_ = cuti::CutiGetMessageW(__VA_ARGS__); expression; } while(false)
+
+#define INTERNAL_CUTI_ASSERT_COMPARE(bound, operation, actual, msg, ...) IMPL_CUTI_ASSERT(bound operation actual, cuti::ToString(actual) + std::string(msg) + cuti::ToString(bound) + /*std::string(". ") +*/ cuti::CutiGetMessage(__VA_ARGS__))
+
+/*************************************************
+* Visual studio CUTI assert macro implementations*
+**************************************************/
+
+#define IMPL_CUTI_ASSERT(condition, ...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::IsTrue(condition, cutiMsg_.c_str(), &li), __VA_ARGS__)
+
+#define IMPL_CUTI_FAIL( ... ) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::Fail(cutiMsg_.c_str(), &li), __VA_ARGS__)
+
+#define IMPL_CUTI_ASSERT_EQUAL(expected,actual, ...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::AreEqual(expected, actual, cutiMsg_.c_str(), &li), __VA_ARGS__)
+
+#define IMPL_CUTI_ASSERT_LESS(bound, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(bound, >, actual, " was expected to be less than ", __VA_ARGS__)
+
+#define IMPL_CUTI_ASSERT_GREATER(bound, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(bound, <, actual, " was expected to be greater than ", __VA_ARGS__)
+
+#define IMPL_CUTI_ASSERT_LESSEQUAL(bound, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(bound, >=, actual, " was expected to be less than or equal to ", __VA_ARGS__)
+
+#define IMPL_CUTI_ASSERT_GREATEREQUAL(bound, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(bound, <=, actual, " was expected to be greater than or equal to ", __VA_ARGS__)
+
+#define IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::AreEqual(expected, actual, delta, cutiMsg_.c_str(), &li), __VA_ARGS__)
 
 #else
 //XCode specific backend
@@ -37,7 +107,6 @@ SOFTWARE.
 #import <XCTest/XCTest.h>
 #import <objc/runtime.h>
 #include <string>
-
 
 /**
  * Declare a test fixture
@@ -122,15 +191,11 @@ namespace cuti {
         virtual void tearDown() {}
         virtual ~CutiBaseTestCase() = default;
     };
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-function"
-    static std::string CutiGetFormatMessage(std::string msg = std::string()) { return msg;}
-#pragma clang diagnostic pop
 };
 
 #define INTERNAL_CUTI_FORMAT_MESSAGE() @"%@", @(cutiMsg_.c_str())
 
-#define INTERNAL_CUTI_ASSERT_MESSAGE(expression, ...) do { const auto cutiMsg_ = cuti::CutiGetFormatMessage(__VA_ARGS__); expression; } while(false)
+#define INTERNAL_CUTI_ASSERT_MESSAGE(expression, ...) do { const auto cutiMsg_ = cuti::CutiGetMessage(__VA_ARGS__); expression; } while(false)
 
 /******************************************
  * XCode CUTI assert macro implementations*
@@ -151,31 +216,6 @@ namespace cuti {
 #define IMPL_CUTI_ASSERT_GREATEREQUAL(bound, actual, ...)  INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssertGreaterThanOrEqual(actual, bound, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
 
 #define IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected,actual,delta, ...) INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssertEqualWithAccuracy(actual, expected, delta, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
-
-#define IMPL_CUTI_ASSERT_THROW( expression, ExceptionType, ... ) \
-do { \
-    bool cpputCorrectExceptionThrown_ = false; \
-    std::string cutiMsgT_( "expected exception not thrown. " ); \
-    cutiMsgT_ += "Expected: " #ExceptionType ". "; \
-\
-    try { \
-        expression; \
-    } catch ( const ExceptionType & ) { \
-        cpputCorrectExceptionThrown_ = true; \
-    } catch ( const std::exception &e) { \
-        cutiMsgT_ += std::string("Actual  : ") + std::string(typeid(e).name());\
-        cutiMsgT_ += std::string(". What()  : ") + e.what();\
-    } catch ( ... ) { \
-        cutiMsgT_ += ( "Actual  : unknown."); \
-    } \
-\
-    if ( cpputCorrectExceptionThrown_ )\
-    break; \
-    cutiMsgT_ += std::string(". ") + cuti::CutiGetFormatMessage(__VA_ARGS__); \
-    CUTI_FAIL( cutiMsgT_); \
-} while ( false )
-
-
 
 #endif
 
@@ -218,33 +258,219 @@ do { \
  * Public assert macros*
  ***********************/
 
+/**
+* asserts that condition is true with optional message
+*/
 #define CUTI_ASSERT(condition, ...) IMPL_CUTI_ASSERT(condition, __VA_ARGS__)
 
+/**
+* unconditional fail with optional message
+*/
 #define CUTI_FAIL( ... ) IMPL_CUTI_FAIL( __VA_ARGS__ )
 
-#define CUTI_ASSERT_EQUAL(expected,actual, ...) IMPL_CUTI_ASSERT_EQUAL(expected,actual, __VA_ARGS__)
+/**
+* asserts that actual is equal to expected with optional message
+*/
+#define CUTI_ASSERT_EQUAL(expected, actual, ...) IMPL_CUTI_ASSERT_EQUAL(expected,actual, __VA_ARGS__)
 
+/**
+* asserts that actual is less than bound with optional message
+*/
 #define CUTI_ASSERT_LESS(bound, actual, ...) IMPL_CUTI_ASSERT_LESS(bound, actual, __VA_ARGS__)
 
+/**
+* asserts that actual is greater than bound with optional message
+*/
 #define CUTI_ASSERT_GREATER(bound, actual, ...) IMPL_CUTI_ASSERT_GREATER(bound, actual, __VA_ARGS__)
 
+/**
+* asserts that actual is less than or equal to bound with optional message
+*/
 #define CUTI_ASSERT_LESSEQUAL(bound, actual, ...) IMPL_CUTI_ASSERT_LESSEQUAL(bound, actual, __VA_ARGS__)
 
+/**
+* asserts that actual is greater than or equal to bound with optional message
+*/
 #define CUTI_ASSERT_GREATEREQUAL(bound, actual, ...)  IMPL_CUTI_ASSERT_GREATEREQUAL(bound, actual, __VA_ARGS__)
 
-#define CUTI_ASSERT_DOUBLES_EQUAL(expected,actual,delta, ...) IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected,actual,delta, __VA_ARGS__)
+/**
+* asserts that floating point actual is equal to actual with fabs(expected - actual) < delta with optional message
+*/
+#define CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected,actual,delta, __VA_ARGS__)
 
-#define CUTI_ASSERT_THROW( expression, ExceptionType, ... ) IMPL_CUTI_ASSERT_THROW( expression, ExceptionType, __VA_ARGS__)
+/**
+* asserts that expression throws ExceptionType with optional message
+*/
+#define CUTI_ASSERT_THROW( expression, ExceptionType, ... ) \
+do { \
+    bool cpputCorrectExceptionThrown_ = false; \
+    std::string cutiMsgT_( "Expected exception not thrown. " ); \
+    cutiMsgT_ += "Expected: " #ExceptionType ". "; \
+\
+    try { \
+        expression; \
+        cutiMsgT_ += "But none was thrown. "; \
+    } catch ( const ExceptionType & ) { \
+        cpputCorrectExceptionThrown_ = true; \
+    } catch ( const std::exception &e) { \
+        cutiMsgT_ += std::string("Actual : ") + std::string(typeid(e).name()) + std::string(". ");\
+        cutiMsgT_ += std::string("What() : ") + e.what() + std::string(". ");\
+    } catch ( ... ) { \
+        cutiMsgT_ += ( "Actual  : unknown. "); \
+    } \
+\
+    if ( cpputCorrectExceptionThrown_ ) {\
+        break; \
+    } \
+    cutiMsgT_ += cuti::CutiGetMessage(__VA_ARGS__); \
+    CUTI_FAIL( cutiMsgT_); \
+} while ( false )
 
-# define CUTI_ASSERT_NO_THROW( expression, ... ) \
+/**
+* asserts that expression doesn't throw with optional message
+*/
+#define CUTI_ASSERT_NO_THROW( expression, ... ) \
 do { \
     try {\
         expression;\
     } catch (std::exception &e) {\
-        CUTI_FAIL( std::string("Caught: std::exception or derived. What() : ") + e.what() + std::string(". ") + cuti::CutiGetFormatMessage(__VA_ARGS__));\
+        CUTI_FAIL( std::string("Caught: std::exception or derived. What() : ") + e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__));\
     } catch (...) {\
-        CUTI_FAIL(std::string("Unexpected exception caught. " + cuti::CutiGetFormatMessage(__VA_ARGS__)));\
+        CUTI_FAIL(std::string("Unexpected exception caught. " + cuti::CutiGetMessage(__VA_ARGS__)));\
     } \
 } while(false)
+
+ /***********************
+ * Public utility macros*
+ ************************/
+
+namespace cuti {
+    //http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
+    template<typename, typename T>
+    struct has_serialize {
+        static_assert(
+            std::integral_constant<T, false>::value,
+            "Second template parameter needs to be of function type.");
+    };
+    template<typename C, typename Ret, typename... Args>
+    struct has_serialize<C, Ret(Args...)> {
+    private:
+        template<typename T>
+        static constexpr auto check(T*)
+            -> typename
+            std::is_same<
+            decltype(std::declval<T>().operator<<(std::declval<Args>()...)),
+            Ret
+            >::type;
+
+        template<typename>
+        static constexpr std::false_type check(...);
+
+        typedef decltype(check<C>(0)) type;
+
+    public:
+        static constexpr bool value = type::value;
+    };
+
+    template<typename, typename T>
+    struct has_static_serialize {
+        static_assert(
+            std::integral_constant<T, false>::value,
+            "Second template parameter needs to be of function type.");
+    };
+    template<typename C, typename Ret, typename... Args>
+    struct has_static_serialize<C, Ret(Args...)> {
+    private:
+        template<typename T>
+        static constexpr auto check(T*)
+            -> typename
+            std::is_same<
+            decltype(operator<<(std::declval<Args>()...)),
+            Ret
+            >::type;
+
+        template<typename>
+        static constexpr std::false_type check(...);
+
+        typedef decltype(check<C>(0)) type;
+
+    public:
+        static constexpr bool value = type::value;
+    };
+
+    inline std::string CutiGetMessage(std::string msg = std::string()) { return msg; }
+    /**
+    * Converts string to wide string
+    * @param s The string to be converted
+    * @return s as a wide string
+    */
+    inline std::wstring CutiGetMessageW(const std::string &s = std::string()) {
+        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        return converter.from_bytes(s);
+    }
+    /**
+    * converts fundamental and enum types to std::string
+    */
+    template <typename T, typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type* = 0>
+    inline std::string ToString(const T val) {
+        return std::to_string(val);
+    }
+    /**
+    * Special overload for bool
+    */
+    template <>
+    inline std::string ToString(const bool val) {
+        return val ? "true" : "false";
+    }
+
+    /**
+    * converts object types (class and struct) to std::string
+    */
+    template <typename T, typename std::enable_if<
+        has_serialize<T, std::ostringstream&(std::ostringstream&)>::value
+#if !defined(CUTI_USE_MEMBER_SERIALIZE)
+        && !has_static_serialize<T, std::ostringstream&(std::ostringstream&, const T&)>::value
+#endif
+    >::type* = 0>
+    inline std::string ToString(const T & val) {
+        std::ostringstream ost;
+        val.operator<<(ost);
+        return ost.str();
+    }
+
+    template <typename T, typename std::enable_if<
+        has_static_serialize<T, std::ostringstream&(std::ostringstream&, const T&)>::value
+#if defined(CUTI_USE_MEMBER_SERIALIZE)
+        && !has_serialize<T, std::ostringstream&(std::ostringstream&)>::value
+#endif
+    >::type* = 0>
+    inline std::string ToString(const T & val) {
+        std::ostringstream ost;
+        ost << val;
+        return ost.str();
+    }
+
+    template <typename T,
+            typename std::enable_if<
+                std::is_class<T>::value &&
+                !has_serialize<T, std::ostringstream&(std::ostringstream&)>::value &&
+                !has_static_serialize<T, std::ostringstream&(std::ostringstream&, const T&)>::value
+        >::type* = 0
+    >
+    inline std::string ToString(const T & val) {
+        std::ostringstream ost;
+        ost << typeid(T).name();
+        return ost.str();
+    }
+
+    /**
+    * Special overload to avoid converting a std::string to std::string
+    */
+    inline const std::string & ToString(const std::string & val) {
+        return val;
+    }
+}
+
+#define CUTI_DEFAULT_TO_STRING(className) IMPL_CUTI_DEFAULT_TO_STRING(className)
 
 #endif

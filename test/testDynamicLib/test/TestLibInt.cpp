@@ -26,17 +26,6 @@ SOFTWARE.
 
 CUTI_TEST_CLASS(TestLibInt){
 public:
-	CPPUNIT_TEST_SUITE(TestLibInt);
-	CPPUNIT_TEST(simpleAssertTest);
-	CPPUNIT_TEST(assertThrowTest);
-	CPPUNIT_TEST(assertNoThrowTest);
-	CPPUNIT_TEST(assertFailTest);
-	CPPUNIT_TEST(assertLessTest);
-	CPPUNIT_TEST(assertGreaterTest);
-	CPPUNIT_TEST(assertEqual);
-	CPPUNIT_TEST_SUITE_END();
-
-public:
 	CUTI_SET_UP(){
 	}
 
@@ -91,5 +80,15 @@ public:
 		CPPUNIT_ASSERT_EQUAL(5, c.add(0));
 		CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_EQUAL(10, c.add(1)));
 	}
+
+    CPPUNIT_TEST_SUITE(TestLibInt);
+    CPPUNIT_TEST(simpleAssertTest);
+    CPPUNIT_TEST(assertThrowTest);
+    CPPUNIT_TEST(assertNoThrowTest);
+    CPPUNIT_TEST(assertFailTest);
+    CPPUNIT_TEST(assertLessTest);
+    CPPUNIT_TEST(assertGreaterTest);
+    CPPUNIT_TEST(assertEqual);
+    CPPUNIT_TEST_SUITE_END();
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLibInt);

@@ -24,6 +24,8 @@
 /**
 * Mandatory include. Should always be on top
 */
+
+//#define CUTI_CPPUNIT_COMPATABILITY
 #include "Cuti.h"
 
 /**
@@ -33,14 +35,6 @@ CUTI_TEST_CLASS(TestTemplate) {
 private:
     bool val = false;
 public:
-    /**
-     * Test suit declaration and test case registration
-     */
-    CPPUNIT_TEST_SUITE(TestTemplate);
-    CPPUNIT_TEST(testSimpleAssert);
-    CPPUNIT_TEST_SUITE_END();
-
-public://Mandatory because CPPUNIT_TEST_SUITE_END can expend to private:
     /**
     * Optional. Executed before every test case
     */
@@ -58,5 +52,12 @@ public://Mandatory because CPPUNIT_TEST_SUITE_END can expend to private:
     void testSimpleAssert() {
         CPPUNIT_ASSERT(val);
     }
+public:
+    /**
+    * Test suit declaration and test case registration
+    */
+    CPPUNIT_TEST_SUITE(TestTemplate);
+    CPPUNIT_TEST(testSimpleAssert);
+    CPPUNIT_TEST_SUITE_END();
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(TestTemplate);

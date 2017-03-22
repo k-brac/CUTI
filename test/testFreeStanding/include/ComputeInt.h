@@ -26,6 +26,8 @@ SOFTWARE.
 
 #include "DynamicLib.h"
 
+#include <sstream>
+
 class LIBRARY_API ComputeInt
 {
 private:
@@ -34,5 +36,12 @@ public:
 	ComputeInt(int val);
 	int add(int val);
 	int divide(int d);
+
+    bool operator==(const ComputeInt & other) const;
+
+    std::ostringstream& operator<<(std::ostringstream& os) const {
+        os << mVal;
+        return os;
+    }
 };
 #endif
