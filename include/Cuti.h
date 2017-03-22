@@ -74,6 +74,8 @@ SOFTWARE.
 
 #define CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, actual, delta) CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta)
 
+#define CPPUNIT_ASSERT_ASSERTION_FAIL(expression) expression
+
 #if defined(CUTI_EXCLUDE_TEST_FROM_COVERAGE) && defined(_WIN32)
 #include <CodeCoverage/CodeCoverage.h>
 /**
