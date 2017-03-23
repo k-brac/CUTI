@@ -32,7 +32,8 @@ if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 elseif(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wall -Wextra -std=c++14")
+
 endif(WIN32)
 
 #define the resource path
@@ -75,9 +76,16 @@ if(WIN32)
     #Definition for windows to enable the generation of a dll and its lib
     target_compile_definitions(compute_lib PRIVATE -DCOMPUTE_EXPORT)
 elseif(APPLE)
-    target_compile_options(compute_lib PRIVATE "-Weverything -Wno-c++98-compat")
-    target_compile_options(test_compute_lib PRIVATE "-Weverything -Wno-c++98-compat")
+    target_compile_options(compute_lib PRIVATE -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic)
+    target_compile_options(test_compute_lib PRIVATE
+        -Weverything
+        -Wno-c++98-compat
+        -std=c++14
+        -Wno-c++98-compat-pedantic
+        -Wno-gnu
+    )
     set_target_properties (compute_lib PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
     set_target_properties (compute_lib PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
+    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++14")
 endif(WIN32)

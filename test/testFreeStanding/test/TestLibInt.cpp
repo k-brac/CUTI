@@ -42,6 +42,10 @@ public:
 	void simpleAssertTest() {
 		ComputeInt c(5);
 		CUTI_ASSERT(c.add(-2) != 0);
+
+        do { const auto cutiMsg_ = cuti::CutiGetMessage("");XCTAssert(c.add(-2) != 0, INTERNAL_CUTI_FORMAT_MESSAGE()); } while(false);
+
+
 		CUTI_ASSERT(c.add(-2) != 0, "c.add should have returned a value != 0");
 	}
 
@@ -88,7 +92,7 @@ public:
 		CUTI_ASSERT_EQUAL(5, c.add(0), "Should be equal");
 		CUTI_ASSERT_EQUAL(5, c.add(0));
 		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_EQUAL(10, c.add(1)));
-        CUTI_ASSERT_EQUAL(c, c2);
+        //CUTI_ASSERT_EQUAL(c, c2);
 	}
 
     CUTI_BEGIN_TESTS_REGISTRATION(TestLibInt);

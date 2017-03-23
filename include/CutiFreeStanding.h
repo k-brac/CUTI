@@ -102,9 +102,17 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 
 #elif defined(CUTI_USES_XCTEST_BACKEND)
 //XCode specific backend
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+
+#define __ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES 0
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 #import <objc/runtime.h>
+
+#pragma clang diagnostic pop
+
 #include <string>
 
 /**
@@ -117,6 +125,8 @@ struct className; /*forward declaration*/ \
 @end \
 static className * kInstance = nullptr; \
 @implementation C##className \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wweak-vtables\"") \
 struct className : public cuti::CutiBaseTestCase
 
 /**
@@ -153,6 +163,7 @@ struct className : public cuti::CutiBaseTestCase
  * Delimits the beginning of the tests registration
  */
 #define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) }; \
+_Pragma("clang diagnostic pop") \
 + (void)setUp { \
     [super setUp]; \
     kInstance = new className(); \
@@ -184,17 +195,24 @@ namespace {
  *****************/
 
 namespace cuti {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wweak-vtables"
     struct CutiBaseTestCase {
         XCTestCase * self = NULL;
         virtual void setUp() {}
         virtual void tearDown() {}
         virtual ~CutiBaseTestCase() = default;
     };
+#pragma clang diagnostic pop
 };
 
 #define INTERNAL_CUTI_FORMAT_MESSAGE() @"%@", @(cutiMsg_.c_str())
 
-#define INTERNAL_CUTI_ASSERT_MESSAGE(expression, ...) do { const auto cutiMsg_ = cuti::CutiGetMessage(__VA_ARGS__); expression; } while(false)
+#define INTERNAL_CUTI_ASSERT_MESSAGE(expression, ...) do { \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wformat-nonliteral\"") \
+const auto cutiMsg_ = cuti::CutiGetMessage(__VA_ARGS__); expression; } while(false) \
+_Pragma("clang diagnostic push")
 
 /******************************************
  * XCode CUTI assert macro implementations*
@@ -338,6 +356,7 @@ do { \
  * Public interface*
  *******************/
 #include <string>
+#include <sstream>
 #include <codecvt>
 
 /**
@@ -503,10 +522,10 @@ namespace cuti {
     /**
     * Special overload for bool
     */
-    template <>
+    /*template <>
     inline std::string ToString(const bool val) {
         return val ? "true" : "false";
-    }
+    }*/
 
     /**
     * converts object types (class and struct) to std::string
