@@ -564,7 +564,7 @@ namespace cuti {
                 !has_static_serialize<T, std::ostringstream&(std::ostringstream&, const T&)>::value
         >::type* = 0
     >
-    inline std::string ToString(const T & val) {
+    inline std::string ToString(const T & /*val*/) {
         std::ostringstream ost;
         ost << typeid(T).name();
         return ost.str();
