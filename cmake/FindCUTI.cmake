@@ -135,14 +135,6 @@ function(cuti_creates_test_target target testee)
 #creates a test target for the testee target
 #uses ${ARGN} as list of source files for the test target
 
-  if(NOT APPLE)
-    if(NOT ${USE_CUTI_BACK_END})
-      get_filename_component(CUTI_PLUGIN_SRC ${CUTI_ROOT_DIR}/src/UnitTestPlugin.cpp ABSOLUTE)
-      add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE} ${CUTI_PLUGIN_SRC})
-      #target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
-    endif()
-  endif()
-
   if(${USE_CUTI_BACK_END})
     if(WIN32)
       find_package(VisualStudio REQUIRED)
@@ -157,6 +149,9 @@ function(cuti_creates_test_target target testee)
       message(FATAL_ERROR "There is no cuti backend for the selected platform")
     endif()
   else()
+    get_filename_component(CUTI_PLUGIN_SRC ${CUTI_ROOT_DIR}/src/UnitTestPlugin.cpp ABSOLUTE)
+    add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE} ${CUTI_PLUGIN_SRC})
+    #target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
     cuti_init_cppunit_libraries(${target})
   endif()
 

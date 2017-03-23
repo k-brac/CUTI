@@ -50,6 +50,21 @@ if(NOT ${USE_CUTI_BACK_END})
 	target_link_libraries(Cuti debug ${CUTI_LIBRARIES_DEBUG})
 	target_link_libraries(Cuti optimized ${CUTI_LIBRARIES_RELEASE})
 
+	if(WIN32)
+		target_compile_options(Cuti PRIVATE "/W4" "/MP" "/analyze")
+	elseif(APPLE)
+		target_compile_options(Cuti PRIVATE
+			-Weverything
+			-Wno-c++98-compat
+			-std=c++14
+			-Wno-c++98-compat-pedantic
+			-Wno-gnu
+		)
+		set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
+		set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
+	endif(WIN32)
+
 	set(CUTI_COPY_LIB $<$<CONFIG:Debug>:${CPPUNIT_DYN_LIB_DEBUG}> $<$<NOT:$<CONFIG:Debug>>:${CPPUNIT_DYN_LIB_RELEASE}>)
 
 	add_custom_command(TARGET Cuti POST_BUILD

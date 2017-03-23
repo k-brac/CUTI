@@ -31,7 +31,7 @@ float ComputeFloat::add(float val) {
 }
 
 float ComputeFloat::divide(float d) {
-	if (d == 0)
+	if (d == 0.f)
 		throw std::runtime_error("Divide by 0 is forbiden");
 	return mVal / d;
 }
