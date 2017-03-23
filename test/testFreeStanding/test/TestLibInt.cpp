@@ -62,6 +62,8 @@ public:
 
 	void assertFailTest() {
 			//CUTI_ASSERT_ASSERTION_FAIL(CUTI_FAIL("This test has failed"));
+        uint16_t a = 0, b = 0;
+        CUTI_ASSERT_EQUAL(a, b);
 	}
 
     
@@ -85,7 +87,7 @@ public:
 
 	void assertEqual() {
 		ComputeInt c(5);
-        ComputeInt c2(6);
+        ComputeInt c2(5);
 		CUTI_ASSERT_EQUAL(5, c.add(0), "Should be equal");
 		CUTI_ASSERT_EQUAL(5, c.add(0));
 		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_EQUAL(10, c.add(1)));
