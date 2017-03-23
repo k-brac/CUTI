@@ -35,6 +35,7 @@ SOFTWARE.
 #undef CUTI_PREPEND_TEST
 #include "ComputeInt.h"
 
+
 CUTI_DEFAULT_TO_STRING(ComputeInt);
 
 CUTI_TEST_CLASS(TestLibInt){
@@ -92,7 +93,7 @@ public:
 		CUTI_ASSERT_EQUAL(5, c.add(0), "Should be equal");
 		CUTI_ASSERT_EQUAL(5, c.add(0));
 		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_EQUAL(10, c.add(1)));
-        //CUTI_ASSERT_EQUAL(c, c2);
+        CUTI_ASSERT_EQUAL(c, c2);
 	}
 
     CUTI_BEGIN_TESTS_REGISTRATION(TestLibInt);

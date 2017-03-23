@@ -222,7 +222,10 @@ _Pragma("clang diagnostic push")
 
 #define IMPL_CUTI_FAIL( ... ) INTERNAL_CUTI_ASSERT_MESSAGE(XCTFail(INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
 
-#define IMPL_CUTI_ASSERT_EQUAL(expected,actual, ...) INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssertEqual(actual, expected, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
+/**
+ * not using XCTAssertEqual because the value displayed for object comparison is not nice
+ */
+#define IMPL_CUTI_ASSERT_EQUAL(expected,actual, ...) INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssert(expected == actual, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
 
 #define IMPL_CUTI_ASSERT_LESS(bound, actual, ...) INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssertLessThan(actual, bound, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
 
