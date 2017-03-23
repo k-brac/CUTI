@@ -257,8 +257,25 @@ _Pragma("clang diagnostic push")
 # define CPPUNIT_UNIQUE_COUNTER __COUNTER__
 #endif
 
+#if __MACH__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpadded"
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#pragma clang diagnostic ignored "-Wextra-semi"
+#pragma clang diagnostic ignored "-Wdocumentation"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+#pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#pragma clang diagnostic ignored "-Wdeprecated"
+#define CPPUNIT_STD_NEED_ALLOCATOR 0
+#endif
+
 #include "cppunit/plugin/TestPlugIn.h"
 #include <cppunit/extensions/HelperMacros.h>
+
+#if __MACH__
+#pragma clang diagnostic pop
+#endif
 
 #ifdef _MSC_VER
 #pragma warning( pop )

@@ -43,10 +43,6 @@ public:
 	void simpleAssertTest() {
 		ComputeInt c(5);
 		CUTI_ASSERT(c.add(-2) != 0);
-
-        do { const auto cutiMsg_ = cuti::CutiGetMessage("");XCTAssert(c.add(-2) != 0, INTERNAL_CUTI_FORMAT_MESSAGE()); } while(false);
-
-
 		CUTI_ASSERT(c.add(-2) != 0, "c.add should have returned a value != 0");
 	}
 
