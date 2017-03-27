@@ -38,4 +38,4 @@ before_build:
 
 #build using cmake
 build_script:
-  cmake.exe --build --config %CONFIGURATION% .
+  cmake.exe --build . --config %CONFIGURATION%
