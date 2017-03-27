@@ -27,6 +27,16 @@ shallow_clone: true
 environment:
   configuration: Release
   matrix:
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    platform: x86
+    CMAKE_GENERATOR: 'Visual Studio 12 2013'
+    CUTI_TEST_PROJECT: testFreeStanding
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    platform: x64
+    CMAKE_GENERATOR: 'Visual Studio 12 2013 Win64'
+    CUTI_TEST_PROJECT: testFreeStanding
+
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     platform: x86
     CMAKE_GENERATOR: 'Visual Studio 14 2015'
@@ -55,5 +65,6 @@ before_build:
 build_script:
   cmake.exe --build . --config %CONFIGURATION%
 
+#run tests using vstest.console
 test_script:
   vstest.console /logger:Appveyor ./%CONFIGURATION%/%CUTI_TEST_PROJECT%.dll /InIsolation /Platform:%PLATFORM%
