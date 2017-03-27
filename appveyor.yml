@@ -30,36 +30,78 @@ environment:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
     platform: x86
     CMAKE_GENERATOR: 'Visual Studio 12 2013'
+    CMAKE_ARGS: ''
     CUTI_TEST_PROJECT: testFreeStanding
 
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
     platform: x64
     CMAKE_GENERATOR: 'Visual Studio 12 2013 Win64'
+    CMAKE_ARGS: ''
     CUTI_TEST_PROJECT: testFreeStanding
 
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     platform: x86
     CMAKE_GENERATOR: 'Visual Studio 14 2015'
+    CMAKE_ARGS: ''
     CUTI_TEST_PROJECT: testFreeStanding
 
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     platform: x64
     CMAKE_GENERATOR: 'Visual Studio 14 2015 Win64'
+    CMAKE_ARGS: ''
     CUTI_TEST_PROJECT: testFreeStanding
 
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     platform: x86
     CMAKE_GENERATOR: 'Visual Studio 15 2017'
+    CMAKE_ARGS: ''
     CUTI_TEST_PROJECT: testFreeStanding
 
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     platform: x64
     CMAKE_GENERATOR: 'Visual Studio 15 2017 Win64'
+    CMAKE_ARGS: ''
     CUTI_TEST_PROJECT: testFreeStanding
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    platform: x86
+    CMAKE_GENERATOR: 'Visual Studio 12 2013'
+    CMAKE_ARGS: '-DCUTI_FRONT_END:STRING=CPPUNIT'
+    CUTI_TEST_PROJECT: testDynamicLib
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    platform: x64
+    CMAKE_GENERATOR: 'Visual Studio 12 2013 Win64'
+    CMAKE_ARGS: '-DCUTI_FRONT_END:STRING=CPPUNIT'
+    CUTI_TEST_PROJECT: testDynamicLib
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    platform: x86
+    CMAKE_GENERATOR: 'Visual Studio 14 2015'
+    CMAKE_ARGS: '-DCUTI_FRONT_END:STRING=CPPUNIT'
+    CUTI_TEST_PROJECT: testDynamicLib
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    platform: x64
+    CMAKE_GENERATOR: 'Visual Studio 14 2015 Win64'
+    CMAKE_ARGS: '-DCUTI_FRONT_END:STRING=CPPUNIT'
+    CUTI_TEST_PROJECT: testDynamicLib
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    platform: x86
+    CMAKE_GENERATOR: 'Visual Studio 15 2017'
+    CMAKE_ARGS: '-DCUTI_FRONT_END:STRING=CPPUNIT'
+    CUTI_TEST_PROJECT: testDynamicLib
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    platform: x64
+    CMAKE_GENERATOR: 'Visual Studio 15 2017 Win64'
+    CMAKE_ARGS: '-DCUTI_FRONT_END:STRING=CPPUNIT'
+    CUTI_TEST_PROJECT: testDynamicLib
 
 #generate the solution using cmake and environment variables
 before_build:
-  cmake.exe -G "%CMAKE_GENERATOR%" ./test/%CUTI_TEST_PROJECT%
+  cmake.exe -G "%CMAKE_GENERATOR%" ./test/%CUTI_TEST_PROJECT% %CMAKE_ARGS%
 
 #build using cmake
 build_script:

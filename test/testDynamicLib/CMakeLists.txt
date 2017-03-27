@@ -69,7 +69,7 @@ include_directories(${TEST_INCLUDE_DIR})
 cuti_creates_test_target(testDynamicLib DynamicLib ${TEST_LIB_SRC})
 
 if(WIN32)
-    target_compile_options(compute_lib PRIVATE "/W4" "/MP" "/analyze")
+    target_compile_options(DynamicLib PRIVATE "/W4" "/MP" "/analyze")
     target_compile_options(testDynamicLib PRIVATE "/W4" "/MP" "/analyze")
     #Definition for windows to enable the generation of a dll and its lib
     target_compile_definitions(DynamicLib PRIVATE -DCOMPUTE_EXPORT)
