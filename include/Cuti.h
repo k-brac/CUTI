@@ -127,7 +127,7 @@ SOFTWARE.
 
 namespace cuti
 {
-
+#if !defined(_MSC_VER) || _MSC_VER > 1800
     //http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
     template <typename, typename T>
     struct has_serialize
@@ -177,26 +177,6 @@ namespace cuti
         static constexpr bool value = type::value;
     };
 
-    inline std::string CutiGetMessage(std::string msg = std::string()) { return msg; }
-    /**
-    * Converts string to wide string
-    * @param s The string to be converted
-    * @return s as a wide string
-    */
-    inline std::wstring CutiGetMessageW(const std::string &s = std::string())
-    {
-        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        return converter.from_bytes(s);
-    }
-    /**
-    * converts fundamental and enum types to std::string
-    */
-    template <typename T, typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type * = 0>
-    inline std::string ToString(const T val)
-    {
-        return std::to_string(val);
-    }
-
     /**
     * converts object types (class and struct) to std::string
     */
@@ -206,7 +186,7 @@ namespace cuti
         && !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
 #endif
     >::type * = 0>
-        inline std::string ToString(const T &val)
+    inline std::string ToString(const T &val)
     {
         std::ostringstream ost;
         val.operator<<(ost);
@@ -237,11 +217,42 @@ namespace cuti
         ost << typeid(T).name();
         return ost.str();
     }
+#else
+    template <typename T, typename std::enable_if<std::is_object<T>::value && !std::is_fundamental<T>::value>::type * = 0>
+    inline std::string ToString(const T &val)
+    {
+        std::ostringstream ost;
+        val.operator<<(ost);
+        return ost.str();
+    }
+
+#endif
+
+    inline std::string CutiGetMessage(std::string msg = std::string()) { return msg; }
+    /**
+    * Converts string to wide string
+    * @param s The string to be converted
+    * @return s as a wide string
+    */
+    inline std::wstring CutiGetMessageW(const std::string &s = std::string())
+    {
+        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        return converter.from_bytes(s);
+    }
+    /**
+    * converts fundamental and enum types to std::string
+    */
+    template <typename T, typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type * = 0>
+    inline std::string ToString(const T val)
+    {
+        return std::to_string(val);
+    }
 
     /**
     * Special overload to avoid converting a std::string to std::string
     */
-    inline const std::string &ToString(const std::string &val)
+    template<>
+    inline std::string ToString<std::string>(const std::string &val)
     {
         return val;
     }
