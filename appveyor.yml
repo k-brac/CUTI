@@ -34,9 +34,7 @@ environment:
 
 #generate the solution using cmake and environment variables
 before_build:
-  mkdir %CUTI_TEST_PROJECT%
-  cd %CUTI_TEST_PROJECT%
-  cmake.exe -G "%CMAKE_GENERATOR%" ../test/%CUTI_TEST_PROJECT%
+  cmake.exe -G "%CMAKE_GENERATOR%" ./test/%CUTI_TEST_PROJECT%
 
 #build using cmake
 build_script:
