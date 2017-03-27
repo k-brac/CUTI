@@ -1,6 +1,6 @@
 #The MIT License (MIT)
 #
-#Copyright (c) 2015 k-brac
+#Copyright (c) 2017 k-brac
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -30,44 +30,37 @@ find_package(CUTI REQUIRED)
 
 #In the case we don't want to use IDE integration, we can use a command line test runner for cppunit
 if(NOT ${USE_CUTI_BACK_END})
-	if(WIN32)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-	elseif(APPLE)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wall -Wextra")
-	endif(WIN32)
 
-	set(TOP_DIR .)
-	set(SRC_DIR ${TOP_DIR}/src)
+    set(TOP_DIR .)
+    set(SRC_DIR ${TOP_DIR}/src)
 
-	project (Cuti)
-	find_package(CppUnit REQUIRED)
-	include_directories(${CPPUNIT_INCLUDE_DIRS})
-	add_executable(Cuti ${SRC_DIR}/CutiMain.cpp)
+    project (Cuti)
+    find_package(CppUnit REQUIRED)
+    include_directories(${CPPUNIT_INCLUDE_DIRS})
+    add_executable(Cuti ${SRC_DIR}/CutiMain.cpp)
 
-	cuti_init_cppunit_libraries(Cuti)
+    cuti_init_cppunit_libraries(Cuti)
 
-	target_link_libraries(Cuti debug ${CUTI_LIBRARIES_DEBUG})
-	target_link_libraries(Cuti optimized ${CUTI_LIBRARIES_RELEASE})
+    target_link_libraries(Cuti debug ${CUTI_LIBRARIES_DEBUG})
+    target_link_libraries(Cuti optimized ${CUTI_LIBRARIES_RELEASE})
 
-	if(WIN32)
-		target_compile_options(Cuti PRIVATE "/W4" "/MP" "/analyze")
-	elseif(APPLE)
-		target_compile_options(Cuti PRIVATE
-			-Weverything
-			-Wno-c++98-compat
-			-std=c++14
-			-Wno-c++98-compat-pedantic
-			-Wno-gnu
-		)
-		set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
-		set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
-	endif(WIN32)
+    #Check that we are as warning clean as possible
+    if(WIN32)
+        target_compile_options(Cuti PRIVATE "/W4" "/MP" "/analyze")
+    elseif(APPLE)
+        target_compile_options(Cuti PRIVATE
+            -Weverything
+            -Wno-c++98-compat
+            -std=c++14
+            -Wno-c++98-compat-pedantic
+            -Wno-gnu
+        )
+        set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
+        set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
+    endif(WIN32)
 
-	set(CUTI_COPY_LIB $<$<CONFIG:Debug>:${CPPUNIT_DYN_LIB_DEBUG}> $<$<NOT:$<CONFIG:Debug>>:${CPPUNIT_DYN_LIB_RELEASE}>)
-
-	add_custom_command(TARGET Cuti POST_BUILD
-					COMMAND ${CMAKE_COMMAND} -E copy
-						${CUTI_COPY_LIB} $<TARGET_FILE_DIR:Cuti>)
+    #copy cppunit dll to current build dir
+    set(CUTI_COPY_LIB $<$<CONFIG:Debug>:${CPPUNIT_DYN_LIB_DEBUG}> $<$<NOT:$<CONFIG:Debug>>:${CPPUNIT_DYN_LIB_RELEASE}>)
+    add_custom_command(TARGET Cuti POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CUTI_COPY_LIB} $<TARGET_FILE_DIR:Cuti>)
 endif()
