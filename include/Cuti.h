@@ -127,123 +127,124 @@ SOFTWARE.
 
 namespace cuti
 {
-//http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
-template <typename, typename T>
-struct has_serialize
-{
-    static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
-};
-template <typename C, typename Ret, typename... Args>
-struct has_serialize<C, Ret(Args...)>
-{
-  private:
-    template <typename T>
-    static constexpr auto check(T *)
-        -> typename std::is_same<
+
+    //http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
+    template <typename, typename T>
+    struct has_serialize
+    {
+        static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
+    };
+    template <typename C, typename Ret, typename... Args>
+    struct has_serialize<C, Ret(Args...)>
+    {
+    private:
+        template <typename T>
+        static constexpr auto check(T *)
+            -> typename std::is_same<
             decltype(std::declval<T>().operator<<(std::declval<Args>()...)),
             Ret>::type;
 
-    template <typename>
-    static constexpr std::false_type check(...);
+        template <typename>
+        static constexpr std::false_type check(...);
 
-    typedef decltype(check<C>(0)) type;
+        typedef decltype(check<C>(0)) type;
 
-  public:
-    static constexpr bool value = type::value;
-};
+    public:
+        static constexpr bool value = type::value;
+    };
 
-template <typename, typename T>
-struct has_static_serialize
-{
-    static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
-};
-template <typename C, typename Ret, typename... Args>
-struct has_static_serialize<C, Ret(Args...)>
-{
-  private:
-    template <typename T>
-    static constexpr auto check(T *)
-        -> typename std::is_same<
+    template <typename, typename T>
+    struct has_static_serialize
+    {
+        static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
+    };
+    template <typename C, typename Ret, typename... Args>
+    struct has_static_serialize<C, Ret(Args...)>
+    {
+    private:
+        template <typename T>
+        static constexpr auto check(T *)
+            -> typename std::is_same<
             decltype(operator<<(std::declval<Args>()...)),
             Ret>::type;
 
-    template <typename>
-    static constexpr std::false_type check(...);
+        template <typename>
+        static constexpr std::false_type check(...);
 
-    typedef decltype(check<C>(0)) type;
+        typedef decltype(check<C>(0)) type;
 
-  public:
-    static constexpr bool value = type::value;
-};
+    public:
+        static constexpr bool value = type::value;
+    };
 
-inline std::string CutiGetMessage(std::string msg = std::string()) { return msg; }
-/**
-* Converts string to wide string
-* @param s The string to be converted
-* @return s as a wide string
-*/
-inline std::wstring CutiGetMessageW(const std::string &s = std::string())
-{
-    static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(s);
-}
-/**
-* converts fundamental and enum types to std::string
-*/
-template <typename T, typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type * = 0>
-inline std::string ToString(const T val)
-{
-    return std::to_string(val);
-}
+    inline std::string CutiGetMessage(std::string msg = std::string()) { return msg; }
+    /**
+    * Converts string to wide string
+    * @param s The string to be converted
+    * @return s as a wide string
+    */
+    inline std::wstring CutiGetMessageW(const std::string &s = std::string())
+    {
+        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        return converter.from_bytes(s);
+    }
+    /**
+    * converts fundamental and enum types to std::string
+    */
+    template <typename T, typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type * = 0>
+    inline std::string ToString(const T val)
+    {
+        return std::to_string(val);
+    }
 
-/**
-* converts object types (class and struct) to std::string
-*/
-template <typename T, typename std::enable_if<
-                          has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
+    /**
+    * converts object types (class and struct) to std::string
+    */
+    template <typename T, typename std::enable_if<
+        has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
 #if !defined(CUTI_USE_MEMBER_SERIALIZE)
-                          && !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
+        && !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
 #endif
-                          >::type * = 0>
-inline std::string ToString(const T &val)
-{
-    std::ostringstream ost;
-    val.operator<<(ost);
-    return ost.str();
-}
+    >::type * = 0>
+        inline std::string ToString(const T &val)
+    {
+        std::ostringstream ost;
+        val.operator<<(ost);
+        return ost.str();
+    }
 
-template <typename T, typename std::enable_if<
-                          has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
+    template <typename T, typename std::enable_if<
+        has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
 #if defined(CUTI_USE_MEMBER_SERIALIZE)
-                          && !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
+        && !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
 #endif
-                          >::type * = 0>
-inline std::string ToString(const T &val)
-{
-    std::ostringstream ost;
-    ost << val;
-    return ost.str();
-}
+    >::type * = 0>
+        inline std::string ToString(const T &val)
+    {
+        std::ostringstream ost;
+        ost << val;
+        return ost.str();
+    }
 
-template <typename T,
-          typename std::enable_if<
-              std::is_class<T>::value &&
-              !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value &&
-              !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value>::type * = 0>
-inline std::string ToString(const T & /*val*/)
-{
-    std::ostringstream ost;
-    ost << typeid(T).name();
-    return ost.str();
-}
+    template <typename T,
+        typename std::enable_if<
+        std::is_class<T>::value &&
+        !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value &&
+        !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value>::type * = 0>
+        inline std::string ToString(const T & /*val*/)
+    {
+        std::ostringstream ost;
+        ost << typeid(T).name();
+        return ost.str();
+    }
 
-/**
-* Special overload to avoid converting a std::string to std::string
-*/
-inline const std::string &ToString(const std::string &val)
-{
-    return val;
-}
+    /**
+    * Special overload to avoid converting a std::string to std::string
+    */
+    inline const std::string &ToString(const std::string &val)
+    {
+        return val;
+    }
 }
 
 /***********************************************************
