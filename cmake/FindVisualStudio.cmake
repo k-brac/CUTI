@@ -22,6 +22,8 @@
 
 cmake_minimum_required(VERSION 2.8)
 
+#Looks for the install directory of the currently used visual studio
+
 set(CUTI_VS_PATH_PREFIX "C:/Program Files (x86)/Microsoft Visual Studio ")
 set(CUTI_VS_PATH_SUFIX "VC/UnitTest")
 

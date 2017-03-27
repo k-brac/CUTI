@@ -57,7 +57,7 @@ if(NOT ${USE_CUTI_BACK_END})
         )
         set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
         set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
+        set_target_properties(Cuti PROPERTIES COMPILE_FLAGS "-g")
     endif(WIN32)
 
     #copy cppunit dll to current build dir
