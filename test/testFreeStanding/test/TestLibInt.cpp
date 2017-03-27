@@ -20,11 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 /**
-* Switch betwenn member and static operator<< for serializing.
+* Switch between member and static operator<< for serializing.
 * Usefull if both are defined
 */
-//#define CUTI_USE_MEMBER_SERIALIZE
+#define CUTI_USE_MEMBER_SERIALIZE
 
 /**
 * Prepend test_ to all function declared using CUTI_TEST in XCode.
