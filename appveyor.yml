@@ -39,3 +39,6 @@ before_build:
 #build using cmake
 build_script:
   cmake.exe --build . --config %CONFIGURATION%
+
+test_script:
+  vstest.console /logger:Appveyor ./%CONFIGURATION%/%CUTI_TEST_PROJECT%.dll /InIsolation /Platform:%PLATFORM%
