@@ -58,16 +58,16 @@ set(TEST_LIB_SRC
 include_directories(${TEST_INCLUDE_DIR})
 
 #creates the test target to be integrated in Visual Studio and XCode
-cuti_creates_test_target(test_compute_lib compute_lib ${TEST_LIB_SRC})
+cuti_creates_test_target(testFreeStanding compute_lib ${TEST_LIB_SRC})
 
 if(WIN32)
     target_compile_options(compute_lib PRIVATE "/W4" "/MP" "/analyze")
-    target_compile_options(test_compute_lib PRIVATE "/W4" "/MP" "/analyze")
+    target_compile_options(testFreeStanding PRIVATE "/W4" "/MP" "/analyze")
     #Definition for windows to enable the generation of a dll and its lib
     target_compile_definitions(compute_lib PRIVATE -DCOMPUTE_EXPORT)
 elseif(APPLE)
     target_compile_options(compute_lib PRIVATE -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic)
-    target_compile_options(test_compute_lib PRIVATE
+    target_compile_options(testFreeStanding PRIVATE
         -Weverything
         -Wno-c++98-compat
         -std=c++14
