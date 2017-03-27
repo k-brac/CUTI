@@ -24,14 +24,12 @@
 /**
 * Mandatory include. Should always be on top
 */
-
-//#define CUTI_CPPUNIT_COMPATABILITY
 #include "Cuti.h"
 
 /**
 * Declare a test class allowing for standalone or integrated test runner
 */
-CUTI_TEST_CLASS(TestTemplate) {
+CUTI_TEST_CLASS(TemplateFreeStanding) {
 private:
     bool val = false;
 public:
@@ -50,13 +48,13 @@ public:
     }
 
     void testSimpleAssert() {
-        CPPUNIT_ASSERT(val);
+        CUTI_ASSERT(val);
     }
-public:
     /**
-    * Test suit declaration and test case registration
-    */
-    CPPUNIT_TEST_SUITE(TestTemplate);
-    CPPUNIT_TEST(testSimpleAssert);
-    CPPUNIT_TEST_SUITE_END();
+     * Test suit declaration and test case registration
+     */
+    CUTI_BEGIN_TESTS_REGISTRATION(TemplateFreeStanding);
+    CUTI_TEST(testSimpleAssert);
+    CUTI_END_TESTS_REGISTRATION();//must be the last statement in the class
 };
+

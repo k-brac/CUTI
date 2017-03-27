@@ -1,6 +1,6 @@
 /*The MIT License (MIT)
 
-Copyright (c) 2015 k-brac
+Copyright (c) 2017 k-brac
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include "Cuti.h"
 #include "ComputeFloat.h"
-#include <stdexcept>
 
-ComputeFloat::ComputeFloat(float val) : mVal(val) {}
+CUTI_TEST_CLASS(TestLibFloat){
 
-float ComputeFloat::add(float val) {
-	return mVal + val;
-}
+public:
 
-float ComputeFloat::divide(float d) {
-	if (d == 0.f)
-		throw std::runtime_error("Divide by 0 is forbiden");
-	return mVal / d;
-}
+	void testFloatAssert() {
+		ComputeFloat c(5.f);
+		CUTI_ASSERT_DOUBLES_EQUAL(1.66f, c.divide(3.f), 0.01f);
+		CUTI_ASSERT_DOUBLES_EQUAL(1.66f, c.divide(3.f), 0.01f, "c.divide should have been equal to 1.6");
+	}
+
+    CUTI_BEGIN_TESTS_REGISTRATION(TestLibFloat);
+    CUTI_TEST(testFloatAssert);
+    CUTI_END_TESTS_REGISTRATION();//must be the last statement in the class
+};

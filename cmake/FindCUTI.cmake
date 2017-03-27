@@ -20,60 +20,35 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
+#minimal version for an acceptable XCode integration
 cmake_minimum_required (VERSION 3.2)
 
+#Options to configure cuti's back end and front end
 IF(WIN32 OR APPLE)
-  #Defaulted to ON for windows and mac
-  option(USE_CUTI_INTEGRATION "Use IDE test integration (Cuti)" ON)
+  #Defaulted to cuti front and back end for windows and mac
+  set(CUTI_FRONT_END "CUTI" CACHE STRING "Select cuti's front end")
+  set(CUTI_BACK_END "CUTI" CACHE STRING "Select cuti's back end")
 ELSE()
-  #Defaulted to OFF for the rest because there is no integration
-  option(USE_CUTI_INTEGRATION "Use IDE test integration (Cuti)" OFF)
+  #Defaulted to cppunit front and back end other platforms
+  set(CUTI_FRONT_END "CPPUNIT" CACHE STRING "Select cuti's front end")
+  set(CUTI_BACK_END "CPPUNIT" CACHE STRING "Select cuti's back end")
 ENDIF(WIN32 OR APPLE)
+
+set_property(CACHE CUTI_FRONT_END PROPERTY STRINGS "CUTI" "CPPUNIT")
+set_property(CACHE CUTI_BACK_END PROPERTY STRINGS "CUTI" "CPPUNIT")
+
+string(COMPARE EQUAL "${CUTI_FRONT_END}" "CUTI" USE_CUTI_FRONT_END)
+string(COMPARE EQUAL "${CUTI_BACK_END}" "CUTI" USE_CUTI_BACK_END)
 
 set(CUTI_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
 set(CUTI_INCLUDE_DIRS ${CUTI_ROOT_DIR}/include)
 
-IF(USE_CUTI_INTEGRATION AND WIN32)
-  find_package(VisualStudio REQUIRED)
-  #Code coverage is only available in the enterprise edition so we default to false
-  option(EXCLUDE_TEST_FROM_COVERAGE "Exclude tests from coverage (Cuti)" OFF)
-  set(CUTI_LIBRARIES_DEBUG ${MSVC_UNIT_TEST_LIB})
-  set(CUTI_LIBRARIES_RELEASE ${MSVC_UNIT_TEST_LIB})
-ELSE()
-  find_package(CppUnit REQUIRED)
-  IF(USE_CUTI_INTEGRATION OR WIN32)
-    set(CUTI_LIBRARIES_DEBUG ${CPPUNIT_LIBRARIES_DEBUG})
-    set(CUTI_LIBRARIES_RELEASE ${CPPUNIT_LIBRARIES_RELEASE})
-  ELSE()
-    set(CUTI_LIBRARIES_DEBUG ${CPPUNIT_DYN_LIB_DEBUG})
-    set(CUTI_LIBRARIES_RELEASE ${CPPUNIT_DYN_LIB_RELEASE})
-  ENDIF()
-ENDIF(USE_CUTI_INTEGRATION AND WIN32)
-
 get_filename_component(CUTI_INCLUDE ${CUTI_ROOT_DIR}/include/Cuti.h ABSOLUTE)
 
-IF(USE_CUTI_INTEGRATION AND APPLE)
+#this is mandatory. Otherwise XCode crashes
+IF(APPLE)
   set(MACOSX_BUNDLE_GUI_IDENTIFIER "$(PRODUCT_BUNDLE_IDENTIFIER)")
-ENDIF(USE_CUTI_INTEGRATION AND APPLE)
-
-function(cuti_init_target_flags target)
-#Set all the flags needed by cuti to the test target
-  IF(USE_CUTI_INTEGRATION AND WIN32)
-    target_compile_definitions(${target} PUBLIC -DCUTI_USES_MSVC_UNIT_BACKEND)
-      IF(EXCLUDE_TEST_FROM_COVERAGE)
-        target_compile_definitions(${target} PUBLIC -DCUTI_EXCLUDE_TEST_FROM_COVERAGE)
-      ENDIF(EXCLUDE_TEST_FROM_COVERAGE)
-    target_compile_definitions(${target} PUBLIC -DCUTI_WARNING_UNIMPLEMENTED)
-  ELSE()
-    target_compile_definitions(${target} PUBLIC -DCUTI_USES_CPPUNIT_BACKEND)
-    target_compile_definitions(${target} PUBLIC -DCPPUNIT_DLL)
-    target_include_directories(${target} PUBLIC ${CPPUNIT_INCLUDE_DIRS})
-  ENDIF(USE_CUTI_INTEGRATION AND WIN32)
-  target_include_directories(${target} PUBLIC ${CUTI_INCLUDE_DIRS})
-  #Enable debug information for xcode
-  set_target_properties (${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
-  set_target_properties (${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
-endfunction(cuti_init_target_flags)
+ENDIF(APPLE)
 
 function(cuti_xctest_add_bundle target testee)
   #creates a test bundle ${target} for the testee target
@@ -125,24 +100,72 @@ function(cuti_xctest_add_bundle target testee)
 endfunction(cuti_xctest_add_bundle)
 
 function(cuti_creates_test_target target testee)
-  #creates a test target for the testee target
-  #uses ${ARGN} as list of source files for the test target
-	if(USE_CUTI_INTEGRATION AND APPLE)
-    #integrate tests to XCode
-		find_package(XCTest REQUIRED)
-		cuti_xctest_add_bundle(${target} ${testee} ${CUTI_SOURCE} ${ARGN} ${CUTI_INCLUDE})
-    target_compile_definitions(${target} PUBLIC -DCUTI_USES_XCTEST_BACKEND)
-    set_source_files_properties(${ARGN} PROPERTIES COMPILE_FLAGS "-x objective-c++")
-	else()
-    if(NOT USE_CUTI_INTEGRATION)
-      #code to automatically declare a cpp unit test plugin
-      get_filename_component(CUTI_PLUGIN_SRC ${CUTI_ROOT_DIR}/src/UnitTestPlugin.cpp ABSOLUTE)      
-    endif(NOT USE_CUTI_INTEGRATION)
+#creates a test target for the testee target
+#uses ${ARGN} as list of source files for the test target
+
+  if(${USE_CUTI_BACK_END})
+    if(MSVC)
+      find_package(VisualStudio REQUIRED)
+      add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE} ${CUTI_PLUGIN_SRC})
+    elseif(APPLE)
+      #integrate tests to XCode
+      find_package(XCTest REQUIRED)
+      cuti_xctest_add_bundle(${target} ${testee} ${CUTI_SOURCE} ${ARGN} ${CUTI_INCLUDE})
+      target_compile_definitions(${target} PUBLIC -DCUTI_USES_XCTEST_BACKEND)
+      set_source_files_properties(${ARGN} PROPERTIES COMPILE_FLAGS "-x objective-c++")
+    else()
+      message(FATAL_ERROR "There is no cuti backend for the selected platform")
+    endif()
+  else()
+    get_filename_component(CUTI_PLUGIN_SRC ${CUTI_ROOT_DIR}/src/UnitTestPlugin.cpp ABSOLUTE)
     add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE} ${CUTI_PLUGIN_SRC})
-    target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
-	endif(USE_CUTI_INTEGRATION AND APPLE)
+    #target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
+    cuti_init_cppunit_libraries(${target})
+  endif()
 
 	target_link_libraries(${target} PRIVATE debug ${CUTI_LIBRARIES_DEBUG} ${testee})
 	target_link_libraries(${target} PRIVATE optimized ${CUTI_LIBRARIES_RELEASE} ${testee})
-  cuti_init_target_flags(${target})
+
+  if(MSVC)
+    target_compile_definitions(${target} PUBLIC -DCUTI_USES_MSVC_UNIT_BACKEND)
+    target_compile_options(${target} PRIVATE "/Zi")
+    set_target_properties(${target} PROPERTIES LINK_FLAGS "/DEBUG:FASTLINK")
+  elseif(APPLE)
+    #Enable debug information for xcode
+    set_target_properties (${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
+    set_target_properties (${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
+    set_target_properties(Cuti PROPERTIES COMPILE_FLAGS "-g")
+  endif()
+
+  target_include_directories(${target} PUBLIC ${CUTI_INCLUDE_DIRS})
+
+  if(${USE_CUTI_BACK_END})
+    if(${USE_CUTI_FRONT_END})
+      target_compile_definitions(${target} PUBLIC -DCUTI_FREE_STANDING)
+    else()
+      target_compile_definitions(${target} PUBLIC -DCUTI_CPPUNIT_COMPATABILITY)
+    endif()
+  else()
+    if(${USE_CUTI_FRONT_END})
+      target_compile_definitions(${target} PUBLIC -DCUTI_UNKNOWN)
+    else()
+      target_compile_definitions(${target} PUBLIC -DCUTI_NO_INTEGRATION)
+    endif()
+  endif()
+
 endfunction(cuti_creates_test_target)
+
+function(cuti_init_cppunit_libraries target)
+    find_package(CppUnit REQUIRED)
+    #code to automatically declare a cpp unit test plugin
+    target_compile_definitions(${target} PUBLIC -DCUTI_USES_CPPUNIT_BACKEND)
+    target_compile_definitions(${target} PUBLIC -DCPPUNIT_DLL)
+    target_include_directories(${target} PUBLIC ${CPPUNIT_INCLUDE_DIRS})
+    if(WIN32)
+      set(CUTI_LIBRARIES_DEBUG ${CPPUNIT_LIBRARIES_DEBUG} PARENT_SCOPE)
+      set(CUTI_LIBRARIES_RELEASE ${CPPUNIT_LIBRARIES_RELEASE} PARENT_SCOPE)
+    else()
+      set(CUTI_LIBRARIES_DEBUG ${CPPUNIT_DYN_LIB_DEBUG} PARENT_SCOPE)
+      set(CUTI_LIBRARIES_RELEASE ${CPPUNIT_DYN_LIB_RELEASE} PARENT_SCOPE)
+    endif()
+endfunction(cuti_init_cppunit_libraries)

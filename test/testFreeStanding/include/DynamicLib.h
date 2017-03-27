@@ -21,17 +21,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "ComputeFloat.h"
-#include <stdexcept>
+#ifndef COMPUTE_DYNAMIC_LIB_H
+#define COMPUTE_DYNAMIC_LIB_H
 
-ComputeFloat::ComputeFloat(float val) : mVal(val) {}
+#ifdef WIN32
+#    ifdef COMPUTE_EXPORT
+#        define LIBRARY_API __declspec(dllexport)
+#    else
+#        define LIBRARY_API __declspec(dllimport)
+#    endif
+#else
+#    define LIBRARY_API
+#endif
 
-float ComputeFloat::add(float val) {
-	return mVal + val;
-}
-
-float ComputeFloat::divide(float d) {
-	if (d == 0.f)
-		throw std::runtime_error("Divide by 0 is forbiden");
-	return mVal / d;
-}
+#endif

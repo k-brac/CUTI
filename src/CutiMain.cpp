@@ -21,22 +21,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "cppunit/extensions/TestFactoryRegistry.h"
+#include <string>
+#include <vector>
+#include <iostream>
+
 #ifdef WIN32
 #pragma warning( push )
 #pragma warning( disable : 4251 )
 #endif
+
+#if __MACH__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpadded"
+#pragma clang diagnostic ignored "-Wweak-vtables"
+#pragma clang diagnostic ignored "-Wextra-semi"
+#pragma clang diagnostic ignored "-Wdocumentation"
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
+#pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
+#define CPPUNIT_STD_NEED_ALLOCATOR 0
+#endif
+
+#include "cppunit/extensions/TestFactoryRegistry.h"
 #include "cppunit/CompilerOutputter.h"
 #include "cppunit/XmlOutputter.h"
-#ifdef WIN32
-#pragma warning( pop )
-#endif
 #include "cppunit/TestResult.h"
 #include "cppunit/TestResultCollector.h"
 #include "cppunit/TestRunner.h"
 #include "cppunit/BriefTestProgressListener.h"
-
 #include "cppunit/plugin/PlugInManager.h"
+
+#if __MACH__
+#pragma clang diagnostic pop
+#endif
+
+#ifdef WIN32
+#pragma warning( pop )
+#endif
 
 
 struct CommandLineParser {
@@ -138,13 +158,14 @@ int main(int argc, char* argv[])
 	try {
         CommandLineParser command;
         command.parseArgs(argc, argv);
-		
 		result = runPlugin(command);
 	}
 	catch (std::exception &e) {
 		std::cerr << std::endl
 			<< "ERROR: " << e.what()
 			<< std::endl;
+
+
 	}
 	return result ? 0 : 1;
 }

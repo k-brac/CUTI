@@ -31,7 +31,7 @@ double ComputeDouble::add(double val) {
 }
 
 double ComputeDouble::divide(double d) {
-	if (d == 0)
+	if (d == 0.)
 		throw std::runtime_error("Divide by 0 is forbiden");
 	return mVal / d;
 }

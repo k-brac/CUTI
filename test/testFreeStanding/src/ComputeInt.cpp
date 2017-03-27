@@ -21,17 +21,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "ComputeFloat.h"
+#include "ComputeInt.h"
 #include <stdexcept>
 
-ComputeFloat::ComputeFloat(float val) : mVal(val) {}
+ComputeInt::ComputeInt(int val) : mVal(val) {}
 
-float ComputeFloat::add(float val) {
+int ComputeInt::add(int val) {
 	return mVal + val;
 }
 
-float ComputeFloat::divide(float d) {
-	if (d == 0.f)
+int ComputeInt::divide(int d) {
+	if (d == 0)
 		throw std::runtime_error("Divide by 0 is forbiden");
 	return mVal / d;
+}
+
+bool ComputeInt::operator==(const ComputeInt & other) const {
+    return mVal == other.mVal;
 }

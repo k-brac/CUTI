@@ -23,6 +23,7 @@ SOFTWARE.
 
 #include "ComputeFloat.h"
 #include <stdexcept>
+#include <cmath>
 
 ComputeFloat::ComputeFloat(float val) : mVal(val) {}
 
@@ -31,7 +32,7 @@ float ComputeFloat::add(float val) {
 }
 
 float ComputeFloat::divide(float d) {
-	if (d == 0.f)
+    if (std::fabs(d) < 0.00000001f)
 		throw std::runtime_error("Divide by 0 is forbiden");
 	return mVal / d;
 }

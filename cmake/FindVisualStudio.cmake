@@ -22,6 +22,8 @@
 
 cmake_minimum_required(VERSION 2.8)
 
+#Looks for the install directory of the currently used visual studio
+
 set(CUTI_VS_PATH_PREFIX "C:/Program Files (x86)/Microsoft Visual Studio ")
 set(CUTI_VS_PATH_SUFIX "VC/UnitTest")
 
@@ -30,4 +32,3 @@ set(MSVC_UNIT_TEST_DIR ${CUTI_VS_PATH_PREFIX}${VS_VER}.0/${CUTI_VS_PATH_SUFIX})
 
 include_directories(${MSVC_UNIT_TEST_DIR}/include)
 link_directories(${MSVC_UNIT_TEST_DIR}/lib/)
-set(MSVC_UNIT_TEST_LIB Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib)

@@ -21,17 +21,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "ComputeFloat.h"
-#include <stdexcept>
+#ifndef CUTI_COMPUTE_INT
+#define CUTI_COMPUTE_INT
 
-ComputeFloat::ComputeFloat(float val) : mVal(val) {}
+#include "DynamicLib.h"
 
-float ComputeFloat::add(float val) {
-	return mVal + val;
-}
+#include <sstream>
 
-float ComputeFloat::divide(float d) {
-	if (d == 0.f)
-		throw std::runtime_error("Divide by 0 is forbiden");
-	return mVal / d;
-}
+class LIBRARY_API ComputeInt
+{
+private:
+	int mVal = 0;
+public:
+	ComputeInt(int val);
+	int add(int val);
+	int divide(int d);
+
+    bool operator==(const ComputeInt & other) const;
+
+    std::ostringstream& operator<<(std::ostringstream& os) const {
+        os << mVal;
+        return os;
+    }
+};
+#endif

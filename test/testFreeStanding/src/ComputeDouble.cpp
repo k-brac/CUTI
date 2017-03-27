@@ -21,17 +21,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "ComputeFloat.h"
+#include "ComputeDouble.h"
 #include <stdexcept>
+#include <cmath>
 
-ComputeFloat::ComputeFloat(float val) : mVal(val) {}
+ComputeDouble::ComputeDouble(double val) : mVal(val) {}
 
-float ComputeFloat::add(float val) {
+double ComputeDouble::add(double val) {
 	return mVal + val;
 }
 
-float ComputeFloat::divide(float d) {
-	if (d == 0.f)
+double ComputeDouble::divide(double d) {
+	if (fabs(d) < 0.00000001)
 		throw std::runtime_error("Divide by 0 is forbiden");
 	return mVal / d;
 }

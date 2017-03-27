@@ -1,6 +1,6 @@
 #The MIT License (MIT)
 #
-#Copyright (c) 2015 k-brac
+#Copyright (c) 2017 k-brac
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -28,14 +28,6 @@ LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/../../cmake)
 
 find_package(CUTI REQUIRED)
 
-if(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-elseif(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wall -Wextra -std=c++14")
-
-endif(WIN32)
-
 #define the resource path
 set(TEST_TOP_DIR .)
 set(TEST_SRC_DIR ${TEST_TOP_DIR}/src)
@@ -43,7 +35,7 @@ set(TEST_INCLUDE_DIR ${TEST_TOP_DIR}/include)
 set(TEST_DIR ${TEST_TOP_DIR}/test)
 
 #create the project we want to test
-project (compute_lib)
+project (FreeStanding)
 include_directories(${TEST_INCLUDE_DIR})
 set(COMPUTE_LIB_SRC
     ${TEST_SRC_DIR}/ComputeInt.cpp
@@ -55,14 +47,12 @@ set(COMPUTE_LIB_INCLUDE ${TEST_INCLUDE_DIR}/ComputeInt.h ${TEST_INCLUDE_DIR}/Com
 
 add_library(compute_lib SHARED ${COMPUTE_LIB_SRC} ${COMPUTE_LIB_INCLUDE})
 
-#create the test project
-project(test_compute_lib)
 #put all the test source files in a variable
-set(TEST_LIB_SRC
+set(TEST_LIB_SRC 
     ${TEST_DIR}/TestLibInt.cpp
     ${TEST_DIR}/TestLibFloat.cpp
     ${TEST_DIR}/TestLibDouble.cpp
-    ${TEST_TOP_DIR}/../TestTemplate.cpp
+    ${TEST_TOP_DIR}/../TemplateFreeStanding.cpp
 )
 
 include_directories(${TEST_INCLUDE_DIR})
@@ -88,3 +78,4 @@ elseif(APPLE)
     set_target_properties (compute_lib PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
 endif(WIN32)
+
