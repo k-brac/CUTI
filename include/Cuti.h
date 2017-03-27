@@ -327,7 +327,10 @@ do                                                                              
 * Private implementation for visual studio integration *
 ********************************************************/
 #if defined(CUTI_USES_MSVC_UNIT_BACKEND)
+#pragma warning(push)
+#pragma warning(disable : 4505)
 #include <CppUnitTest.h>
+#pragma warning(pop)
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
