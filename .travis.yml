@@ -24,15 +24,14 @@ language: cpp
 
 os: osx
 
-compiler: clang
-
 env:
   - CUTI_TEST_PROJECT=testFreeStanding CMAKE_ARGS=-DCUTI_FRONT_END:STRING=CUTI
   - CUTI_TEST_PROJECT=testDynamicLib CMAKE_ARGS=-DCUTI_FRONT_END:STRING=CPPUNIT
 
-matrix:
-  include:
-    - osx_image: xcode8.2
+osx_image:
+  - xcode8.2
+  - xcode7.3
+  - xcode6.4
 
 script:
   - cmake -G Xcode ./test/${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
