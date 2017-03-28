@@ -127,7 +127,7 @@ SOFTWARE.
 
 namespace cuti
 {
-#if !defined(_MSC_VER) || _MSC_VER == 1900
+#if /*!defined(_MSC_VER) ||*/ _MSC_VER == 1900
     //http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
     template <typename, typename T>
     struct has_serialize
@@ -251,8 +251,8 @@ namespace cuti
     /**
     * Special overload to avoid converting a std::string to std::string
     */
-    template<>
-    inline std::string ToString<std::string>(const std::string &val)
+    template <typename T, typename std::enable_if<std::is_same<T, std::string>::value>::type * = 0>
+    inline std::string ToString(const T &val)
     {
         return val;
     }

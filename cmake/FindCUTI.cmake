@@ -136,9 +136,9 @@ function(cuti_creates_test_target target testee)
     endif()
   elseif(APPLE)
     #Enable debug information for xcode
-    set_target_properties (${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
-    set_target_properties (${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
-    set_target_properties(Cuti PROPERTIES COMPILE_FLAGS "-g")
+    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
+    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
+    set_target_properties(${target}  PROPERTIES COMPILE_FLAGS "-g")
   endif()
 
   target_include_directories(${target} PUBLIC ${CUTI_INCLUDE_DIRS})
