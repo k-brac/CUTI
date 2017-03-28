@@ -24,13 +24,32 @@ language: cpp
 
 os: osx
 
-env:
-  - CUTI_TEST_PROJECT=testFreeStanding CMAKE_ARGS=-DCUTI_FRONT_END:STRING=CUTI
-  - CUTI_TEST_PROJECT=testDynamicLib CMAKE_ARGS=-DCUTI_FRONT_END:STRING=CPPUNIT
-  matrix:
-    - osx_image: xcode8.2
-    - osx_image: xcode7.3
-    - osx_image: xcode6.4
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode8.2
+      CUTI_TEST_PROJECT: testFreeStanding
+      CMAKE_ARGS: -DCUTI_FRONT_END:STRING=CUTI
+    - os: osx
+      osx_image: xcode7.3
+      CUTI_TEST_PROJECT: testFreeStanding
+      CMAKE_ARGS: -DCUTI_FRONT_END:STRING=CUTI
+    - os: osx
+      osx_image: xcode6.4
+      CUTI_TEST_PROJECT: testFreeStanding
+      CMAKE_ARGS: -DCUTI_FRONT_END:STRING=CUTI
+    - os: osx
+      osx_image: xcode8.2
+      CUTI_TEST_PROJECT: testDynamicLib
+      CMAKE_ARGS: -DCUTI_FRONT_END:STRING=CPPUNIT
+    - os: osx
+      osx_image: xcode7.3
+      CUTI_TEST_PROJECT: testDynamicLib
+      CMAKE_ARGS: -DCUTI_FRONT_END:STRING=CPPUNIT
+    - os: osx
+      osx_image: xcode6.4
+      CUTI_TEST_PROJECT: testDynamicLib
+      CMAKE_ARGS: -DCUTI_FRONT_END:STRING=CPPUNIT
 
 script:
   - echo ${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
