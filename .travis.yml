@@ -33,5 +33,5 @@ matrix:
     - osx_image: xcode8.2
 
 script:
-  - cmake -G Xcode ./test/$CUTI_TEST_PROJECT $CMAKE_ARGS
+  - cmake -G Xcode ./test/${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake --build . --config Release
