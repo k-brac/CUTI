@@ -22,6 +22,8 @@
 
 language: cpp
 
+os: osx
+
 compiler: clang
 
 env:
