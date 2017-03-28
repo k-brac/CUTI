@@ -127,7 +127,7 @@ SOFTWARE.
 
 namespace cuti
 {
-#if !defined(_MSC_VER) || _MSC_VER > 1800
+#if !defined(_MSC_VER) || _MSC_VER == 1900
     //http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
     template <typename, typename T>
     struct has_serialize
