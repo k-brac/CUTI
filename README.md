@@ -1,5 +1,7 @@
+#appveyor status
 [![Build status](https://ci.appveyor.com/api/projects/status/g8h805xifcsauo9x/branch/master?svg=true)](https://ci.appveyor.com/project/k-brac/cuti/branch/master)
-
+#travis status
+[![Build Status](https://travis-ci.org/k-brac/CUTI.svg?branch=master)](https://travis-ci.org/k-brac/CUTI)
 
 # CUTI
 CUTI stands for C++ Unit Test Integrated
