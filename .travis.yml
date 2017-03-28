@@ -47,4 +47,7 @@ script:
   - echo ${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake -G Xcode ./test/${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake --build . --config Release
-  - xcodebuild -project ${CUTI_TEST_PROJECT}.xcodeproj -scheme DynamicLib -configuration Release test
+  - open ${CUTI_TEST_PROJECT}.xcodeproj
+  - xcodebuild test -project ${CUTI_TEST_PROJECT}.xcodeproj -scheme DynamicLib -configuration Release
+
+#open ${CUTI_TEST_PROJECT}.xcodeproj is a hacky way of generating a scheme for the tests
