@@ -36,3 +36,4 @@ osx_image:
 script:
   - cmake -G Xcode ./test/${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake --build . --config Release
+  - xcodebuild -project ${CUTI_TEST_PROJECT}.xcodeproj -scheme DynamicLib -configuration Release test

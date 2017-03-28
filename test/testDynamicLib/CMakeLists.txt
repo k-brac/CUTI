@@ -43,7 +43,7 @@ set(TEST_INCLUDE_DIR ${TEST_TOP_DIR}/include)
 set(TEST_DIR ${TEST_TOP_DIR}/test)
 
 #create the project we want to test
-project (DynamicLib)
+project (testDynamicLib)
 include_directories(${TEST_INCLUDE_DIR})
 set(DYNAMIC_LIB_SRC
     ${TEST_SRC_DIR}/ComputeInt.cpp
