@@ -43,11 +43,15 @@ matrix:
       osx_image: xcode6.4
       env: CUTI_TEST_PROJECT=testDynamicLib CMAKE_ARGS=-DCUTI_FRONT_END:STRING=CPPUNIT
 
+before_install:
+  - brew update
+  - brew outdated cmake || brew upgrade cmake
+
 script:
   - echo ${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake -G Xcode ./test/${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake --build . --config Release
-  - open ${CUTI_TEST_PROJECT}.xcodeproj
-  - xcodebuild test -project ${CUTI_TEST_PROJECT}.xcodeproj -scheme DynamicLib -configuration Release
+#  - xcodebuild test -project ${CUTI_TEST_PROJECT}.xcodeproj -scheme DynamicLib -configuration Release
 
-#open ${CUTI_TEST_PROJECT}.xcodeproj is a hacky way of generating a scheme for the tests
+#cmake does not generate the project scheme needed for command line testing (works OK from Xcode)
+#waiting for cmake 3.9
