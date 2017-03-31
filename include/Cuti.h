@@ -39,7 +39,17 @@ SOFTWARE.
 /**
 * Declare a test fixture
 */
-#define CUTI_TEST_CLASS(className) IMPL_CUTI_TEST_CLASS(className)
+#if defined(CUTI_USES_XCTEST_BACKEND)
+#define CUTI_TEST_CLASS(className) \
+struct className; \
+static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
+IMPL_CUTI_TEST_CLASS(className)
+#else
+#define CUTI_TEST_CLASS(className) \
+class className; \
+static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
+IMPL_CUTI_TEST_CLASS(className)
+#endif
 
 /**
 * Defines a setup method to run before each test case
@@ -800,7 +810,7 @@ static_assert(std::is_same<className, ::className>::value, "CPPUNIT_TEST_SUITE_R
 #define CUTI_TEST_CLASS(className)                        \
     \
 class className;                                          \
-    \
+static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
 static CPPUNIT_NS::AutoRegisterSuite<className>           \
         CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__); \
     \
