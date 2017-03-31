@@ -143,97 +143,7 @@ IMPL_CUTI_TEST_CLASS(className)
 
 namespace cuti
 {
-#if /*!defined(_MSC_VER) ||*/ _MSC_VER == 1900
-//http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
-template <typename, typename T>
-struct has_serialize
-{
-    static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
-};
-template <typename C, typename Ret, typename... Args>
-struct has_serialize<C, Ret(Args...)>
-{
-  private:
-    template <typename T>
-    static constexpr auto check(T *)
-        -> typename std::is_same<
-            decltype(std::declval<T>().operator<<(std::declval<Args>()...)),
-            Ret>::type;
 
-    template <typename>
-    static constexpr std::false_type check(...);
-
-    typedef decltype(check<C>(0)) type;
-
-  public:
-    static constexpr bool value = type::value;
-};
-
-template <typename, typename T>
-struct has_static_serialize
-{
-    static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
-};
-template <typename C, typename Ret, typename... Args>
-struct has_static_serialize<C, Ret(Args...)>
-{
-  private:
-    template <typename T>
-    static constexpr auto check(T *)
-        -> typename std::is_same<
-            decltype(operator<<(std::declval<Args>()...)),
-            Ret>::type;
-
-    template <typename>
-    static constexpr std::false_type check(...);
-
-    typedef decltype(check<C>(0)) type;
-
-  public:
-    static constexpr bool value = type::value;
-};
-
-/**
-    * converts object types (class and struct) to std::string
-    */
-template <typename T, typename std::enable_if<
-                          has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
-#if !defined(CUTI_USE_MEMBER_SERIALIZE)
-                          && !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
-#endif
-                          >::type * = 0>
-inline std::string ToString(const T &val)
-{
-    std::ostringstream ost;
-    val.operator<<(ost);
-    return ost.str();
-}
-
-template <typename T, typename std::enable_if<
-                          has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
-#if defined(CUTI_USE_MEMBER_SERIALIZE)
-                          && !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
-#endif
-                          >::type * = 0>
-inline std::string ToString(const T &val)
-{
-    std::ostringstream ost;
-    ost << val;
-    return ost.str();
-}
-
-template <typename T,
-          typename std::enable_if<
-              std::is_class<T>::value &&
-              !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value &&
-              !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value>::type * = 0>
-inline std::string ToString(const T & /*val*/)
-{
-    std::ostringstream ost;
-    ost << typeid(T).name();
-    return ost.str();
-}
-#else
 template <typename T, typename std::enable_if<std::is_object<T>::value && !std::is_fundamental<T>::value>::type * = 0>
 inline std::string ToString(const T &val)
 {
@@ -241,8 +151,6 @@ inline std::string ToString(const T &val)
     val.operator<<(ost);
     return ost.str();
 }
-
-#endif
 
 inline std::string CutiGetMessage(std::string msg = std::string())
 {

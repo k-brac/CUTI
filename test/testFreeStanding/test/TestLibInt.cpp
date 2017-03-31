@@ -22,12 +22,6 @@ SOFTWARE.
 */
 
 /**
-* Switch between member and static operator<< for serializing.
-* Usefull if both are defined
-*/
-#define CUTI_USE_MEMBER_SERIALIZE
-
-/**
 * Prepend test_ to all function declared using CUTI_TEST in XCode.
 * Indeed XCode needs the prefix "test" to automatically detect test methods
 */
@@ -62,7 +56,7 @@ public:
 	}
 
 	void assertFailTest() {
-			//CUTI_ASSERT_ASSERTION_FAIL(CUTI_FAIL("This test has failed"));
+		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_FAIL("This test has failed"));
         uint16_t a = 0, b = 0;
         CUTI_ASSERT_EQUAL(a, b);
 	}
