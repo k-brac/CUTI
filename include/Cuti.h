@@ -144,7 +144,7 @@ IMPL_CUTI_TEST_CLASS(className)
 namespace cuti
 {
 
-template <typename T, typename std::enable_if<std::is_object<T>::value && !std::is_fundamental<T>::value>::type * = 0>
+template <typename T>
 inline std::string ToString(const T &val)
 {
     std::ostringstream ost;
@@ -527,12 +527,12 @@ _Pragma("clang diagnostic push")
 
 #define IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssertEqualWithAccuracy(actual, expected, delta, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
 
-#define IMPL_CUTI_DEFAULT_TO_STRING(className) /*\                                     \ \
- inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \ \ \
- { \                                                                                   \ \
-     os << cuti::CutiGetMessage(cuti::ToString(obj)); \                                \ \
-     return os; \                                                                      \ \
- }*/
+#define IMPL_CUTI_DEFAULT_TO_STRING(className) \
+ inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \
+ { \
+     os << cuti::CutiGetMessage(cuti::ToString(obj)); \
+     return os; \
+ }
 
 #elif defined(CUTI_UNKNOWN)
 /***************************************************************************
@@ -617,12 +617,12 @@ class className : public CppUnit::TestFixture
 
 #define IMPL_CUTI_ASSERT_NO_THROW(expression, ...) CPPUNIT_ASSERT_NO_THROW_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), expression)
 
-#define IMPL_CUTI_DEFAULT_TO_STRING(className) /*\                                    \ \
-inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \ \ \
-{ \                                                                                   \ \
-    os << cuti::CutiGetMessage(cuti::ToString(obj)); \                                \ \
-    return os; \                                                                      \ \
-}*/
+#define IMPL_CUTI_DEFAULT_TO_STRING(className) \
+inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \
+{ \
+os << cuti::CutiGetMessage(cuti::ToString(obj)); \
+return os; \
+}
 
 #else
 
