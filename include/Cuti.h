@@ -40,14 +40,20 @@ SOFTWARE.
 * Declare a test fixture
 */
 #if defined(CUTI_USES_XCTEST_BACKEND)
-#define CUTI_TEST_CLASS(className) \
-struct className; \
+#define CUTI_TEST_CLASS(className)                                                                                                \
+    \
+struct className;                                                                                                                 \
+    \
 static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
+    \
 IMPL_CUTI_TEST_CLASS(className)
 #else
-#define CUTI_TEST_CLASS(className) \
-class className; \
+#define CUTI_TEST_CLASS(className)                                                                                                \
+    \
+class className;                                                                                                                  \
+    \
 static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
+    \
 IMPL_CUTI_TEST_CLASS(className)
 #endif
 
@@ -138,134 +144,137 @@ IMPL_CUTI_TEST_CLASS(className)
 namespace cuti
 {
 #if /*!defined(_MSC_VER) ||*/ _MSC_VER == 1900
-    //http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
-    template <typename, typename T>
-    struct has_serialize
-    {
-        static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
-    };
-    template <typename C, typename Ret, typename... Args>
-    struct has_serialize<C, Ret(Args...)>
-    {
-    private:
-        template <typename T>
-        static constexpr auto check(T *)
-            -> typename std::is_same<
+//http://stackoverflow.com/questions/87372/check-if-a-class-has-a-member-function-of-a-given-signature
+template <typename, typename T>
+struct has_serialize
+{
+    static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
+};
+template <typename C, typename Ret, typename... Args>
+struct has_serialize<C, Ret(Args...)>
+{
+  private:
+    template <typename T>
+    static constexpr auto check(T *)
+        -> typename std::is_same<
             decltype(std::declval<T>().operator<<(std::declval<Args>()...)),
             Ret>::type;
 
-        template <typename>
-        static constexpr std::false_type check(...);
+    template <typename>
+    static constexpr std::false_type check(...);
 
-        typedef decltype(check<C>(0)) type;
+    typedef decltype(check<C>(0)) type;
 
-    public:
-        static constexpr bool value = type::value;
-    };
+  public:
+    static constexpr bool value = type::value;
+};
 
-    template <typename, typename T>
-    struct has_static_serialize
-    {
-        static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
-    };
-    template <typename C, typename Ret, typename... Args>
-    struct has_static_serialize<C, Ret(Args...)>
-    {
-    private:
-        template <typename T>
-        static constexpr auto check(T *)
-            -> typename std::is_same<
+template <typename, typename T>
+struct has_static_serialize
+{
+    static_assert(std::integral_constant<T, false>::value, "Second template parameter needs to be of function type.");
+};
+template <typename C, typename Ret, typename... Args>
+struct has_static_serialize<C, Ret(Args...)>
+{
+  private:
+    template <typename T>
+    static constexpr auto check(T *)
+        -> typename std::is_same<
             decltype(operator<<(std::declval<Args>()...)),
             Ret>::type;
 
-        template <typename>
-        static constexpr std::false_type check(...);
+    template <typename>
+    static constexpr std::false_type check(...);
 
-        typedef decltype(check<C>(0)) type;
+    typedef decltype(check<C>(0)) type;
 
-    public:
-        static constexpr bool value = type::value;
-    };
+  public:
+    static constexpr bool value = type::value;
+};
 
-    /**
+/**
     * converts object types (class and struct) to std::string
     */
-    template <typename T, typename std::enable_if<
-        has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
+template <typename T, typename std::enable_if<
+                          has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
 #if !defined(CUTI_USE_MEMBER_SERIALIZE)
-        && !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
+                          && !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
 #endif
-    >::type * = 0>
-    inline std::string ToString(const T &val)
-    {
-        std::ostringstream ost;
-        val.operator<<(ost);
-        return ost.str();
-    }
+                          >::type * = 0>
+inline std::string ToString(const T &val)
+{
+    std::ostringstream ost;
+    val.operator<<(ost);
+    return ost.str();
+}
 
-    template <typename T, typename std::enable_if<
-        has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
+template <typename T, typename std::enable_if<
+                          has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value
 #if defined(CUTI_USE_MEMBER_SERIALIZE)
-        && !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
+                          && !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value
 #endif
-    >::type * = 0>
-        inline std::string ToString(const T &val)
-    {
-        std::ostringstream ost;
-        ost << val;
-        return ost.str();
-    }
+                          >::type * = 0>
+inline std::string ToString(const T &val)
+{
+    std::ostringstream ost;
+    ost << val;
+    return ost.str();
+}
 
-    template <typename T,
-        typename std::enable_if<
-        std::is_class<T>::value &&
-        !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value &&
-        !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value>::type * = 0>
-        inline std::string ToString(const T & /*val*/)
-    {
-        std::ostringstream ost;
-        ost << typeid(T).name();
-        return ost.str();
-    }
+template <typename T,
+          typename std::enable_if<
+              std::is_class<T>::value &&
+              !has_serialize<T, std::ostringstream &(std::ostringstream &)>::value &&
+              !has_static_serialize<T, std::ostringstream &(std::ostringstream &, const T &)>::value>::type * = 0>
+inline std::string ToString(const T & /*val*/)
+{
+    std::ostringstream ost;
+    ost << typeid(T).name();
+    return ost.str();
+}
 #else
-    template <typename T, typename std::enable_if<std::is_object<T>::value && !std::is_fundamental<T>::value>::type * = 0>
-    inline std::string ToString(const T &val)
-    {
-        std::ostringstream ost;
-        val.operator<<(ost);
-        return ost.str();
-    }
+template <typename T, typename std::enable_if<std::is_object<T>::value && !std::is_fundamental<T>::value>::type * = 0>
+inline std::string ToString(const T &val)
+{
+    std::ostringstream ost;
+    val.operator<<(ost);
+    return ost.str();
+}
 
 #endif
 
-    inline std::string CutiGetMessage(std::string msg = std::string()) { return msg; }
-    /**
+inline std::string CutiGetMessage(std::string msg = std::string())
+{
+    return msg;
+}
+/**
     * Converts string to wide string
     * @param s The string to be converted
     * @return s as a wide string
     */
-    inline std::wstring CutiGetMessageW(const std::string &s = std::string())
-    {
-        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        return converter.from_bytes(s);
-    }
-    /**
+inline std::wstring CutiGetMessageW(const std::string &s = std::string())
+{
+    static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(s);
+}
+/**
     * converts fundamental and enum types to std::string
     */
-    template <typename T, typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type * = 0>
-    inline std::string ToString(const T val)
-    {
-        return std::to_string(val);
-    }
+template <typename T, typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type * = 0>
+inline std::string ToString(const T val)
+{
+    return std::to_string(val);
+}
 
-    /**
+/**
     * Special overload to avoid converting a std::string to std::string
     */
-    template <typename T, typename std::enable_if<std::is_same<T, std::string>::value>::type * = 0>
-    inline std::string ToString(const T &val)
-    {
-        return val;
-    }
+template <typename T, typename std::enable_if<std::is_same<T, std::string>::value>::type * = 0>
+inline std::string ToString(const T &val)
+{
+    return val;
+}
 }
 
 /***********************************************************
@@ -610,11 +619,11 @@ _Pragma("clang diagnostic push")
 
 #define IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssertEqualWithAccuracy(actual, expected, delta, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
 
-#define IMPL_CUTI_DEFAULT_TO_STRING(className) /*\                                     \
- inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \ \
- { \                                                                                   \
-     os << cuti::CutiGetMessage(cuti::ToString(obj)); \                                \
-     return os; \                                                                      \
+#define IMPL_CUTI_DEFAULT_TO_STRING(className) /*\                                     \ \
+ inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \ \ \
+ { \                                                                                   \ \
+     os << cuti::CutiGetMessage(cuti::ToString(obj)); \                                \ \
+     return os; \                                                                      \ \
  }*/
 
 #elif defined(CUTI_UNKNOWN)
@@ -700,11 +709,11 @@ class className : public CppUnit::TestFixture
 
 #define IMPL_CUTI_ASSERT_NO_THROW(expression, ...) CPPUNIT_ASSERT_NO_THROW_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), expression)
 
-#define IMPL_CUTI_DEFAULT_TO_STRING(className) /*\                                    \
-inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \ \
-{ \                                                                                   \
-    os << cuti::CutiGetMessage(cuti::ToString(obj)); \                                \
-    return os; \                                                                      \
+#define IMPL_CUTI_DEFAULT_TO_STRING(className) /*\                                    \ \
+inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \ \ \
+{ \                                                                                   \ \
+    os << cuti::CutiGetMessage(cuti::ToString(obj)); \                                \ \
+    return os; \                                                                      \ \
 }*/
 
 #else
@@ -807,12 +816,14 @@ static_assert(std::is_same<className, ::className>::value, "CPPUNIT_TEST_SUITE_R
 /**
 * Declare a test fixture
 */
-#define CUTI_TEST_CLASS(className)                        \
+#define CUTI_TEST_CLASS(className)                                                                                                \
     \
-class className;                                          \
+class className;                                                                                                                  \
+    \
 static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
-static CPPUNIT_NS::AutoRegisterSuite<className>           \
-        CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__); \
+    \
+static CPPUNIT_NS::AutoRegisterSuite<className>                                                                                   \
+        CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__);                                                                         \
     \
 class className : public CppUnit::TestFixture
 /**
