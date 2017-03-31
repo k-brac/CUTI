@@ -144,7 +144,7 @@ IMPL_CUTI_TEST_CLASS(className)
 namespace cuti
 {
 
-template <typename T, typename = std::enable_if<std::is_class<T>::value>::type>
+template <typename T, typename = typename std::enable_if<std::is_class<T>::value>::type>
 inline std::string ToString(const T &val)
 {
     std::ostringstream ost;
@@ -169,7 +169,7 @@ inline std::wstring CutiGetMessageW(const std::string &s = std::string())
 /**
     * converts fundamental and enum types to std::string
     */
-template <typename T, typename = std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type>
+template <typename T, typename = typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type>
 inline std::string ToString(const T val)
 {
     return std::to_string(val);
