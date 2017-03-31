@@ -144,7 +144,7 @@ IMPL_CUTI_TEST_CLASS(className)
 namespace cuti
 {
 
-template <typename T, typename std::enable_if<std::is_class<T>::value>::type * = 0>
+template <typename T, typename = typename std::enable_if<std::is_class<T>::value>::type>
 inline std::string ToString(const T &val)
 {
     std::ostringstream ost;
