@@ -67,5 +67,5 @@ build_script:
 
 #run tests using vstest.console
 test_script:
-  vstest.console /logger:Appveyor ./%CONFIGURATION%/testCppunit.dll /InIsolation /Platform:%PLATFORM%
-  vstest.console /logger:Appveyor ./%CONFIGURATION%/testCuti.dll /InIsolation /Platform:%PLATFORM%
+  - vstest.console /logger:Appveyor ./%CONFIGURATION%/testCppunit.dll /InIsolation /Platform:%PLATFORM%
+  - vstest.console /logger:Appveyor ./%CONFIGURATION%/testCuti.dll /InIsolation /Platform:%PLATFORM%
