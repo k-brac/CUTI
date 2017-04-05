@@ -40,7 +40,8 @@ endif(WIN32)
 set(TEST_TOP_DIR .)
 set(TEST_SRC_DIR ${TEST_TOP_DIR}/src)
 set(TEST_INCLUDE_DIR ${TEST_TOP_DIR}/include)
-set(TEST_DIR ${TEST_TOP_DIR}/test)
+set(TEST_CPPUNIT_DIR ${TEST_TOP_DIR}/testCppunitFrontEnd)
+set(TEST_CUTI_DIR ${TEST_TOP_DIR}/testCutiFrontEnd)
 
 #create the project we want to test
 project (testDynamicLib)
@@ -51,31 +52,55 @@ set(DYNAMIC_LIB_SRC
     ${TEST_SRC_DIR}/ComputeFloat.cpp
 )
 
-set(DYNAMIC_LIB_INCLUDE ${TEST_INCLUDE_DIR}/ComputeInt.h ${TEST_INCLUDE_DIR}/ComputeDouble.h ${TEST_INCLUDE_DIR}/ComputeFloat.h ${TEST_INCLUDE_DIR}/DynamicLib.h)
+set(DYNAMIC_LIB_INCLUDE
+    ${TEST_INCLUDE_DIR}/ComputeInt.h
+    ${TEST_INCLUDE_DIR}/ComputeDouble.h
+    ${TEST_INCLUDE_DIR}/ComputeFloat.h
+    ${TEST_INCLUDE_DIR}/DynamicLib.h
+)
 
 add_library(DynamicLib SHARED ${DYNAMIC_LIB_SRC} ${DYNAMIC_LIB_INCLUDE})
 
 #put all the test source files in a variable
-set(TEST_LIB_SRC
-    ${TEST_DIR}/TestLibInt.cpp
-    ${TEST_DIR}/TestLibFloat.cpp
-    ${TEST_DIR}/TestLibDouble.cpp
+set(TEST_CPPUNIT_LIB_SRC
+    ${TEST_CPPUNIT_DIR}/TestLibInt.cpp
+    ${TEST_CPPUNIT_DIR}/TestLibFloat.cpp
+    ${TEST_CPPUNIT_DIR}/TestLibDouble.cpp
     ${TEST_TOP_DIR}/../TestTemplate.cpp
+)
+
+set(TEST_CUTI_LIB_SRC 
+    ${TEST_CUTI_DIR}/TestLibInt.cpp
+    ${TEST_CUTI_DIR}/TestLibFloat.cpp
+    ${TEST_CUTI_DIR}/TestLibDouble.cpp
+    ${TEST_TOP_DIR}/../TemplateFreeStanding.cpp
 )
 
 include_directories(${TEST_INCLUDE_DIR})
 
 #creates the test target to be integrated in Visual Studio and XCode
-cuti_creates_test_target(testDynamicLib DynamicLib ${TEST_LIB_SRC})
+set(USE_CUTI_FRONT_END FALSE)#Hardcode our choice of frontend
+cuti_creates_test_target(testCppunit DynamicLib ${TEST_CPPUNIT_LIB_SRC})
+set(USE_CUTI_FRONT_END TRUE)#Hardcode our choice of frontend
+cuti_creates_test_target(testCuti DynamicLib ${TEST_CUTI_LIB_SRC})
 
+#Various compilation configurations
 if(WIN32)
     target_compile_options(DynamicLib PRIVATE "/W4" "/MP" "/analyze")
-    target_compile_options(testDynamicLib PRIVATE "/W4" "/MP" "/analyze")
+    target_compile_options(testCppunit PRIVATE "/W4" "/MP" "/analyze")
+    target_compile_options(testCuti PRIVATE "/W4" "/MP" "/analyze")
     #Definition for windows to enable the generation of a dll and its lib
     target_compile_definitions(DynamicLib PRIVATE -DCOMPUTE_EXPORT)
 elseif(APPLE)
     target_compile_options(DynamicLib PRIVATE -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic)
-    target_compile_options(testDynamicLib PRIVATE
+    target_compile_options(testCppunit PRIVATE
+        -Weverything
+        -Wno-c++98-compat
+        -std=c++14
+        -Wno-c++98-compat-pedantic
+        -Wno-gnu
+    )
+    target_compile_options(testCuti PRIVATE
         -Weverything
         -Wno-c++98-compat
         -std=c++14
