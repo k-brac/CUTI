@@ -5,19 +5,7 @@
 CUTI stands for C++ Unit Test Integrated
 
 ## What?
-CUTI is a wrapper on top of the CPPUNIT testing framework allowing you to integrate your C++ unit tests in your favorite IDE like Microsoft Visual Studio and XCode.
-
-## How?
-CUTI uses CMake to setup its include and library path.
-
-### Visual Studio
-CUTI overrides CPPUNIT macros, and adds a few, to use Visual Studio's cppunit test framework instead of CPPUNIT.
-
-### XCode
-CUTI uses the CPPUNIT test framework with a special test runner to dynamically register your test in XCode.
-
-### Others
-CUTI uses CPPUNIT framework as backend.
+CUTI allows you to easily integrate your C++ unit tests into Visual Studio and Xcode. It is also possible to use cppunit's macros and test runner through compatibility configuration.
 
 ## Why?
 * You can run your tests from within your IDE
@@ -27,30 +15,45 @@ CUTI uses CPPUNIT framework as backend.
 * You are more likely to run your tests
 
 ## Prerequisite
-* Use CPPUNIT as a shared library
-* Use CPPUNIT plugin feature
-* Use CPPUNIT macros
-* Use CMake
+* Use CMake >= 3.2
 * The code to test must be compiled as a library (static or shared)
-* The test code must be compiled as a library (static or shared)
 
-## Setup
+## How?
+* Add CUTI's cmake directory to your CMAKE_MODULE_PATH
+** LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/../../cmake)
+* Import CUTI in your CMakeLists.txt
+** find_package(CUTI REQUIRED)
+* Create a test target
+** cuti_creates_test_target(test_project_name project_to_test list_of_test_files_cpp)
+* That's it! Take a look at test/testDynamicLib/CMakeLists.txt for an example
+
+### CMake arguments
+By default, CUTI's creates atest target for its front end and Xcode or Visual Studio unit test framework. This behaviour can be customized for compatibility.
+* CUTI_FRONT_END can be set to CUTI or CPPUNIT
+** CUTI: use macros starting by CUTI_
+** CPPUNIT: allow to use macros starting by CPPUNIT_. Usefull if your codebase was using cppunit and you don't want to re-write everything.
+* CUTI_BACK_END can be set to CUTI or CPPUNIT
+** CUTI: use Xcode or Visual Studio unit test framework as test runner
+** CPPUNIT: use cppunit as test runner. Usefull if you want to run your unit tests on a platform not supported by Xcode and Visual Studio
+
+## Example project
 There is a toy project in the test directory to show how to use Cuti.
 
-### CMake
-The minimum version of CMake compatible is 3.2
-In your CMAKE_MODULE_PATH you can add a file named findCUTI.cmake that points to your local Cuti directory and includes Cuti.cmake frome the cmake directory.
-Then in your test project you need to call :
+### Templates
+Templates are available in the test directory
+* TemplateFreeStanding.cpp : Shows how to write a test class when using CUTI_FRONT_END=CUTI
+* TestTemplate.cpp : Shows how to write a test class when using CUTI_FRONT_END=CPPUNIT
 
-cuti_creates_test_target(test_compute_lib compute_lib ${TEST_LIB_SRC})
+## Contributing
+Issues and merge requests are welcome !
 
-* test_compute_lib : your test project declared this way : project(test_compute_lib)
-* compute_lib : your project to test declared this way : project(compute_lib)
-* ${TEST_LIB_SRC} : the list of your tests' source files
+## FAQ:
 
-### Test source files
-* Replace all the CPPUNIT includes by "Cuti.h"
-* Declare your test class using CUTI_TEST_CLASS(TestClass) instead of TestClass : public CppUnit::TestFixture
+### Visual Studio
 
-### Compile and run your tests
-There is nothing else !
+* "Message: A 64-bit test cannot run in a 32-bit process. Specify platform as X64 to force test run in X64 mode on X64 machine."
+** By default Visual Studio tries to run the unit tests target with a 32bit test runner. But if you are compiling in 64 bits this will fail. To fix this go to : Test -> Test Settings -> Default Processor Architecture -> X64
+
+* Xcode
+** No test case in my test suite
+Xcode only show test cases starting by "test". To fix either rename you test case or define CUTI_PREPEND_TEST. Take a look at test/testCutiFrontEnd/TestLibInt.cpp for an example.
