@@ -7,6 +7,16 @@ CUTI stands for C++ Unit Test Integrated
 ## What?
 CUTI allows you to easily integrate your C++ unit tests into Visual Studio and Xcode. It is also possible to use cppunit's macros and test runner through compatibility configuration.
 
+Works for:
+* Visual Studio:
+  * 2013
+  * 2015
+  * 2017
+* Xcode:
+  * 6.4
+  * 7.3
+  * 8.2
+
 ## Why?
 * You can run your tests from within your IDE
 * You have visual feedback when running your tests
