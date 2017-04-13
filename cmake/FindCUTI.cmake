@@ -107,6 +107,7 @@ function(cuti_creates_test_target target testee)
     if(MSVC)
       find_package(VisualStudio REQUIRED)
       add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE} ${CUTI_PLUGIN_SRC})
+      target_include_directories(${target} PRIVATE ${MSVC_UNIT_TEST_DIR}/include)
     elseif(APPLE)
       #integrate tests to XCode
       find_package(XCTest REQUIRED)

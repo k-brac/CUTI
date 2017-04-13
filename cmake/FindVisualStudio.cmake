@@ -30,5 +30,4 @@ set(CUTI_VS_PATH_SUFIX "VC/UnitTest")
 string(SUBSTRING ${CMAKE_GENERATOR} 14 2 VS_VER)
 set(MSVC_UNIT_TEST_DIR ${CUTI_VS_PATH_PREFIX}${VS_VER}.0/${CUTI_VS_PATH_SUFIX})
 
-include_directories(${MSVC_UNIT_TEST_DIR}/include)
 link_directories(${MSVC_UNIT_TEST_DIR}/lib/)
