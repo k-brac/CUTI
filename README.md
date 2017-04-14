@@ -17,7 +17,7 @@ Visual Studio | Xcode
 ## Why?
 * You can run your tests from within your IDE
 * You have visual feedback when running your tests
-* It is easier to use your IDE tools with your tests like code coverage, profiling, ...
+* It is easier to use your IDE tools with your tests like code coverage, profiling,...
 * It is easier to debug your code
 * You are more likely to run your tests
 
@@ -41,13 +41,13 @@ cuti_creates_test_target(test_project_name project_to_test list_of_test_files_cp
 * That's it! Take a look at [./test/testDynamicLib/CMakeLists.txt](./test/testDynamicLib/CMakeLists.txt) for an example
 
 ### CMake arguments
-By default, CUTI's creates a test target for its front end and Xcode or Visual Studio unit test framework. This behaviour can be customized for compatibility.
+By default, CUTI's creates a test target for its front end and Xcode or Visual Studio unit test framework. This behaviur can be customized for compatibility.
 * CUTI_FRONT_END can be set to CUTI or CPPUNIT
   * CUTI: use macros starting by CUTI_
-  * CPPUNIT: allow to use macros starting by CPPUNIT_. Usefull if your codebase was using cppunit and you don't want to re-write everything.
+  * CPPUNIT: allow to use macros starting by CPPUNIT_. Useful if your codebase was using cppunit and you don't want to re-write everything.
 * CUTI_BACK_END can be set to CUTI or CPPUNIT
   * CUTI: use Xcode or Visual Studio unit test framework as test runner
-  * CPPUNIT: use cppunit as test runner. Usefull if you want to run your unit tests on a platform not supported by Xcode and Visual Studio.
+  * CPPUNIT: use cppunit as test runner. Useful if you want to run your unit tests on a platform not supported by Xcode and Visual Studio.
 
 ## Example project
 [There is a toy project in the test directory to show how to use Cuti.](./test/testDynamicLib/)
