@@ -28,7 +28,7 @@ Visual Studio | Xcode
 ## How?
 * Add CUTI's cmake directory to your CMAKE_MODULE_PATH
 ```cmake  
-LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/../../cmake)
+LIST(APPEND CMAKE_MODULE_PATH ${PATH_TO_CUTI_ROOT_DIR}/cmake)
 ```
 * Import CUTI in your CMakeLists.txt
 ```cmake
@@ -41,7 +41,7 @@ cuti_creates_test_target(test_project_name project_to_test list_of_test_files_cp
 * That's it! Take a look at [./test/testDynamicLib/CMakeLists.txt](./test/testDynamicLib/CMakeLists.txt) for an example
 
 ### CMake arguments
-By default, CUTI's creates a test target for its front end and Xcode or Visual Studio unit test framework. This behaviur can be customized for compatibility.
+By default, CUTI's creates a test target for its front end and Xcode or Visual Studio unit test framework. This behavior can be customized for compatibility.
 * CUTI_FRONT_END can be set to CUTI or CPPUNIT
   * CUTI: use macros starting by CUTI_
   * CPPUNIT: allow to use macros starting by CPPUNIT_. Useful if your codebase was using cppunit and you don't want to re-write everything.
@@ -65,7 +65,7 @@ Issues and merge requests are welcome !
 ### Visual Studio
 
 * "Message: A 64-bit test cannot run in a 32-bit process. Specify platform as X64 to force test run in X64 mode on X64 machine."
-  * By default Visual Studio tries to run the unit tests target with a 32 bits test runner. But if you are compiling in 64 bits this will fail. To fix this go to : `Test -> Test Settings -> Default Processor Architecture -> X64`
+  * By default Visual Studio tries to run the unit tests target with a 32 bits test runner. But if you are compiling in 64 bits this will fail. To fix this go to: `Test -> Test Settings -> Default Processor Architecture -> X64`
 
 ### Xcode
 * No test case in my test suite
