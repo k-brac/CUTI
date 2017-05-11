@@ -26,7 +26,7 @@ SOFTWARE.
 #undef CUTI_PREPEND_TEST
 #include "ComputeInt.h"
 
-CUTI_TEST_CLASS(TestLibInt){
+TEST_CLASS(TestLibInt){
 public:
 
 	void simpleAssertTest() {
@@ -39,14 +39,12 @@ public:
 		ComputeInt c(1);
 		CPPUNIT_ASSERT_THROW(c.divide(0), std::runtime_error);
 		CPPUNIT_ASSERT_THROW_MESSAGE("Tried to divide by 0", c.divide(0), std::runtime_error);
-		//CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_THROW(c.divide(0), std::logic_error));
 	}
 	
 	void assertNoThrowTest() {
 		ComputeInt c(1);
 		CPPUNIT_ASSERT_NO_THROW(c.divide(1));
 		CPPUNIT_ASSERT_NO_THROW_MESSAGE("Should not have thrown", c.divide(1));
-		//CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_NO_THROW(c.divide(0)));
 	}
 
 	void assertFailTest() {
@@ -55,27 +53,22 @@ public:
 
 	void assertLessTest() {
 		ComputeInt c(5);
-		//CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_LESS(10, c.add(5)));
 		CPPUNIT_ASSERT_LESS(10, c.add(1));
 		CPPUNIT_ASSERT_LESSEQUAL(10, c.add(5));
 		CPPUNIT_ASSERT_LESSEQUAL(10, c.add(1));
-		//CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_LESSEQUAL(10, c.add(6)));
 	}
 
 	void assertGreaterTest() {
 		ComputeInt c(5);
-		//CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_GREATER(11, c.add(5)));
 		CPPUNIT_ASSERT_GREATER(1, c.add(1));
 		CPPUNIT_ASSERT_GREATEREQUAL(10, c.add(5));
 		CPPUNIT_ASSERT_GREATEREQUAL(10, c.add(6));
-		//CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_GREATEREQUAL(10, c.add(1)));
 	}
 
 	void assertEqual() {
 		ComputeInt c(5);
 		CPPUNIT_ASSERT_EQUAL_MESSAGE("Should be equal", 5, c.add(0));
 		CPPUNIT_ASSERT_EQUAL(5, c.add(0));
-		//CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_EQUAL(10, c.add(1)));
 	}
 
     CPPUNIT_TEST_SUITE(TestLibInt);
@@ -88,5 +81,3 @@ public:
     CPPUNIT_TEST(assertEqual);
     CPPUNIT_TEST_SUITE_END();
 };
-//Not needed anymore !
-//CPPUNIT_TEST_SUITE_REGISTRATION(TestLibInt);

@@ -29,7 +29,7 @@
 /**
 * Declare a test class allowing for standalone or integrated test runner
 */
-CUTI_TEST_CLASS(TemplateFreeStanding) {
+TEST_CLASS(TemplateFreeStanding) {
 private:
     bool val = false;
 public:

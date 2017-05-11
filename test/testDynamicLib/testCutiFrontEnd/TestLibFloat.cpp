@@ -24,7 +24,7 @@ SOFTWARE.
 #include "Cuti.h"
 #include "ComputeFloat.h"
 
-CUTI_TEST_CLASS(TestLibFloat){
+TEST_CLASS(TestLibFloat){
 
 public:
 

@@ -24,7 +24,7 @@ SOFTWARE.
 #include "Cuti.h"
 #include "ComputeDouble.h"
 
-CUTI_TEST_CLASS(TestLibDouble) {
+TEST_CLASS(TestLibDouble) {
 public:
 
 	void testDoubleAssert() {

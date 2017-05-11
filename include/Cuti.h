@@ -36,6 +36,16 @@ SOFTWARE.
 #include <sstream>
 #include <codecvt>
 
+#if defined(CUTI_USES_MSVC_UNIT_BACKEND)
+#pragma warning(push)
+#pragma warning(disable : 4505)
+#include <CppUnitTest.h>
+#undef TEST_CLASS
+#pragma warning(pop)
+#endif
+
+#if defined(CUTI_USE_LONG_MACRO_NAME)
+
 /**
 * Declare a test fixture
 */
@@ -57,7 +67,6 @@ static_assert(std::is_same<className, ::className>::value, "Test class " #classN
 IMPL_CUTI_TEST_CLASS(className)
 #endif
 
-#if defined(CUTI_USE_LONG_MACRO_NAME)
 /**
 * Defines a setup method to run before each test case
 */
@@ -139,6 +148,27 @@ IMPL_CUTI_TEST_CLASS(className)
 #define CUTI_ASSERT_NO_THROW(expression, ...) IMPL_CUTI_ASSERT_NO_THROW(expression, __VA_ARGS__)
 
 #else
+
+/**
+* Declare a test fixture
+*/
+#if defined(CUTI_USES_XCTEST_BACKEND)
+#define TEST_CLASS(className)                                                                                                \
+    \
+struct className;                                                                                                                 \
+    \
+static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
+    \
+IMPL_CUTI_TEST_CLASS(className)
+#else
+#define TEST_CLASS(className)                                                                                                \
+    \
+class className;                                                                                                                  \
+    \
+static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
+    \
+IMPL_CUTI_TEST_CLASS(className)
+#endif
 
 /**
 * Defines a setup method to run before each test case
@@ -337,14 +367,10 @@ do                                                                              
 * Private implementation for visual studio integration *
 ********************************************************/
 #if defined(CUTI_USES_MSVC_UNIT_BACKEND)
-#pragma warning(push)
-#pragma warning(disable : 4505)
-#include <CppUnitTest.h>
-#pragma warning(pop)
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#define IMPL_CUTI_TEST_CLASS(className) TEST_CLASS(className)
+#define IMPL_CUTI_TEST_CLASS(className) ONLY_USED_AT_NAMESPACE_SCOPE class className : public ::Microsoft::VisualStudio::CppUnitTestFramework::TestClass<className>
 
 #define IMPL_CUTI_SET_UP() TEST_METHOD_INITIALIZE(setUp)
 

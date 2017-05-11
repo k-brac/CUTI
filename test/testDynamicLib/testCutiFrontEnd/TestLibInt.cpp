@@ -30,7 +30,7 @@ SOFTWARE.
 #undef CUTI_PREPEND_TEST
 #include "ComputeInt.h"
 
-CUTI_TEST_CLASS(TestLibInt) {
+TEST_CLASS(TestLibInt) {
 public:
     void simpleAssertTest() {
         ComputeInt c(5);
