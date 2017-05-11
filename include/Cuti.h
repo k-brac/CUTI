@@ -463,12 +463,12 @@ struct className : public cuti::CutiBaseTestCase
 /**
 * Defines a setup method to run before each test case
 */
-#define IMPL_CUTI_SET_UP() virtual void setUp() override final
+#define IMPL_CUTI_SET_UP() void setUp() final
 
 /**
 * Defines a tear down method to run after each test case
 */
-#define IMPL_CUTI_TEAR_DOWN() virtual void tearDown() override final
+#define IMPL_CUTI_TEAR_DOWN() void tearDown() final
 
 #if defined(CUTI_PREPEND_TEST)
 /**
@@ -647,9 +647,9 @@ static CPPUNIT_NS::AutoRegisterSuite<className>           \
     \
 class className : public CppUnit::TestFixture
 
-#define IMPL_CUTI_SET_UP() virtual void setUp() override final
+#define IMPL_CUTI_SET_UP() void setUp() final
 
-#define IMPL_CUTI_TEAR_DOWN() virtual void tearDown() override final
+#define IMPL_CUTI_TEAR_DOWN() void tearDown() final
 
 #define IMPL_CUTI_TEST(methodName) CPPUNIT_TEST(methodName)
 
