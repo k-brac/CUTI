@@ -790,14 +790,28 @@ static CPPUNIT_NS::AutoRegisterSuite<className>                                 
         CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__);                                                                         \
     \
 class className : public CppUnit::TestFixture
+
+#if defined(CUTI_USE_LONG_MACRO_NAME)
 /**
 * Function initializing a test case
 */
-#define CUTI_SET_UP() virtual void setUp() override final
+#define CUTI_SET_UP() void setUp() final
 /**
 * Function cleaning up a test case
 */
-#define CUTI_TEAR_DOWN() virtual void tearDown() override final
+#define CUTI_TEAR_DOWN() void tearDown() final
+
+#else
+
+/**
+* Function initializing a test case
+*/
+#define SET_UP() void setUp() final
+/**
+* Function cleaning up a test case
+*/
+#define TEAR_DOWN() void tearDown() final
+#endif
 
 #endif
 
