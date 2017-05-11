@@ -28,11 +28,6 @@ SOFTWARE.
 
 CUTI_TEST_CLASS(TestLibInt){
 public:
-	CUTI_SET_UP(){
-	}
-
-	CUTI_TEAR_DOWN() {
-	}
 
 	void simpleAssertTest() {
 		ComputeInt c(5);

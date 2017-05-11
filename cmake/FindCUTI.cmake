@@ -34,6 +34,8 @@ ELSE()
   set(CUTI_BACK_END "CPPUNIT" CACHE STRING "Select cuti's back end")
 ENDIF(WIN32 OR APPLE)
 
+option(CUTI_USE_LONG_MACRO_NAME "Select wether you want to use long macro names" OFF)
+
 set_property(CACHE CUTI_FRONT_END PROPERTY STRINGS "CUTI" "CPPUNIT")
 set_property(CACHE CUTI_BACK_END PROPERTY STRINGS "CUTI" "CPPUNIT")
 
@@ -156,6 +158,10 @@ function(cuti_creates_test_target target testee)
     else()
       target_compile_definitions(${target} PUBLIC -DCUTI_NO_INTEGRATION)
     endif()
+  endif()
+
+  if(${CUTI_USE_LONG_MACRO_NAME})
+    target_compile_definitions(${target} PRIVATE -DCUTI_USE_LONG_MACRO_NAME)
   endif()
 
 endfunction(cuti_creates_test_target)

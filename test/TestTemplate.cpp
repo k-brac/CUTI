@@ -31,21 +31,21 @@
 /**
 * Declare a test class allowing for standalone or integrated test runner
 */
-CUTI_TEST_CLASS(TestTemplate) {
+TEST_CLASS(TestTemplate) {
 private:
     bool val = false;
 public:
     /**
     * Optional. Executed before every test case
     */
-    CUTI_SET_UP() {
+    SET_UP() {
         val = true;
     }
 
     /**
     * Optional. Executed after every test case
     */
-    CUTI_TEAR_DOWN() {
+    TEAR_DOWN() {
         val = false;
     }
 

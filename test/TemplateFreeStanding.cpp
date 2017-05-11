@@ -36,25 +36,25 @@ public:
     /**
     * Optional. Executed before every test case
     */
-    CUTI_SET_UP() {
+    SET_UP() {
         val = true;
     }
 
     /**
     * Optional. Executed after every test case
     */
-    CUTI_TEAR_DOWN() {
+    TEAR_DOWN() {
         val = false;
     }
 
     void testSimpleAssert() {
-        CUTI_ASSERT(val);
+        ASSERT(val);
     }
     /**
      * Test suit declaration and test case registration
      */
-    CUTI_BEGIN_TESTS_REGISTRATION(TemplateFreeStanding);
-    CUTI_TEST(testSimpleAssert);
-    CUTI_END_TESTS_REGISTRATION();//must be the last statement in the class
+    BEGIN_TESTS_REGISTRATION(TemplateFreeStanding);
+    TEST(testSimpleAssert);
+    END_TESTS_REGISTRATION();//must be the last statement in the class
 };
 

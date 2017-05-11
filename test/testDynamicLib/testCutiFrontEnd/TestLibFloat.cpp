@@ -30,11 +30,11 @@ public:
 
 	void testFloatAssert() {
 		ComputeFloat c(5.f);
-		CUTI_ASSERT_DOUBLES_EQUAL(1.66f, c.divide(3.f), 0.01f);
-		CUTI_ASSERT_DOUBLES_EQUAL(1.66f, c.divide(3.f), 0.01f, "c.divide should have been equal to 1.6");
+		ASSERT_DOUBLES_EQUAL(1.66f, c.divide(3.f), 0.01f);
+		ASSERT_DOUBLES_EQUAL(1.66f, c.divide(3.f), 0.01f, "c.divide should have been equal to 1.6");
 	}
 
-    CUTI_BEGIN_TESTS_REGISTRATION(TestLibFloat);
-    CUTI_TEST(testFloatAssert);
-    CUTI_END_TESTS_REGISTRATION();//must be the last statement in the class
+    BEGIN_TESTS_REGISTRATION(TestLibFloat);
+    TEST(testFloatAssert);
+    END_TESTS_REGISTRATION();//must be the last statement in the class
 };

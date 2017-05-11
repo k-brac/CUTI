@@ -57,6 +57,7 @@ static_assert(std::is_same<className, ::className>::value, "Test class " #classN
 IMPL_CUTI_TEST_CLASS(className)
 #endif
 
+#if defined(CUTI_USE_LONG_MACRO_NAME)
 /**
 * Defines a setup method to run before each test case
 */
@@ -136,6 +137,90 @@ IMPL_CUTI_TEST_CLASS(className)
 * asserts that expression doesn't throw with optional message
 */
 #define CUTI_ASSERT_NO_THROW(expression, ...) IMPL_CUTI_ASSERT_NO_THROW(expression, __VA_ARGS__)
+
+#else
+
+/**
+* Defines a setup method to run before each test case
+*/
+#define SET_UP() IMPL_CUTI_SET_UP()
+
+/**
+* Defines a tear down method to run after each test case
+*/
+#define TEAR_DOWN() IMPL_CUTI_TEAR_DOWN()
+
+/**
+* Add testMethod to the test suite
+* prepend test_ to testMethof if CUTI_PREPEND_TEST is defined
+*/
+#define TEST(testMethod) IMPL_CUTI_TEST(testMethod)
+
+/**
+* Delimits the beginning of the tests registration
+*/
+#define BEGIN_TESTS_REGISTRATION(className) IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className)
+
+/**
+* Mandatory last statement of a test class
+*/
+#define END_TESTS_REGISTRATION() IMPL_CUTI_END_TESTS_REGISTRATION()
+
+/***********************
+* Public assert macros*
+***********************/
+
+/**
+* asserts that condition is true with optional message
+*/
+#define ASSERT(condition, ...) IMPL_CUTI_ASSERT(condition, __VA_ARGS__)
+
+/**
+* unconditional fail with optional message
+*/
+#define FAIL(...) IMPL_CUTI_FAIL(__VA_ARGS__)
+
+/**
+* asserts that actual is equal to expected with optional message
+*/
+#define ASSERT_EQUAL(expected, actual, ...) IMPL_CUTI_ASSERT_EQUAL(expected, actual, __VA_ARGS__)
+
+/**
+* asserts that actual is less than bound with optional message
+*/
+#define ASSERT_LESS(bound, actual, ...) IMPL_CUTI_ASSERT_LESS(bound, actual, __VA_ARGS__)
+
+/**
+* asserts that actual is greater than bound with optional message
+*/
+#define ASSERT_GREATER(bound, actual, ...) IMPL_CUTI_ASSERT_GREATER(bound, actual, __VA_ARGS__)
+
+/**
+* asserts that actual is less than or equal to bound with optional message
+*/
+#define ASSERT_LESSEQUAL(bound, actual, ...) IMPL_CUTI_ASSERT_LESSEQUAL(bound, actual, __VA_ARGS__)
+
+/**
+* asserts that actual is greater than or equal to bound with optional message
+*/
+#define ASSERT_GREATEREQUAL(bound, actual, ...) IMPL_CUTI_ASSERT_GREATEREQUAL(bound, actual, __VA_ARGS__)
+
+/**
+* asserts that floating point actual is equal to actual with fabs(expected - actual) < delta with optional message
+*/
+#define ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, __VA_ARGS__)
+
+/**
+* asserts that expression throws ExceptionType with optional message
+*/
+#define ASSERT_THROW(expression, ExceptionType, ...) IMPL_CUTI_ASSERT_THROW(expression, ExceptionType, __VA_ARGS__)
+
+/**
+* asserts that expression doesn't throw with optional message
+*/
+#define ASSERT_NO_THROW(expression, ...) IMPL_CUTI_ASSERT_NO_THROW(expression, __VA_ARGS__)
+
+#endif //defined(CUTI_USE_LONG_MACRO_NAME)
 
 /*****************
 * Public utility *
@@ -222,7 +307,7 @@ do                                                                              
             break;                                                                                     \
         }                                                                                              \
         cutiMsgT_ += cuti::CutiGetMessage(__VA_ARGS__);                                                \
-        CUTI_FAIL(cutiMsgT_);                                                                          \
+        IMPL_CUTI_FAIL(cutiMsgT_);                                                                          \
     \
 }                                                                                               \
     while (false)
@@ -237,11 +322,11 @@ do                                                                              
         }                                                                                                                                              \
         catch (std::exception & e)                                                                                                                     \
         {                                                                                                                                              \
-            CUTI_FAIL(std::string("Caught: std::exception or derived. What() : ") + e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__)); \
+            IMPL_CUTI_FAIL(std::string("Caught: std::exception or derived. What() : ") + e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__)); \
         }                                                                                                                                              \
         catch (...)                                                                                                                                    \
         {                                                                                                                                              \
-            CUTI_FAIL(std::string("Unexpected exception caught. " + cuti::CutiGetMessage(__VA_ARGS__)));                                               \
+            IMPL_CUTI_FAIL(std::string("Unexpected exception caught. " + cuti::CutiGetMessage(__VA_ARGS__)));                                               \
         }                                                                                                                                              \
     \
 }                                                                                                                                               \
@@ -640,41 +725,41 @@ return os; \
 ****************************************************************************/
 #if defined(CUTI_CPPUNIT_COMPATABILITY)
 
-#define CPPUNIT_TEST_SUITE(className) CUTI_BEGIN_TESTS_REGISTRATION(className)
+#define CPPUNIT_TEST_SUITE(className) IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className)
 
-#define CPPUNIT_TEST(testMethod) CUTI_TEST(testMethod)
+#define CPPUNIT_TEST(testMethod) IMPL_CUTI_TEST(testMethod)
 
-#define CPPUNIT_TEST_SUITE_END() CUTI_END_TESTS_REGISTRATION()
+#define CPPUNIT_TEST_SUITE_END() IMPL_CUTI_END_TESTS_REGISTRATION()
 
-#define CPPUNIT_FAIL(message) CUTI_FAIL(message)
+#define CPPUNIT_FAIL(message) IMPL_CUTI_FAIL(message)
 
-#define CPPUNIT_ASSERT_MESSAGE(message, condition) CUTI_ASSERT(condition, message)
+#define CPPUNIT_ASSERT_MESSAGE(message, condition) IMPL_CUTI_ASSERT(condition, message)
 
-#define CPPUNIT_ASSERT(condition) CUTI_ASSERT(condition)
+#define CPPUNIT_ASSERT(condition) IMPL_CUTI_ASSERT(condition)
 
-#define CPPUNIT_ASSERT_THROW_MESSAGE(message, expression, ExceptionType) CUTI_ASSERT_THROW(expression, ExceptionType, message)
+#define CPPUNIT_ASSERT_THROW_MESSAGE(message, expression, ExceptionType) IMPL_CUTI_ASSERT_THROW(expression, ExceptionType, message)
 
-#define CPPUNIT_ASSERT_THROW(expression, ExceptionType) CUTI_ASSERT_THROW(expression, ExceptionType)
+#define CPPUNIT_ASSERT_THROW(expression, ExceptionType) IMPL_CUTI_ASSERT_THROW(expression, ExceptionType)
 
-#define CPPUNIT_ASSERT_NO_THROW_MESSAGE(message, expression) CUTI_ASSERT_NO_THROW(expression, message)
+#define CPPUNIT_ASSERT_NO_THROW_MESSAGE(message, expression) IMPL_CUTI_ASSERT_NO_THROW(expression, message)
 
-#define CPPUNIT_ASSERT_NO_THROW(expression) CUTI_ASSERT_NO_THROW(expression)
+#define CPPUNIT_ASSERT_NO_THROW(expression) IMPL_CUTI_ASSERT_NO_THROW(expression)
 
-#define CPPUNIT_ASSERT_LESS(expected, actual) CUTI_ASSERT_LESS(expected, actual)
+#define CPPUNIT_ASSERT_LESS(expected, actual) IMPL_CUTI_ASSERT_LESS(expected, actual)
 
-#define CPPUNIT_ASSERT_LESSEQUAL(expected, actual) CUTI_ASSERT_LESSEQUAL(expected, actual)
+#define CPPUNIT_ASSERT_LESSEQUAL(expected, actual) IMPL_CUTI_ASSERT_LESSEQUAL(expected, actual)
 
-#define CPPUNIT_ASSERT_GREATER(expected, actual) CUTI_ASSERT_GREATER(expected, actual)
+#define CPPUNIT_ASSERT_GREATER(expected, actual) IMPL_CUTI_ASSERT_GREATER(expected, actual)
 
-#define CPPUNIT_ASSERT_GREATEREQUAL(expected, actual) CUTI_ASSERT_GREATEREQUAL(expected, actual)
+#define CPPUNIT_ASSERT_GREATEREQUAL(expected, actual) IMPL_CUTI_ASSERT_GREATEREQUAL(expected, actual)
 
-#define CPPUNIT_ASSERT_EQUAL_MESSAGE(message, expected, actual) CUTI_ASSERT_EQUAL(expected, actual, message)
+#define CPPUNIT_ASSERT_EQUAL_MESSAGE(message, expected, actual) IMPL_CUTI_ASSERT_EQUAL(expected, actual, message)
 
-#define CPPUNIT_ASSERT_EQUAL(expected, actual) CUTI_ASSERT_EQUAL(expected, actual)
+#define CPPUNIT_ASSERT_EQUAL(expected, actual) IMPL_CUTI_ASSERT_EQUAL(expected, actual)
 
-#define CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(message, expected, actual, delta) CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, message)
+#define CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(message, expected, actual, delta) IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, message)
 
-#define CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, actual, delta) CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta)
+#define CPPUNIT_ASSERT_DOUBLES_EQUAL(expected, actual, delta) IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta)
 
 #define CPPUNIT_ASSERT_ASSERTION_FAIL(expression) expression
 

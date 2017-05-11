@@ -30,72 +30,60 @@ SOFTWARE.
 #undef CUTI_PREPEND_TEST
 #include "ComputeInt.h"
 
-
-CUTI_DEFAULT_TO_STRING(ComputeInt);
-
-CUTI_TEST_CLASS(TestLibInt){
+CUTI_TEST_CLASS(TestLibInt) {
 public:
-	void simpleAssertTest() {
-		ComputeInt c(5);
-		CUTI_ASSERT(c.add(-2) != 0);
-		CUTI_ASSERT(c.add(-2) != 0, "c.add should have returned a value != 0");
-	}
+    void simpleAssertTest() {
+        ComputeInt c(5);
+        ASSERT(c.add(-2) != 0);
+        ASSERT(c.add(-2) != 0, "c.add should have returned a value != 0");
+    }
 
-	void assertThrowTest() {
-		ComputeInt c(1);
-		CUTI_ASSERT_THROW(c.divide(0), std::runtime_error);
-		CUTI_ASSERT_THROW(c.divide(0), std::runtime_error, "Tried to divide by 0");
-		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_THROW(c.divide(0), std::logic_error));
-	}
-	
-	void assertNoThrowTest() {
-		ComputeInt c(1);
-		CUTI_ASSERT_NO_THROW(c.divide(1));
-		CUTI_ASSERT_NO_THROW(c.divide(1), "Should not have thrown");
-		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_NO_THROW(c.divide(0)));
-	}
+    void assertThrowTest() {
+        ComputeInt c(1);
+        ASSERT_THROW(c.divide(0), std::runtime_error);
+        ASSERT_THROW(c.divide(0), std::runtime_error, "Tried to divide by 0");
+    }
 
-	void assertFailTest() {
-		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_FAIL("This test has failed"));
+    void assertNoThrowTest() {
+        ComputeInt c(1);
+        ASSERT_NO_THROW(c.divide(1));
+        ASSERT_NO_THROW(c.divide(1), "Should not have thrown");
+    }
+
+    void assertFailTest() {
         uint16_t a = 0, b = 0;
-        CUTI_ASSERT_EQUAL(a, b);
-	}
+        ASSERT_EQUAL(a, b);
+    }
 
-    
-	void assertLessTest() {
-		ComputeInt c(5);
-		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_LESS(10, c.add(5)));
-		CUTI_ASSERT_LESS(10, c.add(1));
-		CUTI_ASSERT_LESSEQUAL(10, c.add(5));
-		CUTI_ASSERT_LESSEQUAL(10, c.add(1));
-		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_LESSEQUAL(10, c.add(6)));
-	}
+    void assertLessTest() {
+        ComputeInt c(5);
+        ASSERT_LESS(10, c.add(1));
+        ASSERT_LESSEQUAL(10, c.add(5));
+        ASSERT_LESSEQUAL(10, c.add(1));
+    }
 
-	void assertGreaterTest() {
-		ComputeInt c(5);
-		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_GREATER(11, c.add(5)));
-		CUTI_ASSERT_GREATER(1, c.add(1));
-		CUTI_ASSERT_GREATEREQUAL(1, c.add(5));
-		CUTI_ASSERT_GREATEREQUAL(10, c.add(6));
-		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_GREATEREQUAL(10, c.add(1)));
-	}
+    void assertGreaterTest() {
+        ComputeInt c(5);
+        ASSERT_GREATER(1, c.add(1));
+        ASSERT_GREATEREQUAL(1, c.add(5));
+        ASSERT_GREATEREQUAL(10, c.add(6));
+    }
 
-	void assertEqual() {
-		ComputeInt c(5);
+    void assertEqual() {
+        ComputeInt c(5);
         ComputeInt c2(5);
-		CUTI_ASSERT_EQUAL(5, c.add(0), "Should be equal");
-		CUTI_ASSERT_EQUAL(5, c.add(0));
-		//CUTI_ASSERT_ASSERTION_FAIL(CUTI_ASSERT_EQUAL(10, c.add(1)));
-        CUTI_ASSERT_EQUAL(c, c2);
-	}
+        ASSERT_EQUAL(5, c.add(0), "Should be equal");
+        ASSERT_EQUAL(5, c.add(0));
+        //ASSERT_EQUAL(c, c2);
+    }
 
-    CUTI_BEGIN_TESTS_REGISTRATION(TestLibInt);
-    CUTI_TEST(simpleAssertTest);
-    CUTI_TEST(assertThrowTest);
-    CUTI_TEST(assertNoThrowTest);
-    CUTI_TEST(assertFailTest);
-    CUTI_TEST(assertLessTest);
-    CUTI_TEST(assertGreaterTest);
-    CUTI_TEST(assertEqual);
-    CUTI_END_TESTS_REGISTRATION();//must be the last statement in the class
+    BEGIN_TESTS_REGISTRATION(TestLibInt);
+    TEST(simpleAssertTest);
+    TEST(assertThrowTest);
+    TEST(assertNoThrowTest);
+    TEST(assertFailTest);
+    TEST(assertLessTest);
+    TEST(assertGreaterTest);
+    TEST(assertEqual);
+    END_TESTS_REGISTRATION();//must be the last statement in the class
 };
