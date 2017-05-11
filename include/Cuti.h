@@ -333,8 +333,6 @@ do                                                                              
     while (false)
 #endif
 
-#define CUTI_DEFAULT_TO_STRING(className) IMPL_CUTI_DEFAULT_TO_STRING(className)
-
 /*******************************************************
 * Private implementation for visual studio integration *
 ********************************************************/
@@ -371,19 +369,6 @@ static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::Membe
 #define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) /**/
 
 #define IMPL_CUTI_END_TESTS_REGISTRATION() /**/
-
-#define IMPL_CUTI_DEFAULT_TO_STRING(className)               \
-    \
-inline std::wstringstream &                                  \
-    operator<<(std::wstringstream &os, const className &obj) \
-    \
-{                                                     \
-        os << cuti::CutiGetMessageW(cuti::ToString(obj));    \
-        return os;                                           \
-    \
-}                                                     \
-    \
-INTERNAL_CUTI_SPECIALIZED_TO_STRING(className)
 
 /****************************************************************
 * Fix VisualStudio::CppUnitTestFramework missing specializations*
@@ -612,13 +597,6 @@ _Pragma("clang diagnostic push")
 
 #define IMPL_CUTI_ASSERT_DOUBLES_EQUAL(expected, actual, delta, ...) INTERNAL_CUTI_ASSERT_MESSAGE(XCTAssertEqualWithAccuracy(actual, expected, delta, INTERNAL_CUTI_FORMAT_MESSAGE()), __VA_ARGS__)
 
-#define IMPL_CUTI_DEFAULT_TO_STRING(className) \
- inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \
- { \
-     os << cuti::CutiGetMessage(cuti::ToString(obj)); \
-     return os; \
- }
-
 #elif defined(CUTI_UNKNOWN)
 /***************************************************************************
 * Private implementation when using cuti's front end and cppunit's backend *
@@ -701,13 +679,6 @@ class className : public CppUnit::TestFixture
 #define IMPL_CUTI_ASSERT_THROW(expression, ExceptionType, ...) CPPUNIT_ASSERT_THROW_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), expression, ExceptionType)
 
 #define IMPL_CUTI_ASSERT_NO_THROW(expression, ...) CPPUNIT_ASSERT_NO_THROW_MESSAGE(cuti::CutiGetMessage(__VA_ARGS__), expression)
-
-#define IMPL_CUTI_DEFAULT_TO_STRING(className) \
-inline std::ostringstream& operator<<(std::ostringstream& os, const className& obj) \
-{ \
-os << cuti::CutiGetMessage(cuti::ToString(obj)); \
-return os; \
-}
 
 #else
 
