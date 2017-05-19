@@ -123,7 +123,7 @@ function(cuti_creates_test_target target testee)
   else()
     get_filename_component(CUTI_PLUGIN_SRC ${CUTI_ROOT_DIR}/src/UnitTestPlugin.cpp ABSOLUTE)
     add_library(${target} SHARED ${ARGN} ${CUTI_INCLUDE} ${CUTI_PLUGIN_SRC})
-    #target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
+    target_compile_definitions(${target} PUBLIC "-DCPPUNIT_PLUGIN_EXPORT=__attribute__ ((visibility (\"default\")))" )
     cuti_init_cppunit_libraries(${target})
   endif()
 
