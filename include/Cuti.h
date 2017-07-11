@@ -476,9 +476,9 @@ struct className; /*forward declaration*/ \
     ##className : XCTestCase {\
 }        \
     \
++ (className*)instanceControl:(int)inCmd; \
+- (className*)getInstance; \
 @end                                      \
-    \
-static className *kInstance = nullptr;    \
     \
 @implementation C                         \
     ##className \
@@ -505,7 +505,7 @@ struct className : public cuti::CutiBaseTestCase
     \
 -(void)test_##testMethod           \
     {                              \
-        kInstance->testMethod();   \
+        [self getInstance]->testMethod();   \
     \
 }
 #else
@@ -517,7 +517,7 @@ struct className : public cuti::CutiBaseTestCase
     \
 -(void)testMethod                  \
     {                              \
-        kInstance->testMethod();   \
+        [self getInstance]->testMethod();   \
     \
 }
 #endif
@@ -530,16 +530,31 @@ struct className : public cuti::CutiBaseTestCase
     ;                                                 \
     \
 _Pragma("clang diagnostic pop") \
++ (className*)instanceControl:(int)inCmd              \
+{                                                     \
+    static className* kInstance = nullptr;            \
+    switch ( inCmd )                                  \
+    {                                                 \
+        case 10: kInstance = new className(); break;  \
+        case 20: delete kInstance; break;             \
+        default: break;                               \
+    }                                                 \
+    return kInstance;                                 \
+}                                                     \
+- (className*)getInstance                             \
+{                                                     \
+    return [C ## className instanceControl:0];        \
+}                                                     \
 + (void)setUp                                         \
     {                                                 \
         [super setUp];                                \
-        kInstance = new className();                  \
+       [self instanceControl:10];                     \
     \
 }                                              \
     \
 +(void)tearDown                                       \
     {                                                 \
-        delete kInstance;                             \
+        [self instanceControl:20];                    \
         [super tearDown];                             \
     \
 }                                              \
@@ -548,14 +563,14 @@ _Pragma("clang diagnostic pop") \
     {                                                 \
         [super setUp];                                \
         self.continueAfterFailure = NO;               \
-        kInstance->self = self;                       \
-        kInstance->setUp();                           \
+        [self getInstance]->self = self;              \
+        [self getInstance]->setUp();                  \
     \
 }                                              \
     \
 -(void)tearDown                                       \
     {                                                 \
-        kInstance->tearDown();                        \
+        [self getInstance]->tearDown();               \
         [super tearDown];                             \
     \
 }
