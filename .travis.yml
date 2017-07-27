@@ -42,4 +42,5 @@ script:
   - echo ${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake -G Xcode ./test/${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake --build . --config Release
-  - xcodebuild test -project ${CUTI_TEST_PROJECT}.xcodeproj -scheme DynamicLib -configuration Release
+  - /Applications/Xcode.app/Contents/Developer/usr/bin/xctest ./Release/testCuti.xctest
+  - /Applications/Xcode.app/Contents/Developer/usr/bin/xctest ./Release/testCppunit.xctest
