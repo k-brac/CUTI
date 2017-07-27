@@ -129,21 +129,6 @@ function(cuti_creates_test_target target testee)
 
 	target_link_libraries(${target} PRIVATE debug ${CUTI_LIBRARIES_DEBUG} ${testee})
 	target_link_libraries(${target} PRIVATE optimized ${CUTI_LIBRARIES_RELEASE} ${testee})
-
-  if(MSVC)
-    target_compile_options(${target} PRIVATE "/Zi")
-    if (MSVC_VERSION GREATER 1800)
-      set_target_properties(${target} PROPERTIES LINK_FLAGS "/DEBUG:FASTLINK")
-    else()
-      set_target_properties(${target} PROPERTIES LINK_FLAGS "/DEBUG")
-    endif()
-  elseif(APPLE)
-    #Enable debug information for xcode
-    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
-    set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
-    set_target_properties(${target}  PROPERTIES COMPILE_FLAGS "-g")
-  endif()
-
   target_include_directories(${target} PUBLIC ${CUTI_INCLUDE_DIRS})
 
   if(${USE_CUTI_BACK_END})
