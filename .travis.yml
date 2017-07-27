@@ -42,7 +42,4 @@ script:
   - echo ${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake -G Xcode ./test/${CUTI_TEST_PROJECT} ${CMAKE_ARGS}
   - cmake --build . --config Release
-#  - xcodebuild test -project ${CUTI_TEST_PROJECT}.xcodeproj -scheme DynamicLib -configuration Release
-
-#cmake does not generate the project scheme needed for command line testing (works OK from Xcode)
-#waiting for cmake 3.9
+  - xcodebuild test -project ${CUTI_TEST_PROJECT}.xcodeproj -scheme DynamicLib -configuration Release
