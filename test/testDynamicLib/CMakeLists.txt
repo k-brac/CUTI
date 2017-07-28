@@ -83,6 +83,11 @@ if(WIN32)
     target_compile_options(testCuti PRIVATE "/W4" "/MP" "/analyze")
     #Definition for windows to enable the generation of a dll and its lib
     target_compile_definitions(DynamicLib PRIVATE -DCOMPUTE_EXPORT)
+    if(MSVC_VERSION GREATER 1900)
+        target_compile_options(DynamicLib PRIVATE "/permissive-")
+        target_compile_options(testCppunit PRIVATE "/permissive-")
+        target_compile_options(testCuti PRIVATE "/permissive-")
+    endif()
 elseif(APPLE)
     target_compile_options(DynamicLib PRIVATE -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic)
     target_compile_options(testCppunit PRIVATE
