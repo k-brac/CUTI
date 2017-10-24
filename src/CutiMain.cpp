@@ -49,6 +49,27 @@ SOFTWARE.
 #include "cppunit/TestRunner.h"
 #include "cppunit/BriefTestProgressListener.h"
 #include "cppunit/plugin/PlugInManager.h"
+#include <chrono>
+
+
+class TimedBriefTestProgressListener : public CppUnit::BriefTestProgressListener {
+private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> mTimer;
+public:
+
+    void startTest(CppUnit::Test *test)
+    {
+        CppUnit::BriefTestProgressListener::startTest(test);
+        mTimer = std::chrono::high_resolution_clock::now();
+    }
+
+    void endTest(CppUnit::Test *test)
+    {
+        const std::chrono::duration<float, std::milli> elapsed = std::chrono::high_resolution_clock::now() - mTimer;
+        CppUnit::stdCOut() << " (" << std::to_string(elapsed.count()) << " ms elapsed)";
+        CppUnit::BriefTestProgressListener::endTest(test);
+    }
+};
 
 #if __MACH__
 #pragma clang diagnostic pop
@@ -106,7 +127,7 @@ bool runPlugin(const CommandLineParser &arguments) {
 	controller.addListener(&result);
 
 	// Add a listener
-	CppUnit::BriefTestProgressListener progress;
+    TimedBriefTestProgressListener progress;
 	controller.addListener(&progress);
 
 	pluginManager.addListener(&controller);
