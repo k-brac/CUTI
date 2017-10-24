@@ -67,6 +67,9 @@ public:
     {
         const std::chrono::duration<float, std::milli> elapsed = std::chrono::high_resolution_clock::now() - mTimer;
         CppUnit::stdCOut() << " (" << std::to_string(elapsed.count()) << " ms elapsed)";
+#if defined(WIN32)
+        CppUnit::stdCOut().flush();
+#endif
         CppUnit::BriefTestProgressListener::endTest(test);
     }
 };
