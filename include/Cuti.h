@@ -52,7 +52,7 @@ SOFTWARE.
 #if defined(CUTI_USES_XCTEST_BACKEND)
 #define CUTI_TEST_CLASS(className)                                                                                                \
     \
-struct className;                                                                                                                 \
+class className;                                                                                                                 \
     \
 static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
     \
@@ -155,7 +155,7 @@ IMPL_CUTI_TEST_CLASS(className)
 #if defined(CUTI_USES_XCTEST_BACKEND)
 #define TEST_CLASS(className)                                                                                                \
     \
-struct className;                                                                                                                 \
+class className;                                                                                                                 \
     \
 static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
     \
@@ -470,7 +470,7 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 */
 #define IMPL_CUTI_TEST_CLASS(className)   \
     \
-struct className; /*forward declaration*/ \
+class className; /*forward declaration*/ \
     \
 @interface C                              \
     ##className : XCTestCase {\
@@ -484,7 +484,7 @@ struct className; /*forward declaration*/ \
     ##className \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wweak-vtables\"") \
-struct className : public cuti::CutiBaseTestCase
+class className : public cuti::CutiBaseTestCase
 
 /**
 * Defines a setup method to run before each test case
