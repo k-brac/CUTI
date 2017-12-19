@@ -54,7 +54,7 @@ SOFTWARE.
 
 class TimedBriefTestProgressListener : public CppUnit::BriefTestProgressListener {
 private:
-    std::chrono::time_point<std::chrono::high_resolution_clock> mTimer;
+    std::chrono::time_point<std::chrono::steady_clock> mTimer;
 public:
 
     void startTest(CppUnit::Test *test)
@@ -65,7 +65,7 @@ public:
 
     void endTest(CppUnit::Test *test)
     {
-        const std::chrono::duration<float, std::milli> elapsed = std::chrono::high_resolution_clock::now() - mTimer;
+        const std::chrono::duration<float, std::milli> elapsed = std::chrono::steady_clock::now() - mTimer;
         CppUnit::stdCOut() << " (" << std::to_string(elapsed.count()) << " ms elapsed)";
 #if defined(WIN32)
         CppUnit::stdCOut().flush();
