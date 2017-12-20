@@ -12,6 +12,7 @@ Visual Studio | Xcode
 2013 | 6.4
 2015 | 7.3
 2017 | 8.3
+     | 9.2
 ![Visual Studio Tests Results](https://cloud.githubusercontent.com/assets/7798247/24714946/40390d92-1a2a-11e7-8f8f-8787e2aa6498.jpg) | ![Xcode Tests Results](https://cloud.githubusercontent.com/assets/7798247/24714947/429acb5c-1a2a-11e7-9a32-95194205f046.jpg)
 
 ## Why?
