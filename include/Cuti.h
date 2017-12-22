@@ -258,46 +258,68 @@ IMPL_CUTI_TEST_CLASS(className)
 
 namespace cuti
 {
-
-template <typename T, typename = typename std::enable_if<std::is_class<T>::value>::type>
-inline std::string ToString(const T &val)
-{
-    std::ostringstream ost;
-    val.operator<<(ost);
-    return ost.str();
-}
-
-inline std::string CutiGetMessage(std::string msg = std::string())
-{
-    return msg;
-}
-/**
-    * Converts string to wide string
-    * @param s The string to be converted
-    * @return s as a wide string
-    */
-inline std::wstring CutiGetMessageW(const std::string &s = std::string())
-{
-    static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(s);
-}
-/**
-    * converts fundamental and enum types to std::string
-    */
-template <typename T, typename = typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type>
-inline std::string ToString(const T val)
-{
-    return std::to_string(val);
-}
-
-/**
-    * Special overload to avoid converting a std::string to std::string
-    */
-template <>
-inline std::string ToString<std::string>(const std::string &val)
-{
-    return val;
-}
+    /**
+     * constexpr recursive comparison of 2 strings where src_str is at least as long as ref_str
+     * @param src_str The string to be compared
+     * @param ref_str The reference string to look for in src_str
+     * @param idx The index of the character to compare
+     * @return True if src_str starts with ref_str, false otherwise
+     */
+    constexpr bool CompareStartWith(const char* src_str, const char* ref_str, unsigned idx) {
+        return idx == static_cast<unsigned>(-1) ? true : src_str[idx] == ref_str[idx] && CompareStartWith(src_str, ref_str, idx - 1);
+    }
+    
+    /**
+     * constexpr recursive comparison of 2 strings where src_str is at least as long as ref_str
+     * @param src_str The string to be compared
+     * @param ref_str The reference string to look for in src_str
+     * @param idx The index of the character to compare
+     * @return True if src_str starts with ref_str, false otherwise. False for empty strings
+     */
+    template< unsigned N, unsigned M >
+    constexpr bool StartWith(const char (&src_str)[N], const char (&ref_str)[M]) {
+        return N >= M && M > 1 && CompareStartWith(src_str, ref_str, M - 2);
+    }
+    
+    template <typename T, typename = typename std::enable_if<std::is_class<T>::value>::type>
+    inline std::string ToString(const T &val)
+    {
+        std::ostringstream ost;
+        val.operator<<(ost);
+        return ost.str();
+    }
+    
+    inline std::string CutiGetMessage(std::string msg = std::string())
+    {
+        return msg;
+    }
+    /**
+     * Converts string to wide string
+     * @param s The string to be converted
+     * @return s as a wide string
+     */
+    inline std::wstring CutiGetMessageW(const std::string &s = std::string())
+    {
+        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        return converter.from_bytes(s);
+    }
+    /**
+     * converts fundamental and enum types to std::string
+     */
+    template <typename T, typename = typename std::enable_if<std::is_fundamental<T>::value || std::is_enum<T>::value>::type>
+    inline std::string ToString(const T val)
+    {
+        return std::to_string(val);
+    }
+    
+    /**
+     * Special overload to avoid converting a std::string to std::string
+     */
+    template <>
+    inline std::string ToString<std::string>(const std::string &val)
+    {
+        return val;
+    }
 }
 
 /***********************************************************
@@ -377,7 +399,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #define IMPL_CUTI_TEAR_DOWN() TEST_METHOD_CLEANUP(tearDown)
 
 #define IMPL_CUTI_TEST(methodName)                                                                                                                                                                                                                           \
-    \
+static_assert(cuti::StartWith(#methodName, "test"), "Your test case name must start with 'test'");    \
 static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo *CALLING_CONVENTION CATNAME(__GetTestMethodInfo_, methodName)()                                                                                                  \
     \
 {                                                                                                                                                                                                                                                     \
@@ -514,7 +536,7 @@ class className : public cuti::CutiBaseTestCase
 * prepend test_ to testMethof if CUTI_PREPEND_TEST is defined
 */
 #define IMPL_CUTI_TEST(testMethod) \
-    \
+static_assert(cuti::StartWith(#testMethod, "test"), "Your test case name must start with 'test'");    \
 -(void)testMethod                  \
     {                              \
         [self getInstance]->testMethod();   \
@@ -692,7 +714,7 @@ class className : public CppUnit::TestFixture
 
 #define IMPL_CUTI_TEAR_DOWN() void tearDown() final
 
-#define IMPL_CUTI_TEST(methodName) CPPUNIT_TEST(methodName)
+#define IMPL_CUTI_TEST(methodName) static_assert(cuti::StartWith(#methodName, "test"), "Your test case name must start with 'test'"); CPPUNIT_TEST(methodName)
 
 #define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) CPPUNIT_TEST_SUITE(className)
 
