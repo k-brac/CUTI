@@ -840,6 +840,8 @@ static_assert(std::is_same<className, ::className>::value, "CPPUNIT_TEST_SUITE_R
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
+
+#if defined(CUTI_USE_LONG_MACRO_NAME)
 /**
 * Declare a test fixture
 */
@@ -853,8 +855,6 @@ static CPPUNIT_NS::AutoRegisterSuite<className>                                 
         CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__);                                                                         \
     \
 class className : public CppUnit::TestFixture
-
-#if defined(CUTI_USE_LONG_MACRO_NAME)
 /**
 * Function initializing a test case
 */
@@ -865,6 +865,19 @@ class className : public CppUnit::TestFixture
 #define CUTI_TEAR_DOWN() void tearDown() final
 
 #else
+/**
+* Declare a test fixture
+*/
+#define TEST_CLASS(className)                                                                                                \
+    \
+class className;                                                                                                                  \
+    \
+static_assert(std::is_same<className, ::className>::value, "Test class " #className " must be declared in the global namespace"); \
+    \
+static CPPUNIT_NS::AutoRegisterSuite<className>                                                                                   \
+        CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__);                                                                         \
+    \
+class className : public CppUnit::TestFixture
 
 /**
 * Function initializing a test case
