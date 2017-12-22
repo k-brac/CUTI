@@ -79,7 +79,7 @@ IMPL_CUTI_TEST_CLASS(className)
 
 /**
 * Add testMethod to the test suite
-* prepend test_ to testMethof if CUTI_PREPEND_TEST is defined
+* prepend test_ to testMethod if CUTI_PREPEND_TEST is defined
 */
 #define CUTI_TEST(testMethod) IMPL_CUTI_TEST(testMethod)
 
@@ -182,7 +182,7 @@ IMPL_CUTI_TEST_CLASS(className)
 
 /**
 * Add testMethod to the test suite
-* prepend test_ to testMethof if CUTI_PREPEND_TEST is defined
+* prepend test_ to testMethod if CUTI_PREPEND_TEST is defined
 */
 #define TEST(testMethod) IMPL_CUTI_TEST(testMethod)
 
@@ -398,6 +398,30 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #define IMPL_CUTI_TEAR_DOWN() TEST_METHOD_CLEANUP(tearDown)
 
+#if defined(CUTI_PREPEND_TEST)
+/**
+* Add testMethod to the test suite
+* prepend test_ to testMethod if CUTI_PREPEND_TEST is defined
+*/
+#define IMPL_CUTI_TEST(methodName)                                                                                                                                                                                                                           \
+void test_##methodName() { methodName(); } \
+static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo *CALLING_CONVENTION CATNAME(__GetTestMethodInfo_, test_##methodName)()                                                                                                  \
+    \
+{                                                                                                                                                                                                                                                     \
+        __GetTestClassInfo();                                                                                                                                                                                                                                \
+        __GetTestVersion();                                                                                                                                                                                                                                  \
+        ALLOCATE_TESTDATA_SECTION_METHOD                                                                                                                                                                                                                     \
+        static const ::Microsoft::VisualStudio::CppUnitTestFramework::MethodMetadata s_Metadata = {L"TestMethodInfo", L"test_"#methodName, reinterpret_cast<const unsigned char *>(__FUNCTION__), reinterpret_cast<const unsigned char *>(__FUNCDNAME__), __WFILE__, __LINE__}; \
+                                                                                                                                                                                                                                                             \
+        static ::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo s_Info = {::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo::TestMethod, NULL, &s_Metadata};                                                                \
+        s_Info.method.pVoidMethod = static_cast<::Microsoft::VisualStudio::CppUnitTestFramework::TestClassImpl::__voidFunc>(&test_##methodName);                                                                                                                    \
+        return &s_Info;                                                                                                                                                                                                                                      \
+    \
+}
+#else
+/**
+* Add testMethod to the test suite
+*/
 #define IMPL_CUTI_TEST(methodName)                                                                                                                                                                                                                           \
 static_assert(cuti::StartWith(#methodName, "test"), "Your test case name must start with 'test'");    \
 static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo *CALLING_CONVENTION CATNAME(__GetTestMethodInfo_, methodName)()                                                                                                  \
@@ -413,6 +437,7 @@ static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::Membe
         return &s_Info;                                                                                                                                                                                                                                      \
     \
 }
+#endif
 
 #define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) /**/
 
@@ -521,7 +546,7 @@ class className : public cuti::CutiBaseTestCase
 #if defined(CUTI_PREPEND_TEST)
 /**
 * Add testMethod to the test suite
-* prepend test_ to testMethof if CUTI_PREPEND_TEST is defined
+* prepend test_ to testMethod if CUTI_PREPEND_TEST is defined
 */
 #define IMPL_CUTI_TEST(testMethod) \
     \
@@ -533,7 +558,6 @@ class className : public cuti::CutiBaseTestCase
 #else
 /**
 * Add testMethod to the test suite
-* prepend test_ to testMethof if CUTI_PREPEND_TEST is defined
 */
 #define IMPL_CUTI_TEST(testMethod) \
 static_assert(cuti::StartWith(#testMethod, "test"), "Your test case name must start with 'test'");    \
