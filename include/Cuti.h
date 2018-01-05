@@ -278,7 +278,11 @@ namespace cuti
      */
     template< unsigned N, unsigned M >
     constexpr bool StartWith(const char (&src_str)[N], const char (&ref_str)[M]) {
+#if defined(_MSC_VER) && _MSC_VER < 1900
+		return true;
+#else
         return N >= M && M > 1 && CompareStartWith(src_str, ref_str, M - 2);
+#endif
     }
     
     template <typename T, typename = typename std::enable_if<std::is_class<T>::value>::type>
