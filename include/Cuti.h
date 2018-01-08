@@ -258,6 +258,13 @@ IMPL_CUTI_TEST_CLASS(className)
 
 namespace cuti
 {
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+
+#pragma push_macro("constexpr")
+#define constexpr inline
+
+#endif // defined(_MSC_VER) && _MSC_VER < 1900
     /**
      * constexpr recursive comparison of 2 strings where src_str is at least as long as ref_str
      * @param src_str The string to be compared
@@ -284,6 +291,16 @@ namespace cuti
         return N >= M && M > 1 && CompareStartWith(src_str, ref_str, M - 2);
 #endif
     }
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+
+#undef constexpr
+#pragma pop_macro("constexpr")
+
+#define CUTI_START_WITH_TEST_CHECK(methodName) /**/
+#else
+#define CUTI_START_WITH_TEST_CHECK(methodName) static_assert(cuti::StartWith(#methodName, "test"), "Your test case name must start with 'test'");
+#endif // defined(_MSC_VER) && _MSC_VER < 1900
     
     template <typename T, typename = typename std::enable_if<std::is_class<T>::value>::type>
     inline std::string ToString(const T &val)
@@ -427,7 +444,7 @@ static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::Membe
 * Add testMethod to the test suite
 */
 #define IMPL_CUTI_TEST(methodName)                                                                                                                                                                                                                           \
-static_assert(cuti::StartWith(#methodName, "test"), "Your test case name must start with 'test'");    \
+CUTI_START_WITH_TEST_CHECK(methodName);    \
 static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::MemberMethodInfo *CALLING_CONVENTION CATNAME(__GetTestMethodInfo_, methodName)()                                                                                                  \
     \
 {                                                                                                                                                                                                                                                     \
@@ -564,7 +581,7 @@ class className : public cuti::CutiBaseTestCase
 * Add testMethod to the test suite
 */
 #define IMPL_CUTI_TEST(testMethod) \
-static_assert(cuti::StartWith(#testMethod, "test"), "Your test case name must start with 'test'");    \
+CUTI_START_WITH_TEST_CHECK(testMethod);    \
 -(void)testMethod                  \
     {                              \
         [self getInstance]->testMethod();   \
@@ -742,7 +759,7 @@ class className : public CppUnit::TestFixture
 
 #define IMPL_CUTI_TEAR_DOWN() void tearDown() final
 
-#define IMPL_CUTI_TEST(methodName) static_assert(cuti::StartWith(#methodName, "test"), "Your test case name must start with 'test'"); CPPUNIT_TEST(methodName)
+#define IMPL_CUTI_TEST(methodName) CUTI_START_WITH_TEST_CHECK(methodName); CPPUNIT_TEST(methodName)
 
 #define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) CPPUNIT_TEST_SUITE(className)
 
