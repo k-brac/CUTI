@@ -24,10 +24,42 @@ cmake_minimum_required(VERSION 2.8)
 
 #Looks for the install directory of the currently used visual studio
 
-set(CUTI_VS_PATH_PREFIX "C:/Program Files (x86)/Microsoft Visual Studio ")
-set(CUTI_VS_PATH_SUFIX "VC/UnitTest")
+string(COMPARE EQUAL ${CMAKE_GENERATOR} "Ninja" CUTI_USES_NINJA_GENERATOR)
+if (${CUTI_USES_NINJA_GENERATOR})
+    #When using the Ninja generator we default to the latest version of visual studio (currently 15)
+    set(VS_VER 15)
+else()
+    string(SUBSTRING ${CMAKE_GENERATOR} 14 2 VS_VER)
+endif()
+set(CUTI_PROGRAM_FILES_X86 "PROGRAMFILES(X86)")
+string(REPLACE "\\" "/" CUTI_VS_PROGRAM_FILES_ENV $ENV{${CUTI_PROGRAM_FILES_X86}})
 
-string(SUBSTRING ${CMAKE_GENERATOR} 14 2 VS_VER)
-set(MSVC_UNIT_TEST_DIR ${CUTI_VS_PATH_PREFIX}${VS_VER}.0/${CUTI_VS_PATH_SUFIX})
+if(VS_VER LESS 15)
+    #Visual Studio 14 (2015) or less
+    set(CUTI_VS_PATH_PREFIX "${CUTI_VS_PROGRAM_FILES_ENV}/Microsoft Visual Studio ")
+    set(CUTI_VS_PATH_SUFIX "VC/UnitTest")
 
-link_directories(${MSVC_UNIT_TEST_DIR}/lib/)
+    set(MSVC_UNIT_TEST_DIR ${CUTI_VS_PATH_PREFIX}${VS_VER}.0/${CUTI_VS_PATH_SUFIX})
+else()
+    #Visual Studio 15 (2017) or more
+    if(VS_VER EQUAL 15)
+        set(VS_YEAR 2017)
+    else()
+        message(FATAL_ERROR "Visual Studio version unknown. Please edit FindVisualStudio.cmake.")
+    endif()
+    set(CUTI_VS_PATH_PREFIX "${CUTI_VS_PROGRAM_FILES_ENV}/Microsoft Visual Studio/${VS_YEAR}")
+    set(CUTI_VS_PATH_SUFIX "VC/Auxiliary/VS/UnitTest")
+
+    if(EXISTS ${CUTI_VS_PATH_PREFIX}/Professional)
+        set(VS_TYPE "Professional")
+    elseif(EXISTS ${CUTI_VS_PATH_PREFIX}/Enterprise)
+        set(VS_TYPE "Enterprise")
+    elseif(EXISTS ${CUTI_VS_PATH_PREFIX}/Community)
+        set(VS_TYPE "Community")
+    else()
+        message(FATAL_ERROR "Couldn't find Visual Studio installation. Tried in ${CUTI_VS_PATH_PREFIX}")
+    endif()
+
+    set(MSVC_UNIT_TEST_DIR ${CUTI_VS_PATH_PREFIX}/${VS_TYPE}/${CUTI_VS_PATH_SUFIX})
+endif()
+link_directories(${MSVC_UNIT_TEST_DIR}/lib/ ${MSVC_UNIT_TEST_DIR}/lib/)
