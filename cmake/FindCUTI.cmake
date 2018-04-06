@@ -127,8 +127,10 @@ function(cuti_creates_test_target target testee)
     cuti_init_cppunit_libraries(${target})
   endif()
 
-	target_link_libraries(${target} PRIVATE debug ${CUTI_LIBRARIES_DEBUG} ${testee})
-	target_link_libraries(${target} PRIVATE optimized ${CUTI_LIBRARIES_RELEASE} ${testee})
+  if(NOT ${testee} STREQUAL "")
+    target_link_libraries(${target} PRIVATE debug ${CUTI_LIBRARIES_DEBUG} ${testee})
+    target_link_libraries(${target} PRIVATE optimized ${CUTI_LIBRARIES_RELEASE} ${testee})
+  endif()
   target_include_directories(${target} PUBLIC ${CUTI_INCLUDE_DIRS})
 
   if(${USE_CUTI_BACK_END})
