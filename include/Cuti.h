@@ -39,7 +39,9 @@ SOFTWARE.
 #if defined(CUTI_USES_MSVC_UNIT_BACKEND)
 #pragma warning(push)
 #pragma warning(disable : 4505)
+#define FEATURE_CORESYSTEM // if not defined, the test classes have a noexcept(false) destructor, which causes compile errors in some case
 #include <CppUnitTest.h>
+#undef FEATURE_CORESYSTEM
 #undef TEST_CLASS
 #pragma warning(pop)
 #endif
