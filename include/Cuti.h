@@ -34,7 +34,6 @@ SOFTWARE.
 *******************/
 #include <string>
 #include <sstream>
-#include <codecvt>
 
 #if defined(CUTI_USES_MSVC_UNIT_BACKEND)
 #pragma warning(push)
@@ -316,6 +315,7 @@ namespace cuti
     {
         return msg;
     }
+#if defined(CUTI_USES_MSVC_UNIT_BACKEND)
     /**
      * Converts string to wide string
      * @param s The string to be converted
@@ -323,9 +323,9 @@ namespace cuti
      */
     inline std::wstring CutiGetMessageW(const std::string &s = std::string())
     {
-        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        return converter.from_bytes(s);
+        RETURN_WIDE_STRING(s.c_str());
     }
+#endif
     /**
      * converts fundamental and enum types to std::string
      */
