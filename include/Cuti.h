@@ -34,6 +34,7 @@ SOFTWARE.
 *******************/
 #include <string>
 #include <sstream>
+#include <typeinfo>
 
 #if defined(CUTI_USES_MSVC_UNIT_BACKEND)
 #pragma warning(push)
@@ -397,7 +398,7 @@ do                                                                              
         }                                                                                                                                              \
         catch (std::exception & e)                                                                                                                     \
         {                                                                                                                                              \
-            IMPL_CUTI_FAIL(std::string("Caught: std::exception or derived. What() : ") + e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__)); \
+            IMPL_CUTI_FAIL(typeid(e).name() + std::string(" was caught. What() : ") + e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__)); \
         }                                                                                                                                              \
         catch (...)                                                                                                                                    \
         {                                                                                                                                              \
