@@ -1,6 +1,6 @@
 #The MIT License (MIT)
 #
-#Copyright (c) 2017 k-brac
+#Copyright (c) 2018 k-brac
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -20,47 +20,70 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-#CMake file to compile a cli test runner for CPPUNIT plugins
 cmake_minimum_required (VERSION 3.2)
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake/")
-
-find_package(CUTI REQUIRED)
-
-#In the case we don't want to use IDE integration, we can use a command line test runner for cppunit
-if(NOT ${USE_CUTI_BACK_END})
-
-    set(TOP_DIR .)
-    set(SRC_DIR ${TOP_DIR}/src)
-
-    project (Cuti)
-    find_package(CppUnit REQUIRED)
-    include_directories(${CPPUNIT_INCLUDE_DIRS})
-    add_executable(Cuti ${SRC_DIR}/CutiMain.cpp)
-
-    cuti_init_cppunit_libraries(Cuti)
-
-    target_link_libraries(Cuti debug ${CUTI_LIBRARIES_DEBUG})
-    target_link_libraries(Cuti optimized ${CUTI_LIBRARIES_RELEASE})
-
-    #Check that we are as warning clean as possible
-    if(WIN32)
-        target_compile_options(Cuti PRIVATE "/W4" "/MP" "/analyze")
-    elseif(APPLE)
-        target_compile_options(Cuti PRIVATE
-            -Weverything
-            -Wno-c++98-compat
-            -std=c++14
-            -Wno-c++98-compat-pedantic
-            -Wno-gnu
-        )
-        set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT[variant=Debug] "dwarf")
-        set_target_properties (Cuti PROPERTIES XCODE_ATTRIBUTE_DEBUG_INFORMATION_FORMAT "dwarf-with-dsym")
-        set_target_properties(Cuti PROPERTIES COMPILE_FLAGS "-g")
-    endif(WIN32)
-
-    #copy cppunit dll to current build dir
-    set(CUTI_COPY_LIB $<$<CONFIG:Debug>:${CPPUNIT_DYN_LIB_DEBUG}> $<$<NOT:$<CONFIG:Debug>>:${CPPUNIT_DYN_LIB_RELEASE}>)
-    add_custom_command(TARGET Cuti POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CUTI_COPY_LIB} $<TARGET_FILE_DIR:Cuti>)
+if(CUTI_INCLUDE_GUARD)
+	return()
 endif()
+set(CUTI_INCLUDE_GUARD ON)
+
+#Options to configure cuti's back end and front end
+if(WIN32 OR APPLE)
+	#Defaulted to cuti front and back end for windows and mac
+	set(CUTI_FRONT_END "CUTI" CACHE STRING "Select cuti's front end")
+	set(CUTI_BACK_END "CUTI" CACHE STRING "Select cuti's back end")
+else()
+	#Defaulted to cppunit front and back end other platforms
+	set(CUTI_FRONT_END "CPPUNIT" CACHE STRING "Select cuti's front end")
+	set(CUTI_BACK_END "CPPUNIT" CACHE STRING "Select cuti's back end")
+endif(WIN32 OR APPLE)
+
+option(CUTI_USE_LONG_MACRO_NAME "Select wether you want to use long macro names" OFF)
+
+set_property(CACHE CUTI_FRONT_END PROPERTY STRINGS "CUTI" "CPPUNIT")
+set_property(CACHE CUTI_BACK_END PROPERTY STRINGS "CUTI" "CPPUNIT")
+
+string(COMPARE EQUAL "${CUTI_FRONT_END}" "CUTI" USE_CUTI_FRONT_END)
+string(COMPARE EQUAL "${CUTI_BACK_END}" "CUTI" USE_CUTI_BACK_END)
+
+#this is mandatory. Otherwise XCode crashes
+if(APPLE)
+	set(MACOSX_BUNDLE_GUI_IDENTIFIER "$(PRODUCT_BUNDLE_IDENTIFIER)")
+endif(APPLE)
+
+if(WIN32 AND ${USE_CUTI_BACK_END})
+	get_filename_component(CUTI_VS_DIR ${CMAKE_VS_DEVENV_COMMAND} DIRECTORY)
+	link_directories("${CUTI_VS_DIR}/../../VC/Auxiliary/VS/UnitTest/lib")
+endif()
+
+add_library(cuti INTERFACE)
+target_include_directories(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Cuti.h>)
+
+target_compile_definitions(cuti INTERFACE
+	$<IF:${USE_CUTI_BACK_END},
+		$<IF:$<BOOL:MSVC>,
+			CUTI_USES_MSVC_UNIT_BACKEND,
+			$<IF:$<BOOL:APPLE>,
+				CUTI_USES_XCTEST_BACKEND,
+				CUTI_CONFIG_ERROR
+			>
+		>, 
+		CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility("default")))
+	>
+)
+
+target_compile_definitions(cuti INTERFACE
+	$<IF:${USE_CUTI_BACK_END},
+		$<IF:${USE_CUTI_FRONT_END},
+			CUTI_FREE_STANDING,
+			CUTI_CPPUNIT_COMPATABILITY
+		>,
+		$<IF:${USE_CUTI_FRONT_END},
+			CUTI_UNKNOWN,
+			CUTI_NO_INTEGRATION
+		>
+	>
+)
+
+target_compile_definitions(cuti INTERFACE $<$<BOOL:${CUTI_USE_LONG_MACRO_NAME}>:CUTI_USE_LONG_MACRO_NAME>)
