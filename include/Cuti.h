@@ -939,4 +939,8 @@ class className : public CppUnit::TestFixture
 
 #endif
 
+#if defined(CUTI_CONFIG_ERROR)
+#error "Cuti's configuration is wrong'"
+#endif
+
 #endif //CPP_UNIT_TEST_INTEGRATED
