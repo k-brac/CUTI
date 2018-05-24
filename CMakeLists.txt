@@ -38,6 +38,9 @@ else()
 	set(CUTI_BACK_END "CPPUNIT" CACHE STRING "Select cuti's back end")
 endif(WIN32 OR APPLE)
 
+set(CUTI_PATH_TO_CPPUNIT_ROOT "" CACHE STRING "Provide a path to cppunit root directory (optional)")
+set(CUTI_PATH_TO_CPPUNIT_BIN "" CACHE STRING "Provide a path to cppunit binary directory (optional)")
+
 option(CUTI_USE_LONG_MACRO_NAME "Select wether you want to use long macro names" OFF)
 
 set_property(CACHE CUTI_FRONT_END PROPERTY STRINGS "CUTI" "CPPUNIT")
@@ -69,7 +72,9 @@ target_compile_definitions(cuti INTERFACE
 				CUTI_CONFIG_ERROR
 			>
 		>, 
-		CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility("default")))
+		"CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility(\"default\")))"
+		CUTI_USES_CPPUNIT_BACKEND
+		CPPUNIT_DLL
 	>
 )
 
@@ -87,3 +92,43 @@ target_compile_definitions(cuti INTERFACE
 )
 
 target_compile_definitions(cuti INTERFACE $<$<BOOL:${CUTI_USE_LONG_MACRO_NAME}>:CUTI_USE_LONG_MACRO_NAME>)
+
+#Special case to use cppunit as backend
+if(NOT ${USE_CUTI_BACK_END})
+	if("${CUTI_PATH_TO_CPPUNIT_ROOT}" STREQUAL "")
+		set(CUTI_PATH_TO_CPPUNIT_ROOT ${CMAKE_CURRENT_LIST_DIR}/../cppunit)
+	endif()
+	if("${CUTI_PATH_TO_CPPUNIT_BIN}" STREQUAL "")
+		set(CUTI_PATH_TO_CPPUNIT_BIN ${CMAKE_CURRENT_LIST_DIR}/../cppunit/bin)
+	endif()
+
+	if(MSVC)
+		string(SUBSTRING ${CMAKE_GENERATOR} 14 2 VS_VER)
+		set(CUTI_COMPILER_NAME msvc${VS_VER})
+	elseif(CMAKE_COMPILER_IS_GNUCXX)
+		set(CUTI_COMPILER_NAME gcc)
+	else()
+		set(CUTI_COMPILER_NAME clang)
+	endif()
+
+	set(CPPUNIT_ARCH_DIR $<$<AND:$<NOT:$<BOOL:${APPLE}>>,$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>>:x64>)
+
+	target_include_directories(cuti INTERFACE ${CUTI_PATH_TO_CPPUNIT_ROOT}/include)
+	target_link_libraries(cuti INTERFACE
+		debug ${CUTI_PATH_TO_CPPUNIT_BIN}/Debug/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:WIN32>:d_dll>${CMAKE_STATIC_LIBRARY_SUFFIX}
+		optimized ${CUTI_PATH_TO_CPPUNIT_BIN}/Release/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:WIN32>:_dll>${CMAKE_STATIC_LIBRARY_SUFFIX}
+	)
+
+	target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/UnitTestPlugin.cpp>)
+	
+	if(NOT CUTI_RUNNER_INCLUDE_GUARD)
+		add_executable(Cuti ${CMAKE_CURRENT_SOURCE_DIR}/src/CutiMain.cpp)
+		target_link_libraries(Cuti cuti)
+		set(CPPUNIT_DYN_LIB_DEBUG ${CUTI_PATH_TO_CPPUNIT_BIN}/Debug/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:WIN32>:d_dll>${CMAKE_SHARED_LIBRARY_SUFFIX})
+		set(CPPUNIT_DYN_LIB_RELEASE ${CUTI_PATH_TO_CPPUNIT_BIN}/Release/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:WIN32>:_dll>${CMAKE_SHARED_LIBRARY_SUFFIX})
+		set(CUTI_RUNNER_INCLUDE_GUARD ON)
+		set(CUTI_COPY_LIB $<$<CONFIG:Debug>:${CPPUNIT_DYN_LIB_DEBUG}> $<$<NOT:$<CONFIG:Debug>>:${CPPUNIT_DYN_LIB_RELEASE}>)
+		#copy cppunit dll to current build dir
+		add_custom_command(TARGET Cuti POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CUTI_COPY_LIB} $<TARGET_FILE_DIR:Cuti>)
+	endif()
+endif()
