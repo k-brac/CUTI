@@ -174,9 +174,10 @@ bool runPlugin(const CommandLineParser &arguments) {
 
 int main(int argc, char* argv[])
 {
-	std::cout << "usage : " << argv[0] << "{-x | -xml=file} {-t | --test=Namespace::ClassName::TestName} test_plugin_path" << std::endl << std::endl;
-	if (argc < 2)
+	if (argc < 2) {
+		std::cout << "usage : " << argv[0] << " {-x | -xml=file} {-t | --test=Namespace::ClassName::TestName} test_plugin_path" << std::endl << std::endl;
 		return 1;
+	}
 
 	bool result = false;
 	try {
