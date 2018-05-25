@@ -56,7 +56,11 @@ endif(APPLE)
 
 if(WIN32 AND ${USE_CUTI_BACK_END})
 	get_filename_component(CUTI_VS_DIR ${CMAKE_VS_DEVENV_COMMAND} DIRECTORY)
-	link_directories("${CUTI_VS_DIR}/../../VC/Auxiliary/VS/UnitTest/lib")
+	if(MSVC_VERSION GREATER 1900)
+		link_directories("${CUTI_VS_DIR}/../../VC/Auxiliary/VS/UnitTest/lib")
+	else()
+		link_directories("${CUTI_VS_DIR}/../../VC/UnitTest/lib")
+	endif()
 endif()
 
 add_library(cuti INTERFACE)
