@@ -54,18 +54,20 @@ if(APPLE)
 	set(MACOSX_BUNDLE_GUI_IDENTIFIER "$(PRODUCT_BUNDLE_IDENTIFIER)")
 endif(APPLE)
 
+
+add_library(cuti INTERFACE)
+target_include_directories(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Cuti.h>)
+
 if(WIN32 AND ${USE_CUTI_BACK_END})
 	get_filename_component(CUTI_VS_DIR ${CMAKE_VS_DEVENV_COMMAND} DIRECTORY)
 	if(MSVC_VERSION GREATER 1900)
 		link_directories("${CUTI_VS_DIR}/../../VC/Auxiliary/VS/UnitTest/lib")
 	else()
 		link_directories("${CUTI_VS_DIR}/../../VC/UnitTest/lib")
+		target_include_directories(cuti INTERFACE "${CUTI_VS_DIR}/../../VC/UnitTest/include")
 	endif()
 endif()
-
-add_library(cuti INTERFACE)
-target_include_directories(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
-target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Cuti.h>)
 
 target_compile_definitions(cuti INTERFACE
 	$<IF:${USE_CUTI_BACK_END},
