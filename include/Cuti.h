@@ -282,7 +282,6 @@ namespace cuti
      * constexpr recursive comparison of 2 strings where src_str is at least as long as ref_str
      * @param src_str The string to be compared
      * @param ref_str The reference string to look for in src_str
-     * @param idx The index of the character to compare
      * @return True if src_str starts with ref_str, false otherwise. False for empty strings
      */
     template< unsigned N, unsigned M >
@@ -664,7 +663,7 @@ namespace cuti
 #pragma clang diagnostic ignored "-Wweak-vtables"
 struct CutiBaseTestCase
 {
-    XCTestCase *self = NULL;
+    XCTestCase *self = nullptr;
     virtual void setUp() {}
     virtual void tearDown() {}
     virtual ~CutiBaseTestCase() = default;
