@@ -24,7 +24,6 @@
 #CMake example file to show how to setup a project and its test to use Cuti
 cmake_minimum_required (VERSION 3.2)
 
-
 #define the resource path
 set(TEST_TOP_DIR .)
 set(TEST_SRC_DIR ${TEST_TOP_DIR}/src)
@@ -72,13 +71,11 @@ include_directories(${TEST_INCLUDE_DIR})
 
 #creates the test target to be integrated in Visual Studio and XCode
 set(USE_CUTI_FRONT_END FALSE)#Hardcode our choice of frontend
-add_library(testCppunit MODULE ${TEST_CPPUNIT_LIB_SRC})
+cuti_creates_test_target(testCppunit DynamicLib ${TEST_CPPUNIT_LIB_SRC})
 target_compile_definitions(testCppunit PRIVATE CUTI_CPPUNIT_COMPATABILITY)
-target_link_libraries(testCppunit DynamicLib cuti)
 
 set(USE_CUTI_FRONT_END TRUE)#Hardcode our choice of frontend
-add_library(testCuti MODULE ${TEST_CUTI_LIB_SRC})
-target_link_libraries(testCuti DynamicLib cuti)
+cuti_creates_test_target(testCuti DynamicLib ${TEST_CUTI_LIB_SRC})
 
 #Various compilation configurations
 if(WIN32)

@@ -27,6 +27,32 @@ if(CUTI_INCLUDE_GUARD)
 endif()
 set(CUTI_INCLUDE_GUARD ON)
 
+function(cuti_target_properties target testee)
+#set some custom properties to target
+	if(APPLE)
+		set_target_properties(${target} PROPERTIES
+			BUNDLE TRUE
+			XCTEST TRUE
+			XCTEST_TESTEE ${testee}
+		)
+	endif()
+endfunction(cuti_target_properties)
+
+function(cuti_creates_test_target target testee)
+#creates a test target for the testee target
+#uses ${ARGN} as list of source files for the test target
+
+	if(WIN32 AND MSVC_VERSION LESS 1910)
+		get_filename_component(CUTI_VS_DIR ${CMAKE_VS_DEVENV_COMMAND} DIRECTORY)
+		link_directories("${CUTI_VS_DIR}/../../VC/UnitTest/lib")
+	endif()
+
+	add_library(${target} MODULE ${ARGN})
+	target_link_libraries(${target} PRIVATE ${testee} cuti)
+
+	cuti_target_properties(${target} ${testee})
+endfunction(cuti_creates_test_target)
+
 #Options to configure cuti's back end and front end
 if(WIN32 OR APPLE)
 	#Defaulted to cuti front and back end for windows and mac
@@ -59,30 +85,45 @@ add_library(cuti INTERFACE)
 target_include_directories(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Cuti.h>)
 
-if(WIN32 AND ${USE_CUTI_BACK_END})
+if(WIN32 AND ${USE_CUTI_BACK_END} AND MSVC_VERSION LESS 1910)
 	get_filename_component(CUTI_VS_DIR ${CMAKE_VS_DEVENV_COMMAND} DIRECTORY)
-	if(MSVC_VERSION GREATER 1900)
-		link_directories("${CUTI_VS_DIR}/../../VC/Auxiliary/VS/UnitTest/lib")
-	else()
-		link_directories("${CUTI_VS_DIR}/../../VC/UnitTest/lib")
-		target_include_directories(cuti INTERFACE "${CUTI_VS_DIR}/../../VC/UnitTest/include")
-	endif()
+	target_include_directories(cuti INTERFACE "${CUTI_VS_DIR}/../../VC/UnitTest/include")
 endif()
 
-target_compile_definitions(cuti INTERFACE
-	$<IF:${USE_CUTI_BACK_END},
-		$<IF:$<BOOL:MSVC>,
+if(${MSVC})
+	target_compile_definitions(cuti INTERFACE
+		$<IF:${USE_CUTI_BACK_END},
 			CUTI_USES_MSVC_UNIT_BACKEND,
-			$<IF:$<BOOL:APPLE>,
-				CUTI_USES_XCTEST_BACKEND,
-				CUTI_CONFIG_ERROR
-			>
-		>, 
+			"CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility(\"default\")))"
+			CUTI_USES_CPPUNIT_BACKEND
+			CPPUNIT_DLL
+		>
+	)
+elseif(${APPLE})
+	target_compile_definitions(cuti INTERFACE
+		$<IF:${USE_CUTI_BACK_END},
+			CUTI_USES_XCTEST_BACKEND,
+			"CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility(\"default\")))"
+			CUTI_USES_CPPUNIT_BACKEND
+			CPPUNIT_DLL
+		>
+	)
+	find_package(XCTest REQUIRED)
+	if(NOT XCTest_FOUND)
+		message(FATAL_ERROR "XCTest is required to create a XCTest Bundle.")
+	endif()
+	target_link_libraries(cuti INTERFACE "-framework Foundation")
+	target_link_libraries(cuti INTERFACE ${XCTest_LIBRARIES})
+	target_include_directories(cuti INTERFACE ${XCTest_INCLUDE_DIRS})
+	target_compile_options(cuti BEFORE INTERFACE -x objective-c++)
+
+else()
+	target_compile_definitions(cuti INTERFACE
 		"CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility(\"default\")))"
 		CUTI_USES_CPPUNIT_BACKEND
 		CPPUNIT_DLL
-	>
-)
+	)
+endif()
 
 target_compile_definitions(cuti INTERFACE
 	$<IF:${USE_CUTI_BACK_END},
