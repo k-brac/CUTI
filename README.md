@@ -27,19 +27,60 @@ _ | 9.3
 * The code to test must be compiled as a library (static or shared)
 
 ## How?
-* Add CUTI's cmake directory to your CMAKE_MODULE_PATH
+* Add CUTI's cmake directory to your CMakeLists.txt
 ```cmake  
-LIST(APPEND CMAKE_MODULE_PATH ${PATH_TO_CUTI_ROOT_DIR}/cmake)
-```
-* Import CUTI in your CMakeLists.txt
-```cmake
-find_package(CUTI REQUIRED)
+add_subdirectory(${PATH_TO_CUTI_ROOT_DIR} ${CMAKE_BINARY_DIR}/cuti)
 ```
 * Create a test target
 ```cmake
 cuti_creates_test_target(test_project_name project_to_test list_of_test_files_cpp)
 ```
 * That's it! Take a look at [./test/testDynamicLib/CMakeLists.txt](./test/testDynamicLib/CMakeLists.txt) for an example
+
+## Example
+[There is a toy project in the test directory to show how to use Cuti.](./test/testDynamicLib/)
+
+### CMakeLists.txt
+```cmake
+add_subdirectory(${PATH_TO_CUTI_ROOT_DIR} ${CMAKE_BINARY_DIR}/cuti)
+#create your library (SHARED or STATIC)
+add_library(MyLib SHARED ${MyLib_source_files})
+#Create 'MyLibTest' test target to test MyLib
+cuti_creates_test_target(MyLibTest MyLib ${MyLibTest_source_files})
+```
+
+### TestClass.cpp
+```cpp
+#include "Cuti.h"
+
+TEST_CLASS(TestClass) {
+public:
+    /**
+    * Optional. Executed before every test case
+    */
+    SET_UP() {
+      //...
+    }
+
+    /**
+    * Optional. Executed after every test case
+    */
+    TEAR_DOWN() {
+        //...
+    }
+
+    void testSimpleAssert() {
+        ASSERT(true);
+    }
+    /**
+     * Test suit declaration and test case registration
+     */
+    BEGIN_TESTS_REGISTRATION(TestClass);
+    TEST(testSimpleAssert);
+    END_TESTS_REGISTRATION();//must be the last statement in the class
+};
+
+```
 
 ### CMake arguments
 By default, CUTI's creates a test target for its front end and Xcode or Visual Studio unit test framework. This behavior can be customized for compatibility.
@@ -49,9 +90,6 @@ By default, CUTI's creates a test target for its front end and Xcode or Visual S
 * CUTI_BACK_END can be set to CUTI or CPPUNIT
   * CUTI: use Xcode or Visual Studio unit test framework as test runner
   * CPPUNIT: use cppunit as test runner. Useful if you want to run your unit tests on a platform not supported by Xcode and Visual Studio.
-
-## Example project
-[There is a toy project in the test directory to show how to use Cuti.](./test/testDynamicLib/)
 
 ### Templates
 Templates are available in the test directory
