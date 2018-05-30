@@ -505,7 +505,7 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 
 #define IMPL_CUTI_FAIL(...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::Fail(cutiMsg_.c_str(), &li), __VA_ARGS__)
 
-#define IMPL_CUTI_ASSERT_EQUAL(expected, actual, ...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::AreEqual(expected, actual, cutiMsg_.c_str(), &li), __VA_ARGS__)
+#define IMPL_CUTI_ASSERT_EQUAL(expected, actual, ...) static_assert(std::is_same<decltype(expected), decltype(actual)>::value, "You must compare two values of the same type"); INTERNAL_CUTI_ASSERT_COMPARE(expected, ==, actual, " was expected but instead got ", __VA_ARGS__)
 
 #define IMPL_CUTI_ASSERT_LESS(bound, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(bound, >, actual, " was expected to be less than ", __VA_ARGS__)
 
