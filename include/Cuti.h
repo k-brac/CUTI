@@ -282,7 +282,6 @@ namespace cuti
      * constexpr recursive comparison of 2 strings where src_str is at least as long as ref_str
      * @param src_str The string to be compared
      * @param ref_str The reference string to look for in src_str
-     * @param idx The index of the character to compare
      * @return True if src_str starts with ref_str, false otherwise. False for empty strings
      */
     template< unsigned N, unsigned M >
@@ -506,7 +505,7 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 
 #define IMPL_CUTI_FAIL(...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::Fail(cutiMsg_.c_str(), &li), __VA_ARGS__)
 
-#define IMPL_CUTI_ASSERT_EQUAL(expected, actual, ...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::AreEqual(expected, actual, cutiMsg_.c_str(), &li), __VA_ARGS__)
+#define IMPL_CUTI_ASSERT_EQUAL(expected, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(expected, ==, actual, " was expected but instead got ", __VA_ARGS__)
 
 #define IMPL_CUTI_ASSERT_LESS(bound, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(bound, >, actual, " was expected to be less than ", __VA_ARGS__)
 
@@ -664,7 +663,7 @@ namespace cuti
 #pragma clang diagnostic ignored "-Wweak-vtables"
 struct CutiBaseTestCase
 {
-    XCTestCase *self = NULL;
+    XCTestCase *self = nullptr;
     virtual void setUp() {}
     virtual void tearDown() {}
     virtual ~CutiBaseTestCase() = default;
@@ -937,6 +936,10 @@ class className : public CppUnit::TestFixture
 #define TEAR_DOWN() void tearDown() final
 #endif
 
+#endif
+
+#if defined(CUTI_CONFIG_ERROR)
+#error "Cuti's configuration is wrong'"
 #endif
 
 #endif //CPP_UNIT_TEST_INTEGRATED
