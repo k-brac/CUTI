@@ -505,7 +505,7 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 
 #define IMPL_CUTI_FAIL(...) INTERNAL_CUTI_ASSERT_MESSAGE(Assert::Fail(cutiMsg_.c_str(), &li), __VA_ARGS__)
 
-#define IMPL_CUTI_ASSERT_EQUAL(expected, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(expected, ==, actual, " was expected but instead got ", __VA_ARGS__)
+#define IMPL_CUTI_ASSERT_EQUAL(expected, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(actual, ==, expected, " was expected but instead got ", __VA_ARGS__)
 
 #define IMPL_CUTI_ASSERT_LESS(bound, actual, ...) INTERNAL_CUTI_ASSERT_COMPARE(bound, >, actual, " was expected to be less than ", __VA_ARGS__)
 
