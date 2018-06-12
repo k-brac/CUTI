@@ -307,7 +307,7 @@ namespace cuti
     inline std::string ToString(const T &val)
     {
         std::ostringstream ost;
-        val.operator<<(ost);
+        ost << val;
         return ost.str();
     }
     
