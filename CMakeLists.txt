@@ -111,7 +111,7 @@ if(WIN32 AND ${USE_CUTI_BACK_END})
 	endif()
 endif()
 
-if(${MSVC})
+if(WIN32)
 	target_compile_definitions(cuti INTERFACE
 		$<IF:${USE_CUTI_BACK_END},
 			CUTI_USES_MSVC_UNIT_BACKEND,
