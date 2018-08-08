@@ -27,7 +27,7 @@ _ | 9.4
 * The code to test must be compiled as a library (static or shared)
 
 ## How?
-* Add CUTI's cmake directory to your CMakeLists.txt
+* Add CUTI's root directory to your CMakeLists.txt
 ```cmake  
 add_subdirectory(${PATH_TO_CUTI_ROOT_DIR} ${CMAKE_BINARY_DIR}/cuti)
 ```
