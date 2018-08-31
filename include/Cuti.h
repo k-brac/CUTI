@@ -275,7 +275,7 @@ namespace cuti
      * @return True if src_str starts with ref_str, false otherwise
      */
     constexpr bool CompareStartWith(const char* src_str, const char* ref_str, unsigned idx) {
-        return idx == static_cast<unsigned>(-1) ? true : src_str[idx] == ref_str[idx] && CompareStartWith(src_str, ref_str, idx - 1);
+        return idx == static_cast<unsigned>(-1) ? true : src_str[idx] == ref_str[idx] && CompareStartWith(src_str, ref_str, static_cast<unsigned>(idx - 1));
     }
     
     /**
@@ -289,7 +289,7 @@ namespace cuti
 #if defined(_MSC_VER) && _MSC_VER < 1900
 		return true;
 #else
-        return N >= M && M > 1 && CompareStartWith(src_str, ref_str, M - 2);
+        return N >= M && M > static_cast<unsigned>(1) && CompareStartWith(src_str, ref_str, static_cast<unsigned>(M - 2));
 #endif
     }
 
