@@ -367,10 +367,10 @@ do                                                                              
         {                                                                                              \
             cpputCorrectExceptionThrown_ = true;                                                       \
         }                                                                                              \
-        catch (const std::exception &e)                                                                \
+        catch (const std::exception &cuti_e)                                                                \
         {                                                                                              \
-            cutiMsgT_ += std::string("Actual : ") + std::string(typeid(e).name()) + std::string(". "); \
-            cutiMsgT_ += std::string("What() : ") + e.what() + std::string(". ");                      \
+            cutiMsgT_ += std::string("Actual : ") + std::string(typeid(cuti_e).name()) + std::string(". "); \
+            cutiMsgT_ += std::string("What() : ") + cuti_e.what() + std::string(". ");                      \
         }                                                                                              \
         catch (...)                                                                                    \
         {                                                                                              \
@@ -395,9 +395,9 @@ do                                                                              
         {                                                                                                                                              \
             expression;                                                                                                                                \
         }                                                                                                                                              \
-        catch (std::exception & e)                                                                                                                     \
+        catch (std::exception & cuti_e)                                                                                                                     \
         {                                                                                                                                              \
-            IMPL_CUTI_FAIL(typeid(e).name() + std::string(" was caught. What() : ") + e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__)); \
+            IMPL_CUTI_FAIL(typeid(cuti_e).name() + std::string(" was caught. What() : ") + cuti_e.what() + std::string(". ") + cuti::CutiGetMessage(__VA_ARGS__)); \
         }                                                                                                                                              \
         catch (...)                                                                                                                                    \
         {                                                                                                                                              \
