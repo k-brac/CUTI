@@ -462,7 +462,7 @@ static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::Membe
 }
 #endif
 
-#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) /**/
+#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) static_assert(std::is_class<className>::value, #className " is unknown")
 
 #define IMPL_CUTI_END_TESTS_REGISTRATION() /**/
 
