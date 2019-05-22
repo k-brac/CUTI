@@ -1,6 +1,6 @@
 /*The MIT License (MIT)
 
-Copyright (c) 2017 k-brac
+Copyright (c) 2019 k-brac
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -478,7 +478,9 @@ template<> inline std::wstring                                                  
     \
 template<> inline std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<type>(type * t) { RETURN_WIDE_STRING(t); }
 
+#if _MSC_VER < 1921
 INTERNAL_CUTI_SPECIALIZED_TO_STRING(int64_t);
+#endif
 INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 
 /*****************
