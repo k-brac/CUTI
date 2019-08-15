@@ -497,7 +497,11 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
         expression;                                               \
     } while (false)
 
-#define INTERNAL_CUTI_ASSERT_COMPARE(bound, operation, actual, msg, ...) IMPL_CUTI_ASSERT(bound operation actual, cuti::ToString(actual) + std::string(msg) + cuti::ToString(bound) + cuti::CutiGetMessage(__VA_ARGS__))
+#define INTERNAL_CUTI_ASSERT_COMPARE(bound, operation, actual, msg, ...) \
+{ \
+auto const &boundResult = bound; \
+IMPL_CUTI_ASSERT(boundResult operation actual, cuti::ToString(actual) + std::string(msg) + cuti::ToString(boundResult) + cuti::CutiGetMessage(__VA_ARGS__)); \
+}
 
 /*************************************************
 * Visual studio CUTI assert macro implementations*
