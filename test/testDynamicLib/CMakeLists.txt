@@ -60,7 +60,8 @@ set(TEST_CPPUNIT_LIB_SRC
     ${TEST_TOP_DIR}/../TestTemplate.cpp
 )
 
-set(TEST_CUTI_LIB_SRC 
+set(TEST_CUTI_LIB_SRC
+    ${TEST_CUTI_DIR}/TestCuti.cpp
     ${TEST_CUTI_DIR}/TestLibInt.cpp
     ${TEST_CUTI_DIR}/TestLibFloat.cpp
     ${TEST_CUTI_DIR}/TestLibDouble.cpp
