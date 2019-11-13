@@ -66,6 +66,11 @@ function(cuti_creates_test_target target testee)
 	target_link_libraries(${target} PRIVATE ${testee} cuti)
 
 	cuti_target_properties(${target} ${testee})
+
+	if(TARGET Cuti)
+		#create a dependency between test target and Cuti test runner
+		add_dependencies(${target} Cuti)
+	endif()
 endfunction(cuti_creates_test_target)
 
 #Options to configure cuti's back end and front end
