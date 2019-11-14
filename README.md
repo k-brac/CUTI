@@ -1,5 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/g8h805xifcsauo9x/branch/master?svg=true)](https://ci.appveyor.com/project/k-brac/cuti/branch/master)
-[![Build Status](https://travis-ci.org/k-brac/CUTI.svg?branch=master)](https://travis-ci.org/k-brac/CUTI)
+[![Build Status](https://dev.azure.com/baptistehaubry/CUTI/_apis/build/status/k-brac.CUTI?branchName=master)](https://dev.azure.com/baptistehaubry/CUTI/_build/latest?definitionId=1&branchName=master)
 
 # CUTI
 CUTI stands for C++ Unit Test Integrated
@@ -9,11 +8,9 @@ CUTI allows you to easily integrate your C++ unit tests into Visual Studio and X
 
 Visual Studio | Xcode
 ------------- | ------
-2013 | 6.4
-2015 | 7.3
-2017 | 8.3
-_ | 9.4
-_ | 10
+2015 | 9
+2017 | 10
+2019 | 11
 ![Visual Studio Tests Results](https://cloud.githubusercontent.com/assets/7798247/24714946/40390d92-1a2a-11e7-8f8f-8787e2aa6498.jpg) | ![Xcode Tests Results](https://cloud.githubusercontent.com/assets/7798247/24714947/429acb5c-1a2a-11e7-9a32-95194205f046.jpg)
 
 ## Why?
