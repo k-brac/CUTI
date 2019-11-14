@@ -38,7 +38,7 @@ jobs:
       packageApp: false
       publishJUnitResults: true
       scheme: testCuti
-      sdk: macosx10.15
+      sdk: macosx10.14
 - job: Xcode_9
   pool:
     vmImage: 'macOS-latest'
@@ -53,22 +53,7 @@ jobs:
       packageApp: false
       publishJUnitResults: true
       scheme: testCuti
-      sdk: macosx10.15
-- job: Xcode_8
-  pool:
-    vmImage: 'macOS-latest'
-  steps:
-  - bash: cmake -G "Xcode" ./test/testDynamicLib
-  - bash: cmake -G "Xcode" ./test/testDynamicLib
-  - task: Xcode@5
-    inputs:
-      actions: 'test'
-      xcodeVersion: '8'
-      configuration: $(configuration)
-      packageApp: false
-      publishJUnitResults: true
-      scheme: testCuti
-      sdk: macosx10.15
+      sdk: macosx10.13
 - job: VS_latest
   pool:
     vmImage: 'windows-latest'
@@ -107,6 +92,7 @@ jobs:
   pool:
     vmImage: 'vs2015-win2012r2'
   steps:
+  - script: cmake.exe --version
   - script: cmake.exe -G "Visual Studio 14 2015 Win64" ./test/testDynamicLib
   - script: cmake.exe --build . --config $(configuration)
   - task: VSTest@2
