@@ -19,6 +19,7 @@ jobs:
       configuration: 'Release'
       packageApp: false
       publishJUnitResults: true
+      scheme: DynamicLib
 - job: Windows
   pool:
     vmImage: 'windows-latest'
