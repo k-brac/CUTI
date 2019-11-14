@@ -11,10 +11,14 @@ jobs:
   pool:
     vmImage: 'macOS-latest'
   steps:
-  - bash: cmake -G "XCode" ./test/testDynamicLib
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
   - bash: cmake --build . --config Release
-  - bash: /Applications/Xcode.app/Contents/Developer/usr/bin/xctest ./Release/testCuti.xctest
-  - bash: /Applications/Xcode.app/Contents/Developer/usr/bin/xctest ./Release/testCppunit.xctest
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      configuration: 'Release'
+      packageApp: false
+      publishJUnitResults: true
 - job: Windows
   pool:
     vmImage: 'windows-latest'
