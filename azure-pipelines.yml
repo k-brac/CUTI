@@ -1,0 +1,134 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+variables:
+  configuration: Release
+
+trigger:
+- master
+
+jobs:
+- job: Xcode_latest
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCuti
+      sdk: macosx10.15
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCppunit
+      sdk: macosx10.15
+- job: Xcode_10
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '10'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCuti
+      sdk: macosx10.14
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '10'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCppunit
+      sdk: macosx10.14
+- job: Xcode_9
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '9'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCuti
+      sdk: macosx10.13
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '9'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCppunit
+      sdk: macosx10.13
+- job: VS_latest
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: cmake.exe -G "Visual Studio 16 2019" -A x64 ./test/testDynamicLib
+  - script: cmake.exe --build . --config $(configuration)
+  - task: VSTest@2
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\*test*.dll
+        !**\*TestAdapter.dll
+        !**\obj\**
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'CUTI'
+      platform: 'windows-latest'
+      configuration: $(configuration)
+- job: VS_2017
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - script: cmake.exe -G "Visual Studio 15 2017 Win64" ./test/testDynamicLib
+  - script: cmake.exe --build . --config $(configuration)
+  - task: VSTest@2
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\*test*.dll
+        !**\*TestAdapter.dll
+        !**\obj\**
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'CUTI'
+      platform: 'vs2017-win2016'
+      configuration: $(configuration)
+# - job: VS_2015
+#   pool:
+#     vmImage: 'vs2015-win2012r2'
+#   steps:
+#   - script: cmake.exe --version
+#   - script: cmake.exe -G "Visual Studio 14 2015 Win64" ./test/testDynamicLib
+#   - script: cmake.exe --build . --config $(configuration)
+#   - task: VSTest@2
+#     inputs:
+#       testSelector: 'testAssemblies'
+#       testAssemblyVer2: |
+#         **\*test*.dll
+#         !**\*TestAdapter.dll
+#         !**\obj\**
+#       searchFolder: '$(System.DefaultWorkingDirectory)'
+#       testRunTitle: 'CUTI'
+#       platform: 'vs2015-win2012r2'
+#       configuration: $(configuration)
