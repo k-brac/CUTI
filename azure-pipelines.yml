@@ -24,6 +24,14 @@ jobs:
       publishJUnitResults: true
       scheme: testCuti
       sdk: macosx10.15
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCppunit
+      sdk: macosx10.15
 - job: Xcode_10
   pool:
     vmImage: 'macOS-latest'
@@ -39,6 +47,15 @@ jobs:
       publishJUnitResults: true
       scheme: testCuti
       sdk: macosx10.14
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '10'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCppunit
+      sdk: macosx10.14
 - job: Xcode_9
   pool:
     vmImage: 'macOS-latest'
@@ -53,6 +70,15 @@ jobs:
       packageApp: false
       publishJUnitResults: true
       scheme: testCuti
+      sdk: macosx10.13
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '9'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCppunit
       sdk: macosx10.13
 - job: VS_latest
   pool:
