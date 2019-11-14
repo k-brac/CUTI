@@ -1,0 +1,34 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+jobs:
+- job: macOS
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - bash: cmake -G "XCode" ./test/testDynamicLib
+  - bash: cmake --build . --config Release
+  - bash: /Applications/Xcode.app/Contents/Developer/usr/bin/xctest ./Release/testCuti.xctest
+  - bash: /Applications/Xcode.app/Contents/Developer/usr/bin/xctest ./Release/testCppunit.xctest
+- job: Windows
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: cmake.exe -G "Visual Studio 16 2019" -A x64 ./test/testDynamicLib
+  - script: cmake.exe --build . --config Release
+  - task: VSTest@2
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\*test*.dll
+        !**\*TestAdapter.dll
+        !**\obj\**
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'CUTI'
+      platform: 'windows-latest'
+      configuration: 'Release'
