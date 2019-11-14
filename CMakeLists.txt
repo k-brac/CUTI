@@ -49,7 +49,7 @@ function(cuti_init_devenv_path)
 	endif()
 endfunction(cuti_init_devenv_path)
 
-function(cuti_creates_test_target target testee)
+function(cuti_add_test_target target testee)
 #creates a test target for the testee target
 #uses ${ARGN} as list of source files for the test target
 
@@ -71,7 +71,7 @@ function(cuti_creates_test_target target testee)
 		#create a dependency between test target and Cuti test runner
 		add_dependencies(${target} Cuti)
 	endif()
-endfunction(cuti_creates_test_target)
+endfunction(cuti_add_test_target)
 
 #Options to configure cuti's back end and front end
 if(WIN32 OR APPLE)

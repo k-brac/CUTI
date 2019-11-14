@@ -72,11 +72,11 @@ include_directories(${TEST_INCLUDE_DIR})
 
 #creates the test target to be integrated in Visual Studio and XCode
 set(USE_CUTI_FRONT_END FALSE)#Hardcode our choice of frontend
-cuti_creates_test_target(testCppunit DynamicLib ${TEST_CPPUNIT_LIB_SRC})
+cuti_add_test_target(testCppunit DynamicLib ${TEST_CPPUNIT_LIB_SRC})
 target_compile_definitions(testCppunit PRIVATE CUTI_CPPUNIT_COMPATABILITY)
 
 set(USE_CUTI_FRONT_END TRUE)#Hardcode our choice of frontend
-cuti_creates_test_target(testCuti DynamicLib ${TEST_CUTI_LIB_SRC})
+cuti_add_test_target(testCuti DynamicLib ${TEST_CUTI_LIB_SRC})
 
 #Various compilation configurations
 if(WIN32)

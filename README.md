@@ -34,7 +34,7 @@ add_subdirectory(${PATH_TO_CUTI_ROOT_DIR} ${CMAKE_BINARY_DIR}/cuti)
 ```
 * Create a test target
 ```cmake
-cuti_creates_test_target(test_project_name project_to_test list_of_test_files_cpp)
+cuti_add_test_target(test_project_name project_to_test list_of_test_files_cpp)
 ```
 * That's it! Take a look at [./test/testDynamicLib/CMakeLists.txt](./test/testDynamicLib/CMakeLists.txt) for an example
 
@@ -47,7 +47,7 @@ add_subdirectory(${PATH_TO_CUTI_ROOT_DIR} ${CMAKE_BINARY_DIR}/cuti)
 #create your library (SHARED or STATIC)
 add_library(MyLib SHARED ${MyLib_source_files})
 #Create 'MyLibTest' test target to test MyLib
-cuti_creates_test_target(MyLibTest MyLib ${MyLibTest_source_files})
+cuti_add_test_target(MyLibTest MyLib ${MyLibTest_source_files})
 ```
 
 ### TestClass.cpp
