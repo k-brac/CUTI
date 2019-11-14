@@ -15,7 +15,8 @@ jobs:
     vmImage: 'macOS-latest'
   steps:
   - bash: cmake -G "Xcode" ./test/testDynamicLib
-  - bash: cmake --build . --config $(configuration)
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - bash: xcodebuild -showsdks
   - task: Xcode@5
     inputs:
       actions: 'test'
@@ -23,7 +24,7 @@ jobs:
       packageApp: false
       publishJUnitResults: true
       scheme: DynamicLib
-      sdk: macosx10.14
+      sdk: macosx
 - job: VS_latest
   pool:
     vmImage: 'windows-latest'
@@ -45,7 +46,7 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016'
   steps:
-  - script: cmake.exe -G "Visual Studio 15 2017 x64" ./test/testDynamicLib
+  - script: cmake.exe -G "Visual Studio 15 2017 Win64" ./test/testDynamicLib
   - script: cmake.exe --build . --config $(configuration)
   - task: VSTest@2
     inputs:
@@ -62,7 +63,7 @@ jobs:
   pool:
     vmImage: 'vs2015-win2012r2'
   steps:
-  - script: cmake.exe -G "Visual Studio 14 2015 x64" ./test/testDynamicLib
+  - script: cmake.exe -G "Visual Studio 14 2015 Win64" ./test/testDynamicLib
   - script: cmake.exe --build . --config $(configuration)
   - task: VSTest@2
     inputs:
