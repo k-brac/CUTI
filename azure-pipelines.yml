@@ -10,13 +10,12 @@ trigger:
 - master
 
 jobs:
-- job: macOS
+- job: Xcode_latest
   pool:
     vmImage: 'macOS-latest'
   steps:
   - bash: cmake -G "Xcode" ./test/testDynamicLib
   - bash: cmake -G "Xcode" ./test/testDynamicLib
-  - bash: xcodebuild -showsdks
   - task: Xcode@5
     inputs:
       actions: 'test'
@@ -24,7 +23,52 @@ jobs:
       packageApp: false
       publishJUnitResults: true
       scheme: DynamicLib
-      sdk: macosx
+      sdk: macosx10.15
+- job: Xcode_10
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '10'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: DynamicLib
+      sdk: macosx10.15
+- job: Xcode_9
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '9'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: DynamicLib
+      sdk: macosx10.15
+- job: Xcode_8
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '8'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: DynamicLib
+      sdk: macosx10.15
 - job: VS_latest
   pool:
     vmImage: 'windows-latest'
@@ -76,4 +120,3 @@ jobs:
       testRunTitle: 'CUTI'
       platform: 'vs2015-win2012r2'
       configuration: $(configuration)
-
