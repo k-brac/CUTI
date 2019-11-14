@@ -3,6 +3,9 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+variables:
+  configuration: Release
+
 trigger:
 - master
 
@@ -12,20 +15,21 @@ jobs:
     vmImage: 'macOS-latest'
   steps:
   - bash: cmake -G "Xcode" ./test/testDynamicLib
-  - bash: cmake --build . --config Release
+  - bash: cmake --build . --config $(configuration)
   - task: Xcode@5
     inputs:
       actions: 'test'
-      configuration: 'Release'
+      configuration: $(configuration)
       packageApp: false
       publishJUnitResults: true
       scheme: DynamicLib
-- job: Windows
+      sdk: macosx10.14
+- job: VS_latest
   pool:
     vmImage: 'windows-latest'
   steps:
   - script: cmake.exe -G "Visual Studio 16 2019" -A x64 ./test/testDynamicLib
-  - script: cmake.exe --build . --config Release
+  - script: cmake.exe --build . --config $(configuration)
   - task: VSTest@2
     inputs:
       testSelector: 'testAssemblies'
@@ -36,4 +40,39 @@ jobs:
       searchFolder: '$(System.DefaultWorkingDirectory)'
       testRunTitle: 'CUTI'
       platform: 'windows-latest'
-      configuration: 'Release'
+      configuration: $(configuration)
+- job: VS_2017
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - script: cmake.exe -G "Visual Studio 15 2017 x64" ./test/testDynamicLib
+  - script: cmake.exe --build . --config $(configuration)
+  - task: VSTest@2
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\*test*.dll
+        !**\*TestAdapter.dll
+        !**\obj\**
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'CUTI'
+      platform: 'vs2017-win2016'
+      configuration: $(configuration)
+- job: VS_2015
+  pool:
+    vmImage: 'vs2015-win2012r2'
+  steps:
+  - script: cmake.exe -G "Visual Studio 14 2015 x64" ./test/testDynamicLib
+  - script: cmake.exe --build . --config $(configuration)
+  - task: VSTest@2
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\*test*.dll
+        !**\*TestAdapter.dll
+        !**\obj\**
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'CUTI'
+      platform: 'vs2015-win2012r2'
+      configuration: $(configuration)
+
