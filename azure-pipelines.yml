@@ -22,7 +22,7 @@ jobs:
       configuration: $(configuration)
       packageApp: false
       publishJUnitResults: true
-      scheme: DynamicLib
+      scheme: testCuti
       sdk: macosx10.15
 - job: Xcode_10
   pool:
@@ -37,7 +37,7 @@ jobs:
       configuration: $(configuration)
       packageApp: false
       publishJUnitResults: true
-      scheme: DynamicLib
+      scheme: testCuti
       sdk: macosx10.15
 - job: Xcode_9
   pool:
@@ -52,7 +52,7 @@ jobs:
       configuration: $(configuration)
       packageApp: false
       publishJUnitResults: true
-      scheme: DynamicLib
+      scheme: testCuti
       sdk: macosx10.15
 - job: Xcode_8
   pool:
@@ -67,7 +67,7 @@ jobs:
       configuration: $(configuration)
       packageApp: false
       publishJUnitResults: true
-      scheme: DynamicLib
+      scheme: testCuti
       sdk: macosx10.15
 - job: VS_latest
   pool:
@@ -120,3 +120,4 @@ jobs:
       testRunTitle: 'CUTI'
       platform: 'vs2015-win2012r2'
       configuration: $(configuration)
+
