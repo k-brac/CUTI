@@ -140,7 +140,7 @@ elseif(${APPLE})
 	target_link_libraries(cuti INTERFACE ${XCTest_LIBRARIES})
 	target_include_directories(cuti INTERFACE ${XCTest_INCLUDE_DIRS})
 	target_compile_options(cuti BEFORE INTERFACE -x objective-c++)
-
+	target_compile_options(cuti INTERFACE -Wno-gnu-zero-variadic-macro-arguments -Wno-gnu-statement-expression)
 else()
 	target_compile_definitions(cuti INTERFACE
 		"CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility(\"default\")))"
