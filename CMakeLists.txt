@@ -102,8 +102,8 @@ endif(APPLE)
 
 
 add_library(cuti INTERFACE)
-target_include_directories(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
-target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Cuti.h>)
+target_include_directories(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
+target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/Cuti.h>)
 
 if(WIN32 AND ${USE_CUTI_BACK_END})
 	cuti_init_devenv_path()
@@ -190,10 +190,10 @@ if(NOT ${USE_CUTI_BACK_END})
 		optimized ${CUTI_PATH_TO_CPPUNIT_BIN}/Release/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:WIN32>:_dll>${CMAKE_STATIC_LIBRARY_SUFFIX}
 	)
 
-	target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/UnitTestPlugin.cpp>)
+	target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src/UnitTestPlugin.cpp>)
 	
 	if(NOT TARGET Cuti)
-		add_executable(Cuti ${CMAKE_CURRENT_SOURCE_DIR}/src/CutiMain.cpp)
+		add_executable(Cuti ${CMAKE_CURRENT_LIST_DIR}/src/CutiMain.cpp)
 		target_link_libraries(Cuti cuti)
 		set(CPPUNIT_DYN_LIB_DEBUG ${CUTI_PATH_TO_CPPUNIT_BIN}/Debug/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:WIN32>:d_dll>${CMAKE_SHARED_LIBRARY_SUFFIX})
 		set(CPPUNIT_DYN_LIB_RELEASE ${CUTI_PATH_TO_CPPUNIT_BIN}/Release/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:WIN32>:_dll>${CMAKE_SHARED_LIBRARY_SUFFIX})
