@@ -25,9 +25,9 @@ Visual Studio | Xcode
 * The code to test must be compiled as a library (static or shared)
 
 ## How?
-* Add CUTI's root directory to your CMakeLists.txt
+* include CUTI's CMakeLists.txt
 ```cmake  
-add_subdirectory(${PATH_TO_CUTI_ROOT_DIR} ${CMAKE_BINARY_DIR}/cuti)
+include(${PATH_TO_CUTI_ROOT_DIR}/CMakeLists.txt)
 ```
 * Create a test target
 ```cmake
@@ -40,7 +40,7 @@ cuti_add_test_target(test_project_name project_to_test list_of_test_files_cpp)
 
 ### CMakeLists.txt
 ```cmake
-add_subdirectory(${PATH_TO_CUTI_ROOT_DIR} ${CMAKE_BINARY_DIR}/cuti)
+include(${PATH_TO_CUTI_ROOT_DIR}/CMakeLists.txt)
 #create your library (SHARED or STATIC)
 add_library(MyLib SHARED ${MyLib_source_files})
 #Create 'MyLibTest' test target to test MyLib
