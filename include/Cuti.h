@@ -462,7 +462,9 @@ static const EXPORT_METHOD::Microsoft::VisualStudio::CppUnitTestFramework::Membe
 }
 #endif
 
-#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) static_assert(std::is_class<className>::value, #className " is unknown")
+#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) \
+    void* getAssertReporter() const { return nullptr; } \
+    static_assert(std::is_class<className>::value, #className " is unknown")
 
 #define IMPL_CUTI_END_TESTS_REGISTRATION() }; namespace {
 
@@ -602,6 +604,7 @@ CUTI_START_WITH_TEST_CHECK(testMethod);    \
 * Delimits the beginning of the tests registration
 */
 #define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) \
+    XCTestCase* getAssertReporter() const { return self; } \
     }                                                 \
     ;                                                 \
     \
@@ -770,7 +773,9 @@ class className : public CppUnit::TestFixture
 
 #define IMPL_CUTI_TEST(methodName) CUTI_START_WITH_TEST_CHECK(methodName); CPPUNIT_TEST(methodName)
 
-#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) CPPUNIT_TEST_SUITE(className)
+#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) \
+    void* getAssertReporter() const { return nullptr; } \
+    CPPUNIT_TEST_SUITE(className)
 
 #define IMPL_CUTI_END_TESTS_REGISTRATION() CPPUNIT_TEST_SUITE_END()
 
@@ -891,6 +896,31 @@ static_assert(std::is_same<className, ::className>::value, "CPPUNIT_TEST_SUITE_R
 #undef CPPUNIT_TEST_SUITE_REGISTRATION
 #define CPPUNIT_TEST_SUITE_REGISTRATION(className) /**/
 
+/**
+* Replace CPPUNIT_TEST_SUITE to add getAssertReporter function
+*/
+#undef CPPUNIT_TEST_SUITE
+#define CPPUNIT_TEST_SUITE( ATestFixtureType )                              \
+    void* getAssertReporter() const { return nullptr; } \
+public:                                                                   \
+  typedef ATestFixtureType TestFixtureType;                               \
+                                                                          \
+private:                                                                  \
+  static const CPPUNIT_NS::TestNamer &getTestNamer__()                    \
+  {                                                                       \
+    static CPPUNIT_TESTNAMER_DECL( testNamer, ATestFixtureType );         \
+    return testNamer;                                                     \
+  }                                                                       \
+                                                                          \
+public:                                                                   \
+  typedef CPPUNIT_NS::TestSuiteBuilderContext<TestFixtureType>            \
+              TestSuiteBuilderContextType;                                \
+                                                                          \
+  static void                                                             \
+  addTestsToSuite( CPPUNIT_NS::TestSuiteBuilderContextBase &baseContext ) \
+  {                                                                       \
+    TestSuiteBuilderContextType context( baseContext )
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -948,5 +978,16 @@ class className : public CppUnit::TestFixture
 #if defined(CUTI_CONFIG_ERROR)
 #error "Cuti's configuration is wrong'"
 #endif
+
+namespace cuti
+{
+
+#if defined(CUTI_USES_XCTEST_BACKEND)
+using AssertReporter = XCTestCase;
+#else
+using AssertReporter = void;
+#endif
+
+}
 
 #endif //CPP_UNIT_TEST_INTEGRATED
