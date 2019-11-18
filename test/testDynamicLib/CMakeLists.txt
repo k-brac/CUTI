@@ -35,7 +35,7 @@ set(TEST_CUTI_DIR ${TEST_TOP_DIR}/testCutiFrontEnd)
 project (testDynamicLib)
 
 #This add_subdirectory needs to be done after a call to projetc otherwise ${CMAKE_VS_DEVENV_COMMAND} is empty
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../   ${CMAKE_BINARY_DIR}/cuti)
+include(${CMAKE_CURRENT_LIST_DIR}/../../CMakeLists.txt)
 include_directories(${TEST_INCLUDE_DIR})
 set(DYNAMIC_LIB_SRC
     ${TEST_SRC_DIR}/ComputeInt.cpp
