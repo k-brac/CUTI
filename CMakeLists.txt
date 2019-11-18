@@ -27,6 +27,32 @@ if(CUTI_INCLUDE_GUARD)
 endif()
 set(CUTI_INCLUDE_GUARD ON)
 
+#Options to configure cuti's back end and front end
+if(WIN32 OR APPLE)
+	#Defaulted to cuti front and back end for windows and mac
+	set(CUTI_FRONT_END "CUTI" CACHE STRING "Select cuti's front end")
+	set(CUTI_BACK_END "CUTI" CACHE STRING "Select cuti's back end")
+else()
+	#Defaulted to cppunit front and back end other platforms
+	set(CUTI_FRONT_END "CPPUNIT" CACHE STRING "Select cuti's front end")
+	set(CUTI_BACK_END "CPPUNIT" CACHE STRING "Select cuti's back end")
+endif(WIN32 OR APPLE)
+
+set(CUTI_PATH_TO_CPPUNIT_ROOT "" CACHE STRING "Provide a path to cppunit root directory (optional)")
+set(CUTI_PATH_TO_CPPUNIT_BIN "" CACHE STRING "Provide a path to cppunit binary directory (optional)")
+
+option(CUTI_USE_LONG_MACRO_NAME "Select wether you want to use long macro names" OFF)
+
+set_property(CACHE CUTI_FRONT_END PROPERTY STRINGS "CUTI" "CPPUNIT")
+set_property(CACHE CUTI_BACK_END PROPERTY STRINGS "CUTI" "CPPUNIT")
+
+string(COMPARE EQUAL "${CUTI_FRONT_END}" "CUTI" USE_CUTI_FRONT_END)
+string(COMPARE EQUAL "${CUTI_BACK_END}" "CUTI" USE_CUTI_BACK_END)
+
+if(TARGET cuti)
+	return()
+endif()
+
 function(cuti_target_properties target testee)
 #set some custom properties to target
 	if(APPLE AND ${USE_CUTI_BACK_END})
@@ -72,28 +98,6 @@ function(cuti_add_test_target target testee)
 		add_dependencies(${target} Cuti)
 	endif()
 endfunction(cuti_add_test_target)
-
-#Options to configure cuti's back end and front end
-if(WIN32 OR APPLE)
-	#Defaulted to cuti front and back end for windows and mac
-	set(CUTI_FRONT_END "CUTI" CACHE STRING "Select cuti's front end")
-	set(CUTI_BACK_END "CUTI" CACHE STRING "Select cuti's back end")
-else()
-	#Defaulted to cppunit front and back end other platforms
-	set(CUTI_FRONT_END "CPPUNIT" CACHE STRING "Select cuti's front end")
-	set(CUTI_BACK_END "CPPUNIT" CACHE STRING "Select cuti's back end")
-endif(WIN32 OR APPLE)
-
-set(CUTI_PATH_TO_CPPUNIT_ROOT "" CACHE STRING "Provide a path to cppunit root directory (optional)")
-set(CUTI_PATH_TO_CPPUNIT_BIN "" CACHE STRING "Provide a path to cppunit binary directory (optional)")
-
-option(CUTI_USE_LONG_MACRO_NAME "Select wether you want to use long macro names" OFF)
-
-set_property(CACHE CUTI_FRONT_END PROPERTY STRINGS "CUTI" "CPPUNIT")
-set_property(CACHE CUTI_BACK_END PROPERTY STRINGS "CUTI" "CPPUNIT")
-
-string(COMPARE EQUAL "${CUTI_FRONT_END}" "CUTI" USE_CUTI_FRONT_END)
-string(COMPARE EQUAL "${CUTI_BACK_END}" "CUTI" USE_CUTI_BACK_END)
 
 #this is mandatory. Otherwise XCode crashes
 if(APPLE)
