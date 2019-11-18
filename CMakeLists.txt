@@ -29,7 +29,7 @@ set(CUTI_INCLUDE_GUARD ON)
 
 function(cuti_target_properties target testee)
 #set some custom properties to target
-	if(APPLE)
+	if(APPLE AND ${USE_CUTI_BACK_END})
 		set_target_properties(${target} PROPERTIES
 			BUNDLE TRUE
 			XCTEST TRUE
