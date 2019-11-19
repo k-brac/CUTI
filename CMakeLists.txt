@@ -96,7 +96,9 @@ function(cuti_add_test_target target testee)
 	add_library(${target} MODULE ${ARGN})
 	target_link_libraries(${target} PRIVATE ${testee} cuti)
 
-	cuti_target_properties(${target} ${testee})
+	if(TARGET ${testee})
+		cuti_target_properties(${target} ${testee})
+	endif()
 
 	if(TARGET Cuti)
 		#create a dependency between test target and Cuti test runner
