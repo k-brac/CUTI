@@ -55,11 +55,16 @@ endif()
 
 function(cuti_target_properties target testee)
 #set some custom properties to target
-	if(APPLE AND ${USE_CUTI_BACK_END})
+	if(APPLE)
+		if(${USE_CUTI_BACK_END})
+			set_target_properties(${target} PROPERTIES
+				BUNDLE TRUE
+				XCTEST TRUE
+				XCTEST_TESTEE ${testee}
+			)
+		endif()
 		set_target_properties(${target} PROPERTIES
-			BUNDLE TRUE
-			XCTEST TRUE
-			XCTEST_TESTEE ${testee}
+			XCODE_ATTRIBUTE_STRIP_STYLE "non-global"
 		)
 	endif()
 endfunction(cuti_target_properties)
