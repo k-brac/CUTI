@@ -196,22 +196,39 @@ if(NOT ${USE_CUTI_BACK_END})
 	set(CPPUNIT_ARCH_DIR $<$<AND:$<NOT:$<BOOL:${APPLE}>>,$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>>:x64>)
 
 	target_include_directories(cuti INTERFACE ${CUTI_PATH_TO_CPPUNIT_ROOT}/include)
+	set(CPPUNIT_STAT_LIB_DEBUG ${CUTI_PATH_TO_CPPUNIT_BIN}/Debug/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}cppunit$<$<BOOL:${WIN32}>:d_dll>${CMAKE_STATIC_LIBRARY_SUFFIX})
+	set(CPPUNIT_STAT_LIB_RELEASE ${CUTI_PATH_TO_CPPUNIT_BIN}/Release/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}cppunit$<$<BOOL:${WIN32}>:_dll>${CMAKE_STATIC_LIBRARY_SUFFIX})
 	set(CPPUNIT_DYN_LIB_DEBUG ${CUTI_PATH_TO_CPPUNIT_BIN}/Debug/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:${WIN32}>:d_dll>${CMAKE_SHARED_LIBRARY_SUFFIX})
 	set(CPPUNIT_DYN_LIB_RELEASE ${CUTI_PATH_TO_CPPUNIT_BIN}/Release/${CUTI_COMPILER_NAME}/${CPPUNIT_ARCH_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}cppunit$<$<BOOL:${WIN32}>:_dll>${CMAKE_SHARED_LIBRARY_SUFFIX})
-	target_link_libraries(cuti INTERFACE
-		debug ${CPPUNIT_DYN_LIB_DEBUG}
-		optimized ${CPPUNIT_DYN_LIB_RELEASE}
-	)
+	if(WIN32)
+		target_link_libraries(cuti INTERFACE
+			debug ${CPPUNIT_STAT_LIB_DEBUG}
+			optimized ${CPPUNIT_STAT_LIB_RELEASE}
+		)
+	else()
+		target_link_libraries(cuti INTERFACE
+			debug ${CPPUNIT_DYN_LIB_DEBUG}
+			optimized ${CPPUNIT_DYN_LIB_RELEASE}
+		)
+	endif()
 
 	target_sources(cuti INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src/UnitTestPlugin.cpp>)
 	
 	if(NOT TARGET Cuti)
 		add_executable(Cuti ${CMAKE_CURRENT_LIST_DIR}/src/CutiMain.cpp)
 		target_include_directories(Cuti PRIVATE ${CUTI_PATH_TO_CPPUNIT_ROOT}/include)
-		target_link_libraries(Cuti PRIVATE
-			debug ${CPPUNIT_DYN_LIB_DEBUG}
-			optimized ${CPPUNIT_DYN_LIB_RELEASE}
-		)
+		if(WIN32)
+			target_link_libraries(Cuti PRIVATE
+				debug ${CPPUNIT_STAT_LIB_DEBUG}
+				optimized ${CPPUNIT_STAT_LIB_RELEASE}
+			)
+		else()
+			target_link_libraries(Cuti PRIVATE
+				debug ${CPPUNIT_DYN_LIB_DEBUG}
+				optimized ${CPPUNIT_DYN_LIB_RELEASE}
+			)
+		endif()
+
 		set(CUTI_COPY_LIB $<$<CONFIG:Debug>:${CPPUNIT_DYN_LIB_DEBUG}> $<$<NOT:$<CONFIG:Debug>>:${CPPUNIT_DYN_LIB_RELEASE}>)
 		#copy cppunit dll to current build dir
 		add_custom_command(TARGET Cuti POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CUTI_COPY_LIB} $<TARGET_FILE_DIR:Cuti>)
