@@ -60,7 +60,7 @@ public:
     void startTest(CppUnit::Test *test)
     {
         CppUnit::BriefTestProgressListener::startTest(test);
-        mTimer = std::chrono::high_resolution_clock::now();
+        mTimer = std::chrono::steady_clock::now();
     }
 
     void endTest(CppUnit::Test *test)
