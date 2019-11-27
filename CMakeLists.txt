@@ -84,17 +84,26 @@ function(cuti_add_test_target target testee)
 #creates a test target for the testee target
 #uses ${ARGN} as list of source files for the test target
 
+	add_library(${target} MODULE ${ARGN})
+	target_link_libraries(${target} PRIVATE ${testee} cuti)
+
 	if(WIN32)
 		cuti_init_devenv_path()
-		if (MSVC_VERSION LESS 1910)
-			link_directories("${CUTI_VS_DEVENV_COMMAND}/../../VC/UnitTest/lib")
+		if(${CMAKE_VERSION} VERSION_LESS "3.13.0")
+			if (MSVC_VERSION LESS 1910)
+				link_directories("${CUTI_VS_DEVENV_COMMAND}/../../VC/UnitTest/lib")
+			else()
+				link_directories("${CUTI_VS_DEVENV_COMMAND}/../../VC/Auxiliary/VS/UnitTest/lib")
+			endif()
 		else()
-			link_directories("${CUTI_VS_DEVENV_COMMAND}/../../VC/Auxiliary/VS/UnitTest/lib")
+			if (MSVC_VERSION LESS 1910)
+				target_link_directories(${target} PRIVATE "${CUTI_VS_DEVENV_COMMAND}/../../VC/UnitTest/lib")
+			else()
+				target_link_directories(${target} PRIVATE "${CUTI_VS_DEVENV_COMMAND}/../../VC/Auxiliary/VS/UnitTest/lib")
+			endif()
 		endif()
 	endif()
 
-	add_library(${target} MODULE ${ARGN})
-	target_link_libraries(${target} PRIVATE ${testee} cuti)
 
 	if(TARGET ${testee})
 		cuti_target_properties(${target} ${testee})
