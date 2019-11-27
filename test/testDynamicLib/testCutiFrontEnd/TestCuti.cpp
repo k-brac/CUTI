@@ -29,10 +29,8 @@ SOFTWARE.
 class SingleInit {
     bool is_init = false;
 public:
-    bool initialize() {
-        if (is_init) {
-            throw std::runtime_error("Already initialized");
-        }
+    bool initialize(cuti::AssertReporter* self) {
+        ASSERT(!is_init);
         is_init = true;
         return true;
     }
@@ -44,7 +42,7 @@ public:
     void testSingleEvaluateInMacro() {
         SingleInit si;
         SingleInit si_expected;
-        ASSERT_EQUAL(si_expected.initialize(), si.initialize());
+        ASSERT_EQUAL(si_expected.initialize(getAssertReporter()), si.initialize(getAssertReporter()));
     }
 
     BEGIN_TESTS_REGISTRATION(TestCuti);

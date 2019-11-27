@@ -343,6 +343,16 @@ namespace cuti
     {
         return val;
     }
+
+#if !CUTI_USES_XCTEST_BACKEND
+struct CutiBaseTestCase
+{
+    virtual ~CutiBaseTestCase() = default;
+    void* getAssertReporter() const { return self; }
+protected:
+    void* self = nullptr;
+};
+#endif
 }
 
 /***********************************************************
@@ -415,7 +425,7 @@ do                                                                              
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#define IMPL_CUTI_TEST_CLASS(className) ONLY_USED_AT_NAMESPACE_SCOPE class className : public ::Microsoft::VisualStudio::CppUnitTestFramework::TestClass<className>
+#define IMPL_CUTI_TEST_CLASS(className) ONLY_USED_AT_NAMESPACE_SCOPE class className : public ::Microsoft::VisualStudio::CppUnitTestFramework::TestClass<className>, public cuti::CutiBaseTestCase
 
 #define IMPL_CUTI_SET_UP() TEST_METHOD_INITIALIZE(setUp)
 
@@ -456,7 +466,6 @@ INTERNAL_IMPL_CUTI_TEST(methodName)
 #endif
 
 #define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) \
-    void* getAssertReporter() const { return nullptr; } \
     static_assert(std::is_class<className>::value, #className " is unknown")
 
 #define IMPL_CUTI_END_TESTS_REGISTRATION() }; namespace {
@@ -487,6 +496,7 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 #define INTERNAL_CUTI_ASSERT_MESSAGE(expression, ...)             \
     do                                                            \
     {                                                             \
+        (void)self; /*If this line generates an error, you may need to pass a `cuti::AssertReporter* self` as function paramerter which you can get by calling `getAssertReporter()`*/ \
         auto li = INTERNAL_CUTI_LINE_INFO();                      \
         const auto cutiMsg_ = cuti::CutiGetMessageW(__VA_ARGS__); \
         expression;                                               \
@@ -494,6 +504,7 @@ INTERNAL_CUTI_SPECIALIZED_TO_STRING(uint16_t);
 
 #define INTERNAL_CUTI_ASSERT_COMPARE(bound, operation, actual, msg, ...)\
     do {\
+        (void)self; /*If this line generates an error, you may need to pass a `cuti::AssertReporter* self` as function paramerter which you can get by calling `getAssertReporter()`*/ \
         auto&& cuti_bound = bound;\
         auto&& cuti_actual = actual;\
         IMPL_CUTI_ASSERT(cuti_bound operation cuti_actual, cuti::ToString(cuti_actual) + std::string(msg) + cuti::ToString(cuti_bound) + cuti::CutiGetMessage(__VA_ARGS__));\
@@ -597,7 +608,6 @@ CUTI_START_WITH_TEST_CHECK(testMethod);    \
 * Delimits the beginning of the tests registration
 */
 #define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) \
-    XCTestCase* getAssertReporter() const { return self; } \
     }                                                 \
     ;                                                 \
     \
@@ -670,6 +680,7 @@ struct CutiBaseTestCase
     virtual void setUp() {}
     virtual void tearDown() {}
     virtual ~CutiBaseTestCase() = default;
+    XCTestCase* getAssertReporter() const { return self; }
 };
 #pragma clang diagnostic pop
 };
@@ -758,7 +769,7 @@ class className;                                          \
 static CPPUNIT_NS::AutoRegisterSuite<className>           \
         CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__); \
     \
-class className : public CppUnit::TestFixture
+class className : public CppUnit::TestFixture, public cuti::CutiBaseTestCase
 
 #define IMPL_CUTI_SET_UP() void setUp() final
 
@@ -766,9 +777,7 @@ class className : public CppUnit::TestFixture
 
 #define IMPL_CUTI_TEST(methodName) CUTI_START_WITH_TEST_CHECK(methodName); CPPUNIT_TEST(methodName)
 
-#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) \
-    void* getAssertReporter() const { return nullptr; } \
-    CPPUNIT_TEST_SUITE(className)
+#define IMPL_CUTI_BEGIN_TESTS_REGISTRATION(className) CPPUNIT_TEST_SUITE(className)
 
 #define IMPL_CUTI_END_TESTS_REGISTRATION() CPPUNIT_TEST_SUITE_END()
 
@@ -888,31 +897,6 @@ static_assert(std::is_same<className, ::className>::value, "CPPUNIT_TEST_SUITE_R
 */
 #undef CPPUNIT_TEST_SUITE_REGISTRATION
 #define CPPUNIT_TEST_SUITE_REGISTRATION(className) /**/
-
-/**
-* Replace CPPUNIT_TEST_SUITE to add getAssertReporter function
-*/
-#undef CPPUNIT_TEST_SUITE
-#define CPPUNIT_TEST_SUITE( ATestFixtureType )                              \
-    void* getAssertReporter() const { return nullptr; } \
-public:                                                                   \
-  typedef ATestFixtureType TestFixtureType;                               \
-                                                                          \
-private:                                                                  \
-  static const CPPUNIT_NS::TestNamer &getTestNamer__()                    \
-  {                                                                       \
-    static CPPUNIT_TESTNAMER_DECL( testNamer, ATestFixtureType );         \
-    return testNamer;                                                     \
-  }                                                                       \
-                                                                          \
-public:                                                                   \
-  typedef CPPUNIT_NS::TestSuiteBuilderContext<TestFixtureType>            \
-              TestSuiteBuilderContextType;                                \
-                                                                          \
-  static void                                                             \
-  addTestsToSuite( CPPUNIT_NS::TestSuiteBuilderContextBase &baseContext ) \
-  {                                                                       \
-    TestSuiteBuilderContextType context( baseContext )
 
 #ifdef _MSC_VER
 #pragma warning(pop)
