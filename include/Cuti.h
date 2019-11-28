@@ -24,6 +24,18 @@ SOFTWARE.
 #ifndef CPP_UNIT_TEST_INTEGRATED
 #define CPP_UNIT_TEST_INTEGRATED
 
+#if !CUTI_USES_XCTEST_BACKEND
+namespace cuti {
+struct CutiBaseTestCase
+{
+    virtual ~CutiBaseTestCase() = default;
+    void* getAssertReporter() const { return self; }
+protected:
+    void* self = nullptr;
+};
+}
+#endif
+
 /**
 * Uses only cuti's macros
 */
@@ -343,16 +355,6 @@ namespace cuti
     {
         return val;
     }
-
-#if !CUTI_USES_XCTEST_BACKEND
-struct CutiBaseTestCase
-{
-    virtual ~CutiBaseTestCase() = default;
-    void* getAssertReporter() const { return self; }
-protected:
-    void* self = nullptr;
-};
-#endif
 }
 
 /***********************************************************
@@ -915,7 +917,7 @@ static_assert(std::is_same<className, ::className>::value, "Test class " #classN
 static CPPUNIT_NS::AutoRegisterSuite<className>                                                                                   \
         CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__);                                                                         \
     \
-class className : public CppUnit::TestFixture
+class className : public CppUnit::TestFixture, public cuti::CutiBaseTestCase
 /**
 * Function initializing a test case
 */
@@ -938,7 +940,7 @@ static_assert(std::is_same<className, ::className>::value, "Test class " #classN
 static CPPUNIT_NS::AutoRegisterSuite<className>                                                                                   \
         CPPUNIT_MAKE_UNIQUE_NAME(autoRegisterRegistry__);                                                                         \
     \
-class className : public CppUnit::TestFixture
+class className : public CppUnit::TestFixture, public cuti::CutiBaseTestCase
 
 /**
 * Function initializing a test case
