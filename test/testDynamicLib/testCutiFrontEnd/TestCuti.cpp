@@ -45,7 +45,15 @@ public:
         ASSERT_EQUAL(si_expected.initialize(getAssertReporter()), si.initialize(getAssertReporter()));
     }
 
+    /**
+    * Assert that we can compare pointers
+    */
+    void testPtrEqual() {
+        ASSERT_EQUAL(this, this);
+    }
+
     BEGIN_TESTS_REGISTRATION(TestCuti);
     TEST(testSingleEvaluateInMacro);
+    TEST(testPtrEqual);
     END_TESTS_REGISTRATION();//must be the last statement in the class
 };

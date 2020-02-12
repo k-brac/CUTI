@@ -346,6 +346,17 @@ namespace cuti
     {
         return std::to_string(val);
     }
+
+    /**
+    * converts pointer address to string
+    */
+    template <typename T>
+    inline std::string ToString(T* val)
+    {
+        std::ostringstream address;
+        address << (void const*)val;
+        return address.str();
+    }
     
     /**
      * Special overload to avoid converting a std::string to std::string
