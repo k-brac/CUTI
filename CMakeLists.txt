@@ -1,6 +1,6 @@
 #The MIT License (MIT)
 #
-#Copyright (c) 2018 k-brac
+#Copyright (c) 2020 k-brac
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -46,8 +46,13 @@ option(CUTI_USE_LONG_MACRO_NAME "Select wether you want to use long macro names"
 set_property(CACHE CUTI_FRONT_END PROPERTY STRINGS "CUTI" "CPPUNIT")
 set_property(CACHE CUTI_BACK_END PROPERTY STRINGS "CUTI" "CPPUNIT")
 
-string(COMPARE EQUAL "${CUTI_FRONT_END}" "CUTI" USE_CUTI_FRONT_END)
-string(COMPARE EQUAL "${CUTI_BACK_END}" "CUTI" USE_CUTI_BACK_END)
+string(COMPARE EQUAL "${CUTI_FRONT_END}" "CUTI" USE_CUTI_FRONT_END_CMP)
+string(COMPARE EQUAL "${CUTI_BACK_END}" "CUTI" USE_CUTI_BACK_END_CMP)
+
+set(USE_CUTI_FRONT_END ${USE_CUTI_FRONT_END_CMP} CACHE BOOL "Internal variable")
+set(USE_CUTI_BACK_END ${USE_CUTI_BACK_END_CMP} CACHE BOOL "Internal variable")
+
+mark_as_advanced(USE_CUTI_FRONT_END USE_CUTI_BACK_END)
 
 if(TARGET cuti)
 	return()
@@ -136,7 +141,7 @@ endif()
 
 if(WIN32)
 	target_compile_definitions(cuti INTERFACE
-		$<IF:${USE_CUTI_BACK_END},
+		$<IF:$<BOOL:${USE_CUTI_BACK_END}>,
 			CUTI_USES_MSVC_UNIT_BACKEND,
 			"CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility(\"default\")))"
 			CUTI_USES_CPPUNIT_BACKEND
@@ -145,7 +150,7 @@ if(WIN32)
 	)
 elseif(${APPLE})
 	target_compile_definitions(cuti INTERFACE
-		$<IF:${USE_CUTI_BACK_END},
+		$<IF:$<BOOL:${USE_CUTI_BACK_END}>,
 			CUTI_USES_XCTEST_BACKEND,
 			"CPPUNIT_PLUGIN_EXPORT=__attribute__((visibility(\"default\")))"
 			CUTI_USES_CPPUNIT_BACKEND
@@ -172,12 +177,12 @@ else()
 endif()
 
 target_compile_definitions(cuti INTERFACE
-	$<IF:${USE_CUTI_BACK_END},
-		$<IF:${USE_CUTI_FRONT_END},
+	$<IF:$<BOOL:${USE_CUTI_BACK_END}>,
+		$<IF:$<BOOL:${USE_CUTI_FRONT_END}>,
 			CUTI_FREE_STANDING,
 			CUTI_CPPUNIT_COMPATABILITY
 		>,
-		$<IF:${USE_CUTI_FRONT_END},
+		$<IF:$<BOOL:${USE_CUTI_FRONT_END}>,
 			CUTI_UNKNOWN,
 			CUTI_NO_INTEGRATION
 		>
