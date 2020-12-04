@@ -23,7 +23,7 @@ jobs:
       packageApp: false
       publishJUnitResults: true
       scheme: testCuti
-      sdk: macosx11
+      sdk: macosx11.0
   - task: Xcode@5
     inputs:
       actions: 'test'
@@ -31,7 +31,7 @@ jobs:
       packageApp: false
       publishJUnitResults: true
       scheme: testCppunit
-      sdk: macosx11
+      sdk: macosx11.0
 - job: Xcode_11
   pool:
     vmImage: 'macOS-latest'
