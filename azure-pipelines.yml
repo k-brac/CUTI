@@ -23,10 +23,34 @@ jobs:
       packageApp: false
       publishJUnitResults: true
       scheme: testCuti
+      sdk: macOS
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCppunit
+      sdk: macOS
+- job: Xcode_11
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - bash: cmake -G "Xcode" ./test/testDynamicLib
+  - task: Xcode@5
+    inputs:
+      actions: 'test'
+      xcodeVersion: '11'
+      configuration: $(configuration)
+      packageApp: false
+      publishJUnitResults: true
+      scheme: testCuti
       sdk: macosx10.15
   - task: Xcode@5
     inputs:
       actions: 'test'
+      xcodeVersion: '11'
       configuration: $(configuration)
       packageApp: false
       publishJUnitResults: true
@@ -56,30 +80,6 @@ jobs:
       publishJUnitResults: true
       scheme: testCppunit
       sdk: macosx10.14
-- job: Xcode_9
-  pool:
-    vmImage: 'macOS-latest'
-  steps:
-  - bash: cmake -G "Xcode" ./test/testDynamicLib
-  - bash: cmake -G "Xcode" ./test/testDynamicLib
-  - task: Xcode@5
-    inputs:
-      actions: 'test'
-      xcodeVersion: '9'
-      configuration: $(configuration)
-      packageApp: false
-      publishJUnitResults: true
-      scheme: testCuti
-      sdk: macosx10.13
-  - task: Xcode@5
-    inputs:
-      actions: 'test'
-      xcodeVersion: '9'
-      configuration: $(configuration)
-      packageApp: false
-      publishJUnitResults: true
-      scheme: testCppunit
-      sdk: macosx10.13
 - job: VS_latest
   pool:
     vmImage: 'windows-latest'
@@ -114,21 +114,4 @@ jobs:
       testRunTitle: 'CUTI'
       platform: 'vs2017-win2016'
       configuration: $(configuration)
-# - job: VS_2015
-#   pool:
-#     vmImage: 'vs2015-win2012r2'
-#   steps:
-#   - script: cmake.exe --version
-#   - script: cmake.exe -G "Visual Studio 14 2015 Win64" ./test/testDynamicLib
-#   - script: cmake.exe --build . --config $(configuration)
-#   - task: VSTest@2
-#     inputs:
-#       testSelector: 'testAssemblies'
-#       testAssemblyVer2: |
-#         **\*test*.dll
-#         !**\*TestAdapter.dll
-#         !**\obj\**
-#       searchFolder: '$(System.DefaultWorkingDirectory)'
-#       testRunTitle: 'CUTI'
-#       platform: 'vs2015-win2012r2'
-#       configuration: $(configuration)
+
